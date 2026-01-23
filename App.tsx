@@ -60,6 +60,11 @@ const App: React.FC = () => {
         if (window.aistudio) {
           const selected = await window.aistudio.hasSelectedApiKey();
           setHasKey(selected);
+        } else {
+          // Check local storage or env var
+          const localKey = localStorage.getItem('gemini_api_key');
+          const envKey = process.env.API_KEY; // Vite define ile gelir
+          setHasKey(!!localKey || !!envKey);
         }
       } catch (e) {
         console.error("Auth check failed", e);
@@ -94,7 +99,19 @@ const App: React.FC = () => {
           }
         }, 1000);
       } else {
-        alert("Bağlantı Penceresi: Sistem şu an hazır değil, lütfen sayfayı yenileyip tekrar deneyin.");
+        // Fallback: Manual Entry
+        const currentKey = localStorage.getItem('gemini_api_key') || '';
+        const newKey = prompt("Lütfen Google Gemini API Anahtarınızı girin:", currentKey);
+        if (newKey !== null) { // Cancel'a basılmadıysa
+          if (newKey.trim()) {
+            localStorage.setItem('gemini_api_key', newKey.trim());
+            setHasKey(true);
+            alert("API Anahtarı kaydedildi.");
+          } else {
+            localStorage.removeItem('gemini_api_key');
+            setHasKey(false);
+          }
+        }
       }
     } catch (error) {
       console.error("Open Key Selector Error:", error);

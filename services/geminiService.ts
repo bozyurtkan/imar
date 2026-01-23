@@ -4,18 +4,21 @@ import { DocumentFile, Message } from "../types";
 
 export class GeminiService {
   private getClient() {
-    // API key must be obtained exclusively from the environment variable process.env.API_KEY.
-    // We create a fresh client instance to ensure the most up-to-date API key is used.
-    return new GoogleGenAI({ apiKey: process.env.API_KEY });
+    // API key: Try env var first (build time), then localStorage (runtime)
+    const apiKey = process.env.API_KEY || localStorage.getItem('gemini_api_key');
+    if (!apiKey) {
+      throw new Error("API Anahtarı eksik. Lütfen sol menüden API anahtarınızı girin.");
+    }
+    return new GoogleGenAI({ apiKey });
   }
 
   async askQuestion(
-    question: string, 
-    documents: DocumentFile[], 
+    question: string,
+    documents: DocumentFile[],
     chatHistory: Message[]
   ): Promise<string> {
     const ai = this.getClient();
-    
+
     const activeDocs = documents.filter(doc => doc.isActive);
     if (activeDocs.length === 0) {
       throw new Error("Lütfen analiz için kütüphaneden en az bir belge seçin.");
@@ -24,7 +27,7 @@ export class GeminiService {
     const contextText = activeDocs
       .map(doc => `[KAYNAK: ${doc.name} | ETİKET: ${doc.description}]\n${doc.content}`)
       .join('\n\n---\n\n');
-    
+
     const systemInstruction = `
       Sen profesyonel bir Türkiye İmar Mevzuatı danışmanısın. 
       Sadece sana sunulan dökümanlardaki bilgilere dayanarak cevap vermelisin.
@@ -39,7 +42,7 @@ export class GeminiService {
     try {
       // Using gemini-3-pro-preview for complex Turkish Zoning Law reasoning.
       const response = await ai.models.generateContent({
-        model: 'gemini-3-pro-preview', 
+        model: 'gemini-3-pro-preview',
         contents: `KÜTÜPHANE İÇERİĞİ:\n\n${contextText}\n\nKULLANICI SORUSU: ${question}`,
         config: {
           systemInstruction: systemInstruction.trim(),
@@ -59,7 +62,7 @@ export class GeminiService {
     try {
       // Using gemini-3-flash-preview for basic summarization tasks.
       const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview', 
+        model: 'gemini-3-flash-preview',
         contents: `Aşağıdaki imar mevzuatı dökümanını profesyonel bir şekilde özetle:\n\n${doc.content}`,
         config: {
           systemInstruction: "Sen bir hukuk asistanısın. Kısa ve net özetler çıkarırsın.",
@@ -67,11 +70,11 @@ export class GeminiService {
       });
       return response.text || "Özet çıkarılamadı.";
     } catch (e: any) {
-       throw new Error(e?.message || "Özetleme hatası.");
+      throw new Error(e?.message || "Özetleme hatası.");
     }
   }
 
-  async askGeneral(question: string): Promise<{text: string, sources: any[]}> {
+  async askGeneral(question: string): Promise<{ text: string, sources: any[] }> {
     const ai = this.getClient();
     try {
       // Using gemini-3-flash-preview with googleSearch for real-time grounding.
