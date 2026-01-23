@@ -55,22 +55,8 @@ const App: React.FC = () => {
   }, [documents, searchQuery]);
 
   useEffect(() => {
-    const initCheck = async () => {
-      try {
-        if (window.aistudio) {
-          const selected = await window.aistudio.hasSelectedApiKey();
-          setHasKey(selected);
-        } else {
-          // Check local storage or env var
-          const localKey = localStorage.getItem('gemini_api_key');
-          const envKey = process.env.API_KEY; // Vite define ile gelir
-          setHasKey(!!localKey || !!envKey);
-        }
-      } catch (e) {
-        console.error("Auth check failed", e);
-      }
-    };
-    initCheck();
+    // API anahtarı gömülü olduğu için her zaman var kabul ediyoruz.
+    setHasKey(true);
 
     const savedDocs = localStorage.getItem('imar_docs');
     if (savedDocs) {
@@ -89,33 +75,7 @@ const App: React.FC = () => {
   }, []);
 
   const handleOpenKeySelector = async () => {
-    try {
-      if (window.aistudio && typeof window.aistudio.openSelectKey === 'function') {
-        await window.aistudio.openSelectKey();
-        setTimeout(async () => {
-          if (window.aistudio) {
-            const selected = await window.aistudio.hasSelectedApiKey();
-            setHasKey(selected);
-          }
-        }, 1000);
-      } else {
-        // Fallback: Manual Entry
-        const currentKey = localStorage.getItem('gemini_api_key') || '';
-        const newKey = prompt("Lütfen Google Gemini API Anahtarınızı girin:", currentKey);
-        if (newKey !== null) { // Cancel'a basılmadıysa
-          if (newKey.trim()) {
-            localStorage.setItem('gemini_api_key', newKey.trim());
-            setHasKey(true);
-            alert("API Anahtarı kaydedildi.");
-          } else {
-            localStorage.removeItem('gemini_api_key');
-            setHasKey(false);
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Open Key Selector Error:", error);
-    }
+    alert("API Anahtarı sisteme güvenli şekilde gömülmüştür. Ayar yapmanıza gerek yoktur.");
   };
 
   useEffect(() => {

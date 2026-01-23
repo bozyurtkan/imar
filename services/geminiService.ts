@@ -2,12 +2,16 @@
 import { GoogleGenAI } from "@google/genai";
 import { DocumentFile, Message } from "../types";
 
+// DİKKAT: API Anahtarınızı tırnak işaretleri içine yapıştırın.
+const EMBEDDED_API_KEY = "BURAYA_GERCEK_API_KEY_YAZILACAK";
+
 export class GeminiService {
   private getClient() {
-    // API key: Try env var first (build time), then localStorage (runtime)
-    const apiKey = process.env.API_KEY || localStorage.getItem('gemini_api_key');
-    if (!apiKey) {
-      throw new Error("API Anahtarı eksik. Lütfen sol menüden API anahtarınızı girin.");
+    // API key doğrudan kodun içine gömüldü.
+    const apiKey = EMBEDDED_API_KEY;
+
+    if (!apiKey || apiKey === "BURAYA_GERCEK_API_KEY_YAZILACAK") {
+      throw new Error("API Anahtarı tanımlanmamış. Lütfen services/geminiService.ts dosyasına anahtarınızı ekleyin.");
     }
     return new GoogleGenAI({ apiKey });
   }
