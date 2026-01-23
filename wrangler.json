@@ -2,7 +2,6 @@
     "name": "imar-mevzuat-asistani",
     "compatibility_date": "2025-01-23",
     "assets": {
-        "directory": "dist",
-        "binding": "ASSETS"
+        "directory": "dist"
     }
 }
