@@ -1,0 +1,9 @@
+{
+    "name": "imar-mevzuat-asistani",
+    "main": "dist/index.html",
+    "compatibility_date": "2025-01-23",
+    "assets": {
+        "directory": "dist",
+        "binding": "ASSETS"
+    }
+}
