@@ -509,8 +509,8 @@ const ImarApp: React.FC = () => {
               </div>
             </div>
 
-            {/* Yargıtay Kararları */}
-            {selectedMadde.yargitayKararlari && selectedMadde.yargitayKararlari.length > 0 && (
+            {/* Yargıtay Kararları - Şimdilik kapatıldı */}
+            {/* {selectedMadde.yargitayKararlari && selectedMadde.yargitayKararlari.length > 0 && (
               <div>
                 <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                   <Gavel size={12} /> Yargıtay / Danıştay Kararları
@@ -539,7 +539,7 @@ const ImarApp: React.FC = () => {
                   ))}
                 </div>
               </div>
-            )}
+            )} */}
           </div>
 
           {/* Footer */}
