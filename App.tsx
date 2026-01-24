@@ -75,7 +75,7 @@ const App: React.FC = () => {
   }, []);
 
   const handleOpenKeySelector = async () => {
-    alert("API Anahtarı sisteme güvenli şekilde gömülmüştür. Ayar yapmanıza gerek yoktur.");
+    alert("API Anahtarı sistem ortam değişkenlerinden (Cloudflare/Env) otomatik olarak alınmaktadır. Manuel giriş gerekli değildir.");
   };
 
   useEffect(() => {
