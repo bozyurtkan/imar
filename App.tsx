@@ -89,7 +89,7 @@ const App: React.FC = () => {
     else localStorage.removeItem('imar_docs');
   }, [documents]);
 
-  const scrollToBottom = () => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToBottom = () => chatEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   useEffect(() => { scrollToBottom(); }, [messages, isTyping]);
 
   // PDF Export fonksiyonu - Türkçe karakter destekli
@@ -717,7 +717,7 @@ const App: React.FC = () => {
       </aside>
 
       <main className="flex-1 flex flex-col bg-white dark:bg-slate-950 min-w-0">
-        <header className="h-14 lg:h-16 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-4 lg:px-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-30">
+        <header className="h-14 lg:h-16 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-4 lg:px-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-30 pt-[env(safe-area-inset-top)] transition-all">
           <div className="flex items-center gap-3">
             {/* Mobile hamburger menu */}
             <button
@@ -805,7 +805,7 @@ const App: React.FC = () => {
           <div ref={chatEndRef} />
         </div>
 
-        <div className="p-3 lg:p-6 bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800">
+        <div className="p-3 lg:p-6 bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           <form onSubmit={handleSendMessage} className="max-w-4xl mx-auto relative">
             <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder="İmar mevzuatı hakkında soru sorun..." disabled={isTyping} className="w-full pl-4 lg:pl-6 pr-14 py-3 lg:py-4 rounded-2xl border dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm shadow-sm" />
             <button type="submit" disabled={!inputValue.trim() || isTyping} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 lg:w-10 lg:h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all hover:bg-indigo-700 disabled:opacity-30"><Send size={18} /></button>
