@@ -392,13 +392,30 @@ const ImarApp: React.FC = () => {
 
   // Madde tıklama işleyicisi
   const handleMaddeClick = useCallback((maddeId: string) => {
-    const madde = getMadde(maddeId);
-    if (madde) {
-      setSelectedMadde(madde);
-      setShowMaddeModal(true);
-    } else {
-      alert(`"${maddeId}" maddesi veritabanında bulunamadı.`);
+    let madde = getMadde(maddeId);
+
+    if (!madde) {
+      // Dinamik madde oluşturma mantığı
+      const cleanedId = maddeId.replace(/MADDE:\s*/i, '').replace(/[\[\]]/g, '').trim();
+      const parts = cleanedId.split('/');
+      const maddeNo = parts.length > 1 && parts[0].length !== 4 ? parts[0] : parts.length > 1 ? parts[1] : parts[0];
+      const kanunNo = parts.length > 1 && parts[0].length === 4 ? parts[0] : "3194"; // Varsayılan kanun
+
+      madde = {
+        id: cleanedId,
+        kanunNo: kanunNo,
+        kanunAdi: "İmar Kanunu",
+        maddeNo: maddeNo,
+        baslik: `Madde ${maddeNo}`,
+        icerik: "Bu madde içeriği şu an statik veritabanında bulunmamaktadır. Ancak yüklenen belge üzerinden bağlamı görüntüleyebilirsiniz.",
+        iliskiliMaddeler: [],
+        anahtatKelimeler: [],
+        sonGuncelleme: new Date().toLocaleDateString('tr-TR')
+      };
     }
+
+    setSelectedMadde(madde);
+    setShowMaddeModal(true);
   }, []);
 
   // İlişkili maddeye git
