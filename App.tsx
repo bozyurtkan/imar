@@ -11,6 +11,12 @@ import { parseFile, formatBytes } from './utils/fileParser';
 import { geminiService } from './services/geminiService';
 import { getMadde, getAllMaddeler, MevzuatMaddesi, getMevzuatGraph } from './data/mevzuatVeritabani';
 
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AuthModal } from './components/AuthModal';
+import { db } from './services/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { User, LogOut, LogIn } from 'lucide-react';
+
 const DAILY_LIMIT = 50;
 
 declare global {
@@ -23,7 +29,9 @@ declare global {
   }
 }
 
-const App: React.FC = () => {
+const ImarApp: React.FC = () => {
+  const { user, logout } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [documents, setDocuments] = useState<DocumentFile[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -58,10 +66,35 @@ const App: React.FC = () => {
     // API anahtarı gömülü olduğu için her zaman var kabul ediyoruz.
     setHasKey(true);
 
-    const savedDocs = localStorage.getItem('imar_docs');
-    if (savedDocs) {
-      try { setDocuments(JSON.parse(savedDocs)); } catch (e) { console.error(e); }
-    }
+    // Verileri Yükle (Cloud veya Local)
+    const loadData = async () => {
+      if (user) {
+        // Kullanıcı giriş yapmışsa Firestore'dan çek
+        try {
+          const docRef = doc(db, "users", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists() && docSnap.data().documents) {
+            setDocuments(docSnap.data().documents);
+          } else {
+            // Firestore boşsa ve localde veri varsa, opsiyonel olarak merge edilebilir
+            // Şimdilik boş bırakıyoruz veya local'den başlatmıyoruz temiz bir sayfa için
+            // Ancak kullanıcı deneyimi için, boşsa localdekileri oraya aktarmak mantıklı olabilir.
+            // Bu örnekte sadece Firestore'u baz alıyoruz.
+            setDocuments([]);
+          }
+        } catch (e) {
+          console.error("Firestore loading error:", e);
+        }
+      } else {
+        // Giriş yapmamışsa LocalStorage'dan çek
+        const savedDocs = localStorage.getItem('imar_docs');
+        if (savedDocs) {
+          try { setDocuments(JSON.parse(savedDocs)); } catch (e) { console.error(e); }
+        }
+      }
+    };
+
+    loadData();
     const savedTheme = localStorage.getItem('imar_theme');
     setIsDarkMode(savedTheme !== 'false');
 
@@ -84,10 +117,76 @@ const App: React.FC = () => {
     localStorage.setItem('imar_theme', isDarkMode.toString());
   }, [isDarkMode]);
 
+  // Verileri Kaydet (Cloud veya Local)
+  const saveDocuments = async (newDocs: DocumentFile[]) => {
+    setDocuments(newDocs);
+
+    if (user) {
+      // Cloud'a kaydet
+      try {
+        await setDoc(doc(db, "users", user.uid), { documents: newDocs }, { merge: true });
+      } catch (e) {
+        console.error("Error saving to cloud:", e);
+      }
+    } else {
+      // Local'e kaydet
+      if (newDocs.length > 0) localStorage.setItem('imar_docs', JSON.stringify(newDocs));
+      else localStorage.removeItem('imar_docs');
+    }
+  };
+
+  // User değişince verileri yeniden yükle
   useEffect(() => {
-    if (documents.length > 0) localStorage.setItem('imar_docs', JSON.stringify(documents));
-    else localStorage.removeItem('imar_docs');
-  }, [documents]);
+    // API anahtarı ayarı
+    setHasKey(true);
+
+    // Theme
+    const savedTheme = localStorage.getItem('imar_theme');
+    setIsDarkMode(savedTheme !== 'false');
+
+    // Usage
+    const today = new Date().toDateString();
+    const savedUsage = localStorage.getItem('imar_usage_data');
+    if (savedUsage) {
+      const { date, count } = JSON.parse(savedUsage);
+      if (date === today) setUsageCount(count);
+      else setUsageCount(0);
+    }
+  }, []);
+
+  // User auth state değişince verileri güncelle
+  useEffect(() => {
+    const syncData = async () => {
+      if (user) {
+        try {
+          const docRef = doc(db, "users", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists() && docSnap.data().documents) {
+            setDocuments(docSnap.data().documents);
+          } else {
+            // Yeni kullanıcı veya boş veri
+            // Eğer localde veri varsa ve cloud boşsa, buluta aktar (Onboarding)
+            const localDocs = localStorage.getItem('imar_docs');
+            if (localDocs) {
+              const parsed = JSON.parse(localDocs);
+              if (parsed.length > 0) {
+                await setDoc(doc(db, "users", user.uid), { documents: parsed }, { merge: true });
+                setDocuments(parsed);
+              }
+            } else {
+              setDocuments([]);
+            }
+          }
+        } catch (e) { console.error(e); }
+      } else {
+        // Logout olduğunda local'e dön
+        const savedDocs = localStorage.getItem('imar_docs');
+        if (savedDocs) setDocuments(JSON.parse(savedDocs));
+        else setDocuments([]);
+      }
+    };
+    syncData();
+  }, [user]);
 
   const scrollToBottom = () => chatEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   useEffect(() => { scrollToBottom(); }, [messages, isTyping]);
@@ -216,7 +315,7 @@ const App: React.FC = () => {
         console.error(error);
       }
     }
-    setDocuments(prev => [...prev, ...newDocs]);
+    saveDocuments([...documents, ...newDocs]);
     setIsParsing(false);
     setUploadPendingFiles([]);
     setCurrentDescription('');
@@ -664,7 +763,7 @@ const App: React.FC = () => {
               {filteredDocuments.map(doc => (
                 <div key={doc.id} className={`p-3 rounded-xl border transition-all ${doc.isActive ? 'bg-indigo-50/40 dark:bg-indigo-900/10 border-indigo-200 dark:border-indigo-800' : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800'}`}>
                   <div className="flex gap-3">
-                    <div onClick={() => setDocuments(docs => docs.map(d => d.id === doc.id ? { ...d, isActive: !d.isActive } : d))} className="mt-0.5 text-indigo-600 cursor-pointer">
+                    <div onClick={() => saveDocuments(documents.map(d => d.id === doc.id ? { ...d, isActive: !d.isActive } : d))} className="mt-0.5 text-indigo-600 cursor-pointer">
                       {doc.isActive ? <CheckSquare size={16} /> : <Square size={16} className="text-slate-300" />}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -672,7 +771,7 @@ const App: React.FC = () => {
                       <p className="text-[9px] text-slate-400 truncate opacity-70 mb-2">{doc.description}</p>
                       <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-50 dark:border-slate-800/50">
                         <button onClick={() => handleSummarize(doc)} className="text-[9px] font-bold text-indigo-600 hover:underline flex items-center gap-1"><Sparkles size={10} /> Özetle</button>
-                        <button onClick={() => setDocuments(d => d.filter(x => x.id !== doc.id))} className="text-slate-300 hover:text-rose-500"><Trash2 size={12} /></button>
+                        <button onClick={() => saveDocuments(documents.filter(x => x.id !== doc.id))} className="text-slate-300 hover:text-rose-500"><Trash2 size={12} /></button>
                       </div>
                     </div>
                   </div>
@@ -686,162 +785,194 @@ const App: React.FC = () => {
       <div className="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
         <input type="file" ref={fileInputRef} onChange={(e) => e.target.files && setUploadPendingFiles(Array.from(e.target.files))} className="hidden" multiple accept=".pdf,.docx,.jpg,.jpeg,.png" />
         <button onClick={() => fileInputRef.current?.click()} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 text-xs font-bold transition-all"><Plus size={16} /> Mevzuat Yükle</button>
-        <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-800">
-          <button onClick={handleOpenKeySelector} className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-[10px] font-bold text-slate-500">
+
+        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+          <button onClick={handleOpenKeySelector} className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-[10px] font-bold text-slate-500 mb-2">
             <div className="flex items-center gap-2"><Key size={14} /> API AYARLARI</div>
             <div className={`w-1.5 h-1.5 rounded-full ${hasKey ? 'bg-emerald-500' : 'bg-rose-500'}`}></div>
           </button>
+
+          {user ? (
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
+                  {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold dark:text-white truncate">{user.displayName || 'Kullanıcı'}</p>
+                  <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
+                </div>
+              </div>
+              <button onClick={() => logout()} className="w-full py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-[10px] font-bold rounded-xl hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-600 dark:hover:text-rose-400 transition-colors flex items-center justify-center gap-2">
+                <LogOut size={12} /> Oturumu Kapat
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => setIsAuthModalOpen(true)} className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 text-xs font-bold transition-all">
+              <LogIn size={16} /> Giriş Yap / Kayıt Ol
+            </button>
+          )}
         </div>
       </div>
+    </div>
     </>
   );
 
-  return (
-    <div className={`flex h-screen h-[100dvh] w-full bg-slate-50 dark:bg-slate-950 transition-colors duration-200 overflow-hidden supports-[height:100cqh]:h-[100cqh] supports-[height:100svh]:h-[100svh]`}>
-      {/* Mobile Overlay */}
-      {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
+return (
+  <div className={`flex h-screen h-[100dvh] w-full bg-slate-50 dark:bg-slate-950 transition-colors duration-200 overflow-hidden supports-[height:100cqh]:h-[100cqh] supports-[height:100svh]:h-[100svh]`}>
+    {/* Mobile Overlay */}
+    {isMobileMenuOpen && (
+      <div
+        className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+        onClick={() => setIsMobileMenuOpen(false)}
+      />
+    )}
 
-      {/* Sidebar - Desktop */}
-      <aside className="hidden lg:flex w-80 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-col h-full z-40">
-        <SidebarContent />
-      </aside>
+    {/* Sidebar - Desktop */}
+    <aside className="hidden lg:flex w-80 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-col h-full z-40">
+      <SidebarContent />
+    </aside>
 
-      {/* Sidebar - Mobile (Slide-in) */}
-      <aside className={`fixed inset-y-0 left-0 w-80 max-w-[85vw] border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col h-[100dvh] z-[60] transform transition-transform duration-300 lg:hidden ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <SidebarContent />
-      </aside>
+    {/* Sidebar - Mobile (Slide-in) */}
+    <aside className={`fixed inset-y-0 left-0 w-80 max-w-[85vw] border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col h-[100dvh] z-[60] transform transition-transform duration-300 lg:hidden ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <SidebarContent />
+    </aside>
 
-      <main className="flex-1 flex flex-col bg-white dark:bg-slate-950 min-w-0">
-        <header className="h-14 lg:h-16 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-4 lg:px-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-30 pt-[env(safe-area-inset-top)] transition-all">
-          <div className="flex items-center gap-3">
-            {/* Mobile hamburger menu */}
+    <main className="flex-1 flex flex-col bg-white dark:bg-slate-950 min-w-0">
+      <header className="h-14 lg:h-16 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-4 lg:px-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-30 pt-[env(safe-area-inset-top)] transition-all">
+        <div className="flex items-center gap-3">
+          {/* Mobile hamburger menu */}
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="lg:hidden p-2 -ml-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+          >
+            <Menu size={20} />
+          </button>
+          <ShieldCheck className="text-emerald-500 hidden sm:block" size={18} />
+          <div>
+            <h2 className="text-xs font-bold dark:text-white leading-none">Mevzuat Analiz Odası</h2>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 hidden sm:block">Aktif Belge: {documents.filter(d => d.isActive).length}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 lg:gap-3">
+          {/* Mevzuat Kütüphanesi butonu */}
+          <button
+            onClick={() => setShowKnowledgeGraph(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all bg-purple-500 hover:bg-purple-600 text-white shadow-lg shadow-purple-500/20"
+            title="Mevzuat İlişki Grafiği"
+          >
+            <GitBranch size={16} />
+            <span className="hidden sm:inline">Mevzuat</span>
+          </button>
+          {/* PDF Export butonu */}
+          {messages.length > 0 && (
             <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="lg:hidden p-2 -ml-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+              onClick={exportChatToPDF}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20"
+              title="Sohbeti PDF olarak indir"
             >
-              <Menu size={20} />
+              <Download size={16} />
+              <span className="hidden sm:inline">PDF İndir</span>
             </button>
-            <ShieldCheck className="text-emerald-500 hidden sm:block" size={18} />
-            <div>
-              <h2 className="text-xs font-bold dark:text-white leading-none">Mevzuat Analiz Odası</h2>
-              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 hidden sm:block">Aktif Belge: {documents.filter(d => d.isActive).length}</p>
+          )}
+          <button onClick={() => setIsGeneralMode(!isGeneralMode)} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg ${isGeneralMode ? 'bg-indigo-500 text-white shadow-indigo-500/20' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-slate-200/20'}`}>
+            <Globe size={16} />
+            <span className="hidden sm:inline">Web {isGeneralMode ? 'Açık' : 'Kapalı'}</span>
+          </button>
+          <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl shadow-lg transition-all hover:scale-105">
+            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
+        </div>
+      </header>
+
+      <div className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-4 lg:space-y-6 custom-scrollbar overscroll-contain">
+        {messages.length === 0 ? (
+          <div className="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto px-4">
+            <div className="w-14 h-14 lg:w-16 lg:h-16 bg-indigo-50 dark:bg-indigo-900/20 rounded-3xl flex items-center justify-center text-indigo-600 mb-6 shadow-xl"><BookOpen size={28} /></div>
+            <h3 className="text-lg font-bold mb-2 dark:text-white">İmar Mevzuatı Asistanı</h3>
+            <p className="text-slate-500 text-xs leading-relaxed mb-8">Belgelerinizi yükleyin ve imar mevzuatı hakkında sorular sorun. Yüklediğiniz yönetmelik ve kanunlar üzerinden detaylı aramalar yapın.</p>
+            <div className="space-y-2 w-full">
+              {["3194 Sayılı Kanun 18. madde nedir?", "İstanbul İmar Yönetmeliği çekme mesafesi?", "Mevzuata göre otopark şartları?"].map((q, i) => (
+                <button key={i} onClick={() => setInputValue(q)} className="w-full p-3 bg-slate-50 dark:bg-slate-800/40 hover:bg-white border border-slate-100 dark:border-slate-700 rounded-xl text-[11px] font-bold text-slate-600 dark:text-slate-300 text-left flex items-center justify-between transition-all">{q} <ChevronRight size={14} /></button>
+              ))}
             </div>
           </div>
-          <div className="flex items-center gap-2 lg:gap-3">
-            {/* Mevzuat Kütüphanesi butonu */}
-            <button
-              onClick={() => setShowKnowledgeGraph(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all bg-purple-500 hover:bg-purple-600 text-white shadow-lg shadow-purple-500/20"
-              title="Mevzuat İlişki Grafiği"
-            >
-              <GitBranch size={16} />
-              <span className="hidden sm:inline">Mevzuat</span>
-            </button>
-            {/* PDF Export butonu */}
-            {messages.length > 0 && (
-              <button
-                onClick={exportChatToPDF}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20"
-                title="Sohbeti PDF olarak indir"
-              >
-                <Download size={16} />
-                <span className="hidden sm:inline">PDF İndir</span>
-              </button>
-            )}
-            <button onClick={() => setIsGeneralMode(!isGeneralMode)} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg ${isGeneralMode ? 'bg-indigo-500 text-white shadow-indigo-500/20' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-slate-200/20'}`}>
-              <Globe size={16} />
-              <span className="hidden sm:inline">Web {isGeneralMode ? 'Açık' : 'Kapalı'}</span>
-            </button>
-            <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl shadow-lg transition-all hover:scale-105">
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-          </div>
-        </header>
-
-        <div className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-4 lg:space-y-6 custom-scrollbar overscroll-contain">
-          {messages.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto px-4">
-              <div className="w-14 h-14 lg:w-16 lg:h-16 bg-indigo-50 dark:bg-indigo-900/20 rounded-3xl flex items-center justify-center text-indigo-600 mb-6 shadow-xl"><BookOpen size={28} /></div>
-              <h3 className="text-lg font-bold mb-2 dark:text-white">İmar Mevzuatı Asistanı</h3>
-              <p className="text-slate-500 text-xs leading-relaxed mb-8">Belgelerinizi yükleyin ve imar mevzuatı hakkında sorular sorun. Yüklediğiniz yönetmelik ve kanunlar üzerinden detaylı aramalar yapın.</p>
-              <div className="space-y-2 w-full">
-                {["3194 Sayılı Kanun 18. madde nedir?", "İstanbul İmar Yönetmeliği çekme mesafesi?", "Mevzuata göre otopark şartları?"].map((q, i) => (
-                  <button key={i} onClick={() => setInputValue(q)} className="w-full p-3 bg-slate-50 dark:bg-slate-800/40 hover:bg-white border border-slate-100 dark:border-slate-700 rounded-xl text-[11px] font-bold text-slate-600 dark:text-slate-300 text-left flex items-center justify-between transition-all">{q} <ChevronRight size={14} /></button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            messages.map((msg) => (
-              <div key={msg.id} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2`}>
-                <div className={`max-w-[95%] lg:max-w-[85%] rounded-2xl px-4 lg:px-5 py-3 lg:py-4 shadow-sm border ${msg.role === 'user' ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-800 dark:text-slate-200'}`}>
-                  <div className="flex items-center gap-2 mb-2 opacity-60 text-[8px] font-bold uppercase tracking-widest">
-                    {msg.role === 'user' ? <Zap size={10} /> : <ShieldCheck size={10} />}
-                    <span>{msg.role === 'user' ? 'SORU' : 'MEVZUAT YANITI'}</span>
-                  </div>
-                  <div className="text-[12px] lg:text-[13px] leading-relaxed whitespace-pre-wrap font-medium">
-                    {msg.role === 'assistant' ? (
-                      <div className="space-y-4">
-                        <div>{renderText(msg.text)}</div>
-                        {msg.references && msg.references.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-50 dark:border-slate-800">
-                            {msg.references.map((r, i) => (
-                              <a key={i} href={r} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-2 py-1.5 bg-slate-50 dark:bg-slate-800 border rounded-lg text-[9px] font-bold text-indigo-600"><ExternalLink size={10} /> Kaynak {i + 1}</a>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ) : msg.text}
-                  </div>
+        ) : (
+          messages.map((msg) => (
+            <div key={msg.id} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2`}>
+              <div className={`max-w-[95%] lg:max-w-[85%] rounded-2xl px-4 lg:px-5 py-3 lg:py-4 shadow-sm border ${msg.role === 'user' ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-800 dark:text-slate-200'}`}>
+                <div className="flex items-center gap-2 mb-2 opacity-60 text-[8px] font-bold uppercase tracking-widest">
+                  {msg.role === 'user' ? <Zap size={10} /> : <ShieldCheck size={10} />}
+                  <span>{msg.role === 'user' ? 'SORU' : 'MEVZUAT YANITI'}</span>
+                </div>
+                <div className="text-[12px] lg:text-[13px] leading-relaxed whitespace-pre-wrap font-medium">
+                  {msg.role === 'assistant' ? (
+                    <div className="space-y-4">
+                      <div>{renderText(msg.text)}</div>
+                      {msg.references && msg.references.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-50 dark:border-slate-800">
+                          {msg.references.map((r, i) => (
+                            <a key={i} href={r} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-2 py-1.5 bg-slate-50 dark:bg-slate-800 border rounded-lg text-[9px] font-bold text-indigo-600"><ExternalLink size={10} /> Kaynak {i + 1}</a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : msg.text}
                 </div>
               </div>
-            ))
-          )}
-          {isTyping && <div className="flex justify-start"><div className="bg-slate-50 dark:bg-slate-800 rounded-2xl px-5 py-4 border animate-pulse"><Loader2 size={16} className="animate-spin text-indigo-500" /></div></div>}
-          <div ref={chatEndRef} />
-        </div>
+            </div>
+          ))
+        )}
+        {isTyping && <div className="flex justify-start"><div className="bg-slate-50 dark:bg-slate-800 rounded-2xl px-5 py-4 border animate-pulse"><Loader2 size={16} className="animate-spin text-indigo-500" /></div></div>}
+        <div ref={chatEndRef} />
+      </div>
 
-        <div className="p-3 lg:p-6 bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-          <form onSubmit={handleSendMessage} className="max-w-4xl mx-auto relative">
-            <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder="İmar mevzuatı hakkında soru sorun..." disabled={isTyping} className="w-full pl-4 lg:pl-6 pr-14 py-3 lg:py-4 rounded-2xl border dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm shadow-sm" />
-            <button type="submit" disabled={!inputValue.trim() || isTyping} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 lg:w-10 lg:h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all hover:bg-indigo-700 disabled:opacity-30"><Send size={18} /></button>
-          </form>
-          <div className="mt-3 text-center text-[10px] text-slate-400 font-medium flex items-center justify-center gap-2">
-            Yüklediğiniz mevzuat belgeleri üzerinden arama yapar
+      <div className="p-3 lg:p-6 bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+        <form onSubmit={handleSendMessage} className="max-w-4xl mx-auto relative">
+          <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder="İmar mevzuatı hakkında soru sorun..." disabled={isTyping} className="w-full pl-4 lg:pl-6 pr-14 py-3 lg:py-4 rounded-2xl border dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm shadow-sm" />
+          <button type="submit" disabled={!inputValue.trim() || isTyping} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 lg:w-10 lg:h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all hover:bg-indigo-700 disabled:opacity-30"><Send size={18} /></button>
+        </form>
+        <div className="mt-3 text-center text-[10px] text-slate-400 font-medium flex items-center justify-center gap-2">
+          Yüklediğiniz mevzuat belgeleri üzerinden arama yapar
+        </div>
+      </div>
+    </main>
+
+    {uploadPendingFiles.length > 0 && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 backdrop-blur-sm p-4">
+        <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-3xl p-6 lg:p-8 shadow-2xl">
+          <div className="flex justify-between items-start mb-6">
+            <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600"><FileText size={24} /></div>
+            <button onClick={() => setUploadPendingFiles([])} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"><X size={18} className="text-slate-400" /></button>
+          </div>
+          <h4 className="text-lg font-bold mb-1 dark:text-white">Dosya Bilgisi</h4>
+          <p className="text-[10px] text-slate-400 mb-6">Bu belge hangi yönetmelikle ilgili?</p>
+          <input autoFocus type="text" value={currentDescription} onChange={(e) => setCurrentDescription(e.target.value)} placeholder="Örn: Otopark Yönetmeliği 2024" className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-indigo-500/20 rounded-xl px-4 py-3 text-sm focus:outline-none dark:text-white" onKeyDown={(e) => e.key === 'Enter' && finalizeUpload()} />
+          <div className="flex gap-3 mt-8">
+            <button onClick={finalizeUpload} disabled={isParsing} className="flex-1 bg-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all">
+              {isParsing ? <Loader2 size={16} className="animate-spin" /> : "Kütüphaneye Ekle"}
+            </button>
           </div>
         </div>
-      </main>
+      </div>
+    )}
 
-      {uploadPendingFiles.length > 0 && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-3xl p-6 lg:p-8 shadow-2xl">
-            <div className="flex justify-between items-start mb-6">
-              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600"><FileText size={24} /></div>
-              <button onClick={() => setUploadPendingFiles([])} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"><X size={18} className="text-slate-400" /></button>
-            </div>
-            <h4 className="text-lg font-bold mb-1 dark:text-white">Dosya Bilgisi</h4>
-            <p className="text-[10px] text-slate-400 mb-6">Bu belge hangi yönetmelikle ilgili?</p>
-            <input autoFocus type="text" value={currentDescription} onChange={(e) => setCurrentDescription(e.target.value)} placeholder="Örn: Otopark Yönetmeliği 2024" className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-indigo-500/20 rounded-xl px-4 py-3 text-sm focus:outline-none dark:text-white" onKeyDown={(e) => e.key === 'Enter' && finalizeUpload()} />
-            <div className="flex gap-3 mt-8">
-              <button onClick={finalizeUpload} disabled={isParsing} className="flex-1 bg-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all">
-                {isParsing ? <Loader2 size={16} className="animate-spin" /> : "Kütüphaneye Ekle"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+    {/* Madde Detay Modal */}
+    <MaddeModal />
 
-      {/* Madde Detay Modal */}
-      <MaddeModal />
+    {/* Knowledge Graph Modal */}
+    <KnowledgeGraphModal />
 
-      {/* Knowledge Graph Modal */}
-      <KnowledgeGraphModal />
-    </div>
-  );
+    {/* Auth Modal */}
+    <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+  </div>
+);
 };
+
+const App: React.FC = () => (
+  <AuthProvider>
+    <ImarApp />
+  </AuthProvider>
+);
 
 export default App;
