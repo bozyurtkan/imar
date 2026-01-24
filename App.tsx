@@ -814,159 +814,161 @@ const ImarApp: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
+
     </>
   );
 
-return (
-  <div className={`flex h-screen h-[100dvh] w-full bg-slate-50 dark:bg-slate-950 transition-colors duration-200 overflow-hidden supports-[height:100cqh]:h-[100cqh] supports-[height:100svh]:h-[100svh]`}>
-    {/* Mobile Overlay */}
-    {isMobileMenuOpen && (
-      <div
-        className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-        onClick={() => setIsMobileMenuOpen(false)}
-      />
-    )}
+  return (
+    <div className={`flex h-screen h-[100dvh] w-full bg-slate-50 dark:bg-slate-950 transition-colors duration-200 overflow-hidden supports-[height:100cqh]:h-[100cqh] supports-[height:100svh]:h-[100svh]`}>
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
 
-    {/* Sidebar - Desktop */}
-    <aside className="hidden lg:flex w-80 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-col h-full z-40">
-      <SidebarContent />
-    </aside>
+      {/* Sidebar - Desktop */}
+      <aside className="hidden lg:flex w-80 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-col h-full z-40">
+        <SidebarContent />
+      </aside>
 
-    {/* Sidebar - Mobile (Slide-in) */}
-    <aside className={`fixed inset-y-0 left-0 w-80 max-w-[85vw] border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col h-[100dvh] z-[60] transform transition-transform duration-300 lg:hidden ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-      <SidebarContent />
-    </aside>
+      {/* Sidebar - Mobile (Slide-in) */}
+      <aside className={`fixed inset-y-0 left-0 w-80 max-w-[85vw] border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col h-[100dvh] z-[60] transform transition-transform duration-300 lg:hidden ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <SidebarContent />
+      </aside>
 
-    <main className="flex-1 flex flex-col bg-white dark:bg-slate-950 min-w-0">
-      <header className="h-14 lg:h-16 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-4 lg:px-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-30 pt-[env(safe-area-inset-top)] transition-all">
-        <div className="flex items-center gap-3">
-          {/* Mobile hamburger menu */}
-          <button
-            onClick={() => setIsMobileMenuOpen(true)}
-            className="lg:hidden p-2 -ml-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
-          >
-            <Menu size={20} />
-          </button>
-          <ShieldCheck className="text-emerald-500 hidden sm:block" size={18} />
-          <div>
-            <h2 className="text-xs font-bold dark:text-white leading-none">Mevzuat Analiz Odası</h2>
-            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 hidden sm:block">Aktif Belge: {documents.filter(d => d.isActive).length}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 lg:gap-3">
-          {/* Mevzuat Kütüphanesi butonu */}
-          <button
-            onClick={() => setShowKnowledgeGraph(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all bg-purple-500 hover:bg-purple-600 text-white shadow-lg shadow-purple-500/20"
-            title="Mevzuat İlişki Grafiği"
-          >
-            <GitBranch size={16} />
-            <span className="hidden sm:inline">Mevzuat</span>
-          </button>
-          {/* PDF Export butonu */}
-          {messages.length > 0 && (
+      <main className="flex-1 flex flex-col bg-white dark:bg-slate-950 min-w-0">
+        <header className="h-14 lg:h-16 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-4 lg:px-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-30 pt-[env(safe-area-inset-top)] transition-all">
+          <div className="flex items-center gap-3">
+            {/* Mobile hamburger menu */}
             <button
-              onClick={exportChatToPDF}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20"
-              title="Sohbeti PDF olarak indir"
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="lg:hidden p-2 -ml-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
             >
-              <Download size={16} />
-              <span className="hidden sm:inline">PDF İndir</span>
+              <Menu size={20} />
             </button>
-          )}
-          <button onClick={() => setIsGeneralMode(!isGeneralMode)} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg ${isGeneralMode ? 'bg-indigo-500 text-white shadow-indigo-500/20' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-slate-200/20'}`}>
-            <Globe size={16} />
-            <span className="hidden sm:inline">Web {isGeneralMode ? 'Açık' : 'Kapalı'}</span>
-          </button>
-          <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl shadow-lg transition-all hover:scale-105">
-            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
-        </div>
-      </header>
-
-      <div className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-4 lg:space-y-6 custom-scrollbar overscroll-contain">
-        {messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto px-4">
-            <div className="w-14 h-14 lg:w-16 lg:h-16 bg-indigo-50 dark:bg-indigo-900/20 rounded-3xl flex items-center justify-center text-indigo-600 mb-6 shadow-xl"><BookOpen size={28} /></div>
-            <h3 className="text-lg font-bold mb-2 dark:text-white">İmar Mevzuatı Asistanı</h3>
-            <p className="text-slate-500 text-xs leading-relaxed mb-8">Belgelerinizi yükleyin ve imar mevzuatı hakkında sorular sorun. Yüklediğiniz yönetmelik ve kanunlar üzerinden detaylı aramalar yapın.</p>
-            <div className="space-y-2 w-full">
-              {["3194 Sayılı Kanun 18. madde nedir?", "İstanbul İmar Yönetmeliği çekme mesafesi?", "Mevzuata göre otopark şartları?"].map((q, i) => (
-                <button key={i} onClick={() => setInputValue(q)} className="w-full p-3 bg-slate-50 dark:bg-slate-800/40 hover:bg-white border border-slate-100 dark:border-slate-700 rounded-xl text-[11px] font-bold text-slate-600 dark:text-slate-300 text-left flex items-center justify-between transition-all">{q} <ChevronRight size={14} /></button>
-              ))}
+            <ShieldCheck className="text-emerald-500 hidden sm:block" size={18} />
+            <div>
+              <h2 className="text-xs font-bold dark:text-white leading-none">Mevzuat Analiz Odası</h2>
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 hidden sm:block">Aktif Belge: {documents.filter(d => d.isActive).length}</p>
             </div>
           </div>
-        ) : (
-          messages.map((msg) => (
-            <div key={msg.id} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2`}>
-              <div className={`max-w-[95%] lg:max-w-[85%] rounded-2xl px-4 lg:px-5 py-3 lg:py-4 shadow-sm border ${msg.role === 'user' ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-800 dark:text-slate-200'}`}>
-                <div className="flex items-center gap-2 mb-2 opacity-60 text-[8px] font-bold uppercase tracking-widest">
-                  {msg.role === 'user' ? <Zap size={10} /> : <ShieldCheck size={10} />}
-                  <span>{msg.role === 'user' ? 'SORU' : 'MEVZUAT YANITI'}</span>
-                </div>
-                <div className="text-[12px] lg:text-[13px] leading-relaxed whitespace-pre-wrap font-medium">
-                  {msg.role === 'assistant' ? (
-                    <div className="space-y-4">
-                      <div>{renderText(msg.text)}</div>
-                      {msg.references && msg.references.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-50 dark:border-slate-800">
-                          {msg.references.map((r, i) => (
-                            <a key={i} href={r} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-2 py-1.5 bg-slate-50 dark:bg-slate-800 border rounded-lg text-[9px] font-bold text-indigo-600"><ExternalLink size={10} /> Kaynak {i + 1}</a>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ) : msg.text}
-                </div>
+          <div className="flex items-center gap-2 lg:gap-3">
+            {/* Mevzuat Kütüphanesi butonu */}
+            <button
+              onClick={() => setShowKnowledgeGraph(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all bg-purple-500 hover:bg-purple-600 text-white shadow-lg shadow-purple-500/20"
+              title="Mevzuat İlişki Grafiği"
+            >
+              <GitBranch size={16} />
+              <span className="hidden sm:inline">Mevzuat</span>
+            </button>
+            {/* PDF Export butonu */}
+            {messages.length > 0 && (
+              <button
+                onClick={exportChatToPDF}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20"
+                title="Sohbeti PDF olarak indir"
+              >
+                <Download size={16} />
+                <span className="hidden sm:inline">PDF İndir</span>
+              </button>
+            )}
+            <button onClick={() => setIsGeneralMode(!isGeneralMode)} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg ${isGeneralMode ? 'bg-indigo-500 text-white shadow-indigo-500/20' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-slate-200/20'}`}>
+              <Globe size={16} />
+              <span className="hidden sm:inline">Web {isGeneralMode ? 'Açık' : 'Kapalı'}</span>
+            </button>
+            <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl shadow-lg transition-all hover:scale-105">
+              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+          </div>
+        </header>
+
+        <div className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-4 lg:space-y-6 custom-scrollbar overscroll-contain">
+          {messages.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto px-4">
+              <div className="w-14 h-14 lg:w-16 lg:h-16 bg-indigo-50 dark:bg-indigo-900/20 rounded-3xl flex items-center justify-center text-indigo-600 mb-6 shadow-xl"><BookOpen size={28} /></div>
+              <h3 className="text-lg font-bold mb-2 dark:text-white">İmar Mevzuatı Asistanı</h3>
+              <p className="text-slate-500 text-xs leading-relaxed mb-8">Belgelerinizi yükleyin ve imar mevzuatı hakkında sorular sorun. Yüklediğiniz yönetmelik ve kanunlar üzerinden detaylı aramalar yapın.</p>
+              <div className="space-y-2 w-full">
+                {["3194 Sayılı Kanun 18. madde nedir?", "İstanbul İmar Yönetmeliği çekme mesafesi?", "Mevzuata göre otopark şartları?"].map((q, i) => (
+                  <button key={i} onClick={() => setInputValue(q)} className="w-full p-3 bg-slate-50 dark:bg-slate-800/40 hover:bg-white border border-slate-100 dark:border-slate-700 rounded-xl text-[11px] font-bold text-slate-600 dark:text-slate-300 text-left flex items-center justify-between transition-all">{q} <ChevronRight size={14} /></button>
+                ))}
               </div>
             </div>
-          ))
-        )}
-        {isTyping && <div className="flex justify-start"><div className="bg-slate-50 dark:bg-slate-800 rounded-2xl px-5 py-4 border animate-pulse"><Loader2 size={16} className="animate-spin text-indigo-500" /></div></div>}
-        <div ref={chatEndRef} />
-      </div>
-
-      <div className="p-3 lg:p-6 bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-        <form onSubmit={handleSendMessage} className="max-w-4xl mx-auto relative">
-          <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder="İmar mevzuatı hakkında soru sorun..." disabled={isTyping} className="w-full pl-4 lg:pl-6 pr-14 py-3 lg:py-4 rounded-2xl border dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm shadow-sm" />
-          <button type="submit" disabled={!inputValue.trim() || isTyping} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 lg:w-10 lg:h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all hover:bg-indigo-700 disabled:opacity-30"><Send size={18} /></button>
-        </form>
-        <div className="mt-3 text-center text-[10px] text-slate-400 font-medium flex items-center justify-center gap-2">
-          Yüklediğiniz mevzuat belgeleri üzerinden arama yapar
+          ) : (
+            messages.map((msg) => (
+              <div key={msg.id} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2`}>
+                <div className={`max-w-[95%] lg:max-w-[85%] rounded-2xl px-4 lg:px-5 py-3 lg:py-4 shadow-sm border ${msg.role === 'user' ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-800 dark:text-slate-200'}`}>
+                  <div className="flex items-center gap-2 mb-2 opacity-60 text-[8px] font-bold uppercase tracking-widest">
+                    {msg.role === 'user' ? <Zap size={10} /> : <ShieldCheck size={10} />}
+                    <span>{msg.role === 'user' ? 'SORU' : 'MEVZUAT YANITI'}</span>
+                  </div>
+                  <div className="text-[12px] lg:text-[13px] leading-relaxed whitespace-pre-wrap font-medium">
+                    {msg.role === 'assistant' ? (
+                      <div className="space-y-4">
+                        <div>{renderText(msg.text)}</div>
+                        {msg.references && msg.references.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-50 dark:border-slate-800">
+                            {msg.references.map((r, i) => (
+                              <a key={i} href={r} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-2 py-1.5 bg-slate-50 dark:bg-slate-800 border rounded-lg text-[9px] font-bold text-indigo-600"><ExternalLink size={10} /> Kaynak {i + 1}</a>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : msg.text}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+          {isTyping && <div className="flex justify-start"><div className="bg-slate-50 dark:bg-slate-800 rounded-2xl px-5 py-4 border animate-pulse"><Loader2 size={16} className="animate-spin text-indigo-500" /></div></div>}
+          <div ref={chatEndRef} />
         </div>
-      </div>
-    </main>
 
-    {uploadPendingFiles.length > 0 && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 backdrop-blur-sm p-4">
-        <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-3xl p-6 lg:p-8 shadow-2xl">
-          <div className="flex justify-between items-start mb-6">
-            <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600"><FileText size={24} /></div>
-            <button onClick={() => setUploadPendingFiles([])} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"><X size={18} className="text-slate-400" /></button>
-          </div>
-          <h4 className="text-lg font-bold mb-1 dark:text-white">Dosya Bilgisi</h4>
-          <p className="text-[10px] text-slate-400 mb-6">Bu belge hangi yönetmelikle ilgili?</p>
-          <input autoFocus type="text" value={currentDescription} onChange={(e) => setCurrentDescription(e.target.value)} placeholder="Örn: Otopark Yönetmeliği 2024" className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-indigo-500/20 rounded-xl px-4 py-3 text-sm focus:outline-none dark:text-white" onKeyDown={(e) => e.key === 'Enter' && finalizeUpload()} />
-          <div className="flex gap-3 mt-8">
-            <button onClick={finalizeUpload} disabled={isParsing} className="flex-1 bg-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all">
-              {isParsing ? <Loader2 size={16} className="animate-spin" /> : "Kütüphaneye Ekle"}
-            </button>
+        <div className="p-3 lg:p-6 bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+          <form onSubmit={handleSendMessage} className="max-w-4xl mx-auto relative">
+            <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder="İmar mevzuatı hakkında soru sorun..." disabled={isTyping} className="w-full pl-4 lg:pl-6 pr-14 py-3 lg:py-4 rounded-2xl border dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm shadow-sm" />
+            <button type="submit" disabled={!inputValue.trim() || isTyping} className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 lg:w-10 lg:h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all hover:bg-indigo-700 disabled:opacity-30"><Send size={18} /></button>
+          </form>
+          <div className="mt-3 text-center text-[10px] text-slate-400 font-medium flex items-center justify-center gap-2">
+            Yüklediğiniz mevzuat belgeleri üzerinden arama yapar
           </div>
         </div>
-      </div>
-    )}
+      </main>
 
-    {/* Madde Detay Modal */}
-    <MaddeModal />
+      {
+        uploadPendingFiles.length > 0 && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 backdrop-blur-sm p-4">
+            <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-3xl p-6 lg:p-8 shadow-2xl">
+              <div className="flex justify-between items-start mb-6">
+                <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600"><FileText size={24} /></div>
+                <button onClick={() => setUploadPendingFiles([])} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"><X size={18} className="text-slate-400" /></button>
+              </div>
+              <h4 className="text-lg font-bold mb-1 dark:text-white">Dosya Bilgisi</h4>
+              <p className="text-[10px] text-slate-400 mb-6">Bu belge hangi yönetmelikle ilgili?</p>
+              <input autoFocus type="text" value={currentDescription} onChange={(e) => setCurrentDescription(e.target.value)} placeholder="Örn: Otopark Yönetmeliği 2024" className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-indigo-500/20 rounded-xl px-4 py-3 text-sm focus:outline-none dark:text-white" onKeyDown={(e) => e.key === 'Enter' && finalizeUpload()} />
+              <div className="flex gap-3 mt-8">
+                <button onClick={finalizeUpload} disabled={isParsing} className="flex-1 bg-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all">
+                  {isParsing ? <Loader2 size={16} className="animate-spin" /> : "Kütüphaneye Ekle"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      }
 
-    {/* Knowledge Graph Modal */}
-    <KnowledgeGraphModal />
+      {/* Madde Detay Modal */}
+      <MaddeModal />
 
-    {/* Auth Modal */}
-    <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
-  </div>
-);
+      {/* Knowledge Graph Modal */}
+      <KnowledgeGraphModal />
+
+      {/* Auth Modal */}
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+    </div >
+  );
 };
 
 const App: React.FC = () => (
