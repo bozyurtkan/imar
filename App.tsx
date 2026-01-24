@@ -6,6 +6,7 @@ import {
   Square, Globe, ExternalLink, Zap, Sparkles, Key, AlertTriangle,
   ChevronRight, X, Download, Search, Menu, Link2, GitBranch, Gavel, ArrowRight, Hash
 } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 import { DocumentFile, Message } from './types';
 import { parseFile, formatBytes } from './utils/fileParser';
 import { geminiService } from './services/geminiService';
@@ -840,6 +841,9 @@ const App: React.FC = () => {
 
       {/* Knowledge Graph Modal */}
       <KnowledgeGraphModal />
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   );
 };
