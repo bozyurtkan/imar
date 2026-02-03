@@ -759,7 +759,7 @@ const ImarApp: React.FC = () => {
               Profesyonel Mevzuat Asistanı
             </div>
             <div className="text-[8px] opacity-50 font-mono mt-0.5">
-              v: 03.02.2026_11:20
+              v: 03.02.2026_11:26
             </div>
           </div>
         </div>
