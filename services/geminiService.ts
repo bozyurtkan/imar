@@ -42,7 +42,7 @@ export class GeminiService {
     try {
       // Using gemini-1.5-flash for complex Turkish Zoning Law reasoning. (Stable)
       const response = await ai.models.generateContent({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-2.0-flash',
         contents: `KÜTÜPHANE İÇERİĞİ:\n\n${contextText}\n\nKULLANICI SORUSU: ${question}`,
         config: {
           systemInstruction: systemInstruction.trim(),
@@ -62,7 +62,7 @@ export class GeminiService {
     try {
       // Using gemini-1.5-flash for basic summarization tasks.
       const response = await ai.models.generateContent({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-2.0-flash',
         contents: `Aşağıdaki imar mevzuatı dökümanını profesyonel bir şekilde özetle:\n\n${doc.content}`,
         config: {
           systemInstruction: "Sen bir hukuk asistanısın. Kısa ve net özetler çıkarırsın.",
@@ -79,7 +79,7 @@ export class GeminiService {
     try {
       // Using gemini-1.5-flash with googleSearch for real-time grounding.
       const response = await ai.models.generateContent({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-2.0-flash',
         contents: question,
         config: {
           systemInstruction: "Türkiye imar mevzuatı ve güncel belediye/bakanlık kararları hakkında web araştırması yaparak bilgi ver.",
@@ -140,7 +140,7 @@ export class GeminiService {
     try {
       // Using gemini-1.5-flash for smart reasoning and web capabilities
       const response = await ai.models.generateContent({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-2.0-flash',
         contents: prompt,
         config: {
           tools: [{ googleSearch: {} }], // Web arama yeteneği aktif
