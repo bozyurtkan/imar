@@ -758,6 +758,9 @@ const ImarApp: React.FC = () => {
             <div className="flex items-center gap-1 text-[8px] uppercase tracking-widest opacity-70">
               Profesyonel Mevzuat Asistanı
             </div>
+            <div className="text-[8px] opacity-50 font-mono mt-0.5">
+              v: 03.02.2026_11:12
+            </div>
           </div>
         </div>
         {/* Mobile close button */}
