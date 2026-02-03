@@ -104,47 +104,57 @@ export class GeminiService {
       .join('\n');
 
     const prompt = `
-      GÖREV: Mevzuat Karşılaştırma ve Analiz
+      SEN: Türkiye'nin en deneyimli imar hukuku uzmanısın. Mevzuat değişikliklerini analiz etmekte 20 yıllık tecrüben var.
 
-      KULLANICI GİRDİSİ (YENİ DÜZENLEME): ${newRegulationUrl}
+      GÖREV: Aşağıdaki Resmi Gazete linkindeki yeni düzenlemeyi derinlemesine analiz et.
+
+      YENİ DÜZENLEME LİNKİ: ${newRegulationUrl}
       
-      MEVCUT KÜTÜPHANE İNDEKSİ:
-      ${libraryContext}
+      KULLANICININ KÜTÜPHANESİ (varsa):
+      ${libraryContext || "Kütüphanede belge yok."}
 
-      YÖNERGELER:
-      1. Verilen URL'deki (Resmi Gazete vb.) yeni düzenlemeyi incele.
-      2. Bu düzenlemenin değiştirdiği "Ana Yönetmeliği" veya "Eski Mevzuatı" tespit et.
-      3. ARAMA STRATEJİSİ:
-         - Eğer eski mevzuat yukarıdaki "MEVCUT KÜTÜPHANE İNDEKSİ" içinde varsa, sistemdeki bilgiyi kullanacağını belirt.
-         - Eğer kütüphanede YOKSA, "Google Search" aracını kullanarak eski mevzuatın ilgili maddelerini bul.
-      4. ANALİZ:
-         - Yeni düzenleme ile neyin değiştiğini madde madde karşılaştır.
-         - Eski Hali vs Yeni Hali şeklinde net bir ayrım yap.
-         - Değişikliğin pratik etkisini (mimarlar/mühendisler için) yorumla.
+      ANALİZ ADIMLARI:
+      1. Önce verilen URL'yi oku ve hangi yönetmelik/kanunun değiştirildiğini tespit et.
+      2. Değiştirilen her madde için:
+         - ESKİ HALİNİ bul (kütüphanede yoksa Google ile ara)
+         - YENİ HALİNİ belirle
+         - Değişikliğin PRATİK ETKİSİNİ yorumla (mimar/mühendis perspektifinden)
+      3. Önemli değişiklikleri önce listele.
 
-      ÇIKTI FORMATI:
-      ## Karşılaştırma Raporu
-      **İlgili Mevzuat:** [Yönetmelik Adı]
-      **Durum:** [Kütüphaneden Bulundu / Webden Araştırıldı]
-
-      ### Değişiklik 1: [Madde No/Konu]
-      | Eski Durum | Yeni Durum |
-      | :--- | :--- |
-      | [Eski hüküm özeti] | [Yeni hüküm özeti] |
+      ÇIKTI FORMATI (Türkçe):
       
-      **Yorum:** [Bu değişikliğin etkisi nedir?]
+      # 📋 Mevzuat Değişiklik Analizi
+      
+      **Değiştirilen Mevzuat:** [Tam adı]
+      **Resmi Gazete Tarihi:** [Tarih]
+      **Kaynak:** ${libraryContext ? "Kütüphaneden + Web Araştırması" : "Web Araştırması"}
 
-      (Diğer değişiklikler için tekrarla...)
+      ---
+
+      ## 🔄 Değişiklik 1: [Madde No - Konu Başlığı]
+      
+      | ESKİ HALİ | YENİ HALİ |
+      |-----------|-----------|
+      | [Önceki düzenlemenin özeti] | [Yeni düzenlemenin özeti] |
+      
+      **💡 Pratik Etki:** [Bu değişiklik mimarları/mühendisleri nasıl etkiler?]
+
+      ---
+
+      (Diğer değişiklikler için aynı formatı tekrarla)
+
+      ## 📌 Özet ve Öneriler
+      [Genel değerlendirme ve dikkat edilmesi gereken hususlar]
     `;
 
     try {
-      // Using gemini-1.5-flash for smart reasoning and web capabilities
+      // Karşılaştırma için daha akıllı model: gemini-2.0-pro
       const response = await ai.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: 'gemini-2.0-pro',
         contents: prompt,
         config: {
-          tools: [{ googleSearch: {} }], // Web arama yeteneği aktif
-          temperature: 0.1
+          tools: [{ googleSearch: {} }],
+          temperature: 0.2 // Daha tutarlı ve detaylı yanıtlar için
         },
       });
 
