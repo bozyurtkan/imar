@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore, doc, setDoc, collection, query, orderBy, getDocs, getDoc, serverTimestamp } from "firebase/firestore";
+import { getFirestore, doc, setDoc, collection, query, orderBy, getDocs, getDoc, serverTimestamp, deleteDoc, collectionGroup, where, limit } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -32,7 +32,7 @@ export interface ChatSession {
 }
 
 // Sohbeti Kaydet (Günlük)
-export const saveChatHistory = async (userId: string, messages: any[]) => {
+export const saveChatHistory = async (userId: string, messages: any[], userEmail?: string) => {
     if (!userId || messages.length === 0) return;
 
     const today = new Date();
@@ -49,7 +49,9 @@ export const saveChatHistory = async (userId: string, messages: any[]) => {
             date: dateId,
             updatedAt: serverTimestamp(),
             messages: messages,
-            preview: preview
+            preview: preview,
+            userEmail: userEmail || null,
+            messageCount: messages.length
         }, { merge: true });
     } catch (error) {
         console.error("Geçmiş kaydedilemedi:", error);

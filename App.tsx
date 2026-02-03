@@ -14,9 +14,10 @@ import { getMadde, getAllMaddeler, MevzuatMaddesi, getMevzuatGraph } from './dat
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AuthModal } from './components/AuthModal';
 import { HistoryModal } from './components/HistoryModal';
+import { AdminPanel } from './components/AdminPanel';
 import { db, saveChatHistory } from './services/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { User, LogOut, LogIn, Clock, History } from 'lucide-react';
+import { User, LogOut, LogIn, Clock, History, Shield } from 'lucide-react';
 
 const DAILY_LIMIT = 50;
 
@@ -31,7 +32,7 @@ declare global {
 }
 
 const ImarApp: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [documents, setDocuments] = useState<DocumentFile[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -52,6 +53,7 @@ const ImarApp: React.FC = () => {
   const [linkUrl, setLinkUrl] = useState('');
   const [showKnowledgeGraph, setShowKnowledgeGraph] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -199,7 +201,7 @@ const ImarApp: React.FC = () => {
   useEffect(() => {
     if (user && messages.length > 0) {
       const timer = setTimeout(() => {
-        saveChatHistory(user.uid, messages);
+        saveChatHistory(user.uid, messages, user.email || undefined);
       }, 2000); // 2 saniye gecikmeli kaydet (debounce)
       return () => clearTimeout(timer);
     }
@@ -888,10 +890,30 @@ const ImarApp: React.FC = () => {
                   {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold dark:text-white truncate">{user.displayName || 'Kullanıcı'}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold dark:text-white truncate">{user.displayName || 'Kullanıcı'}</p>
+                    {isAdmin && (
+                      <span className="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-[8px] font-bold rounded-full uppercase">Admin</span>
+                    )}
+                  </div>
                   <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
                 </div>
               </div>
+
+              {/* Admin Panel Butonu - Sadece Admin için */}
+              {isAdmin && (
+                <button
+                  onClick={() => {
+                    setShowAdminPanel(true);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full py-2.5 mb-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-[10px] font-bold rounded-xl shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2 transition-all"
+                >
+                  <Shield size={14} />
+                  ADMİN PANELİ
+                </button>
+              )}
+
               <button onClick={() => logout()} className="w-full py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-[10px] font-bold rounded-xl hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-600 dark:hover:text-rose-400 transition-colors flex items-center justify-center gap-2">
                 <LogOut size={12} /> Oturumu Kapat
               </button>
@@ -1105,6 +1127,11 @@ const ImarApp: React.FC = () => {
             setShowHistoryModal(false);
           }}
         />
+      )}
+
+      {/* Admin Panel */}
+      {showAdminPanel && (
+        <AdminPanel onClose={() => setShowAdminPanel(false)} />
       )}
     </div >
   );
