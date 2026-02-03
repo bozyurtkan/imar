@@ -48,6 +48,8 @@ const ImarApp: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedMadde, setSelectedMadde] = useState<MevzuatMaddesi | null>(null);
   const [showMaddeModal, setShowMaddeModal] = useState(false);
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
   const [showKnowledgeGraph, setShowKnowledgeGraph] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
 
@@ -399,6 +401,39 @@ const ImarApp: React.FC = () => {
       }]);
     } finally {
       setIsTyping(false);
+    }
+  };
+
+  const handleLinkComparison = async () => {
+    if (!linkUrl.trim()) return;
+
+    setShowLinkModal(false);
+    setIsTyping(true);
+    setMessages(prev => [...prev, {
+      id: Date.now().toString(),
+      role: 'user',
+      text: `Şu linkteki mevzuat değişikliğini analiz et: ${linkUrl}`,
+      timestamp: new Date()
+    }]);
+
+    try {
+      const result = await geminiService.compareLegislation(linkUrl, documents);
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        text: result,
+        timestamp: new Date()
+      }]);
+    } catch (error: any) {
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        role: 'assistant',
+        text: "Hata: " + error.message,
+        timestamp: new Date()
+      }]);
+    } finally {
+      setIsTyping(false);
+      setLinkUrl('');
     }
   };
 
@@ -770,6 +805,14 @@ const ImarApp: React.FC = () => {
         )}
 
         <div className="space-y-4">
+          <button
+            onClick={() => setShowLinkModal(true)}
+            className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+          >
+            <GitBranch size={16} />
+            MEVZUAT KARŞILAŞTIR
+          </button>
+
           <div className="flex items-center justify-between px-2">
             <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">KÜTÜPHANE</h3>
             <span className="text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full font-bold">{documents.length}</span>
@@ -1001,6 +1044,46 @@ const ImarApp: React.FC = () => {
           </div>
         )
       }
+
+      {/* Link Comparison Modal */}
+      {showLinkModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-sm p-4" onClick={() => setShowLinkModal(false)}>
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center text-emerald-600"><Globe size={20} /></div>
+                <div>
+                  <h3 className="font-bold dark:text-white">Mevzuat Karşılaştır</h3>
+                  <p className="text-[10px] text-slate-500">Resmi Gazete vb. linkini girin</p>
+                </div>
+              </div>
+              <button onClick={() => setShowLinkModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"><X size={18} className="text-slate-400" /></button>
+            </div>
+
+            <div className="mb-6">
+              <label className="text-[10px] uppercase font-bold text-slate-400 mb-2 block">Link (URL)</label>
+              <input
+                autoFocus
+                type="url"
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                placeholder="https://www.resmigazete.gov.tr/..."
+                className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-3 text-sm focus:outline-none dark:text-white transition-colors"
+                onKeyDown={(e) => e.key === 'Enter' && handleLinkComparison()}
+              />
+            </div>
+
+            <button
+              onClick={handleLinkComparison}
+              disabled={!linkUrl.trim()}
+              className="w-full py-3.5 bg-emerald-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
+            >
+              <GitBranch size={16} />
+              Analiz Et ve Karşılaştır
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Madde Detay Modal */}
       <MaddeModal />
