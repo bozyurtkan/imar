@@ -103,7 +103,13 @@ export class GeminiService {
       .map(doc => `[MEVCUT BELGE: ${doc.name}]\n${doc.description}`)
       .join('\n');
 
+    const today = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+
     const prompt = `
+      BUGÜNÜN TARİHİ: ${today}
+      
+      ÖNEMLİ: Sen bir AI modelisin ve eğitim verilerin eski olabilir. Ama bugün ${today}. Kullanıcının verdiği linklerdeki tarihler (2025, 2026 vb.) geçerlidir. Tarihi sorgulamadan analiz yap.
+
       SEN: Türkiye'nin en deneyimli imar hukuku uzmanısın. Mevzuat değişikliklerini analiz etmekte 20 yıllık tecrüben var.
 
       GÖREV: Aşağıdaki Resmi Gazete linkindeki yeni düzenlemeyi derinlemesine analiz et.
