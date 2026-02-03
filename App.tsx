@@ -13,9 +13,10 @@ import { getMadde, getAllMaddeler, MevzuatMaddesi, getMevzuatGraph } from './dat
 
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AuthModal } from './components/AuthModal';
-import { db } from './services/firebase';
+import { HistoryModal } from './components/HistoryModal';
+import { db, saveChatHistory } from './services/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { User, LogOut, LogIn } from 'lucide-react';
+import { User, LogOut, LogIn, Clock, History } from 'lucide-react';
 
 const DAILY_LIMIT = 50;
 
@@ -48,6 +49,7 @@ const ImarApp: React.FC = () => {
   const [selectedMadde, setSelectedMadde] = useState<MevzuatMaddesi | null>(null);
   const [showMaddeModal, setShowMaddeModal] = useState(false);
   const [showKnowledgeGraph, setShowKnowledgeGraph] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -190,6 +192,16 @@ const ImarApp: React.FC = () => {
 
   const scrollToBottom = () => chatEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   useEffect(() => { scrollToBottom(); }, [messages, isTyping]);
+
+  // Otomatik Geçmiş Kaydetme
+  useEffect(() => {
+    if (user && messages.length > 0) {
+      const timer = setTimeout(() => {
+        saveChatHistory(user.uid, messages);
+      }, 2000); // 2 saniye gecikmeli kaydet (debounce)
+      return () => clearTimeout(timer);
+    }
+  }, [messages, user]);
 
   // PDF Export fonksiyonu - Türkçe karakter destekli
   const exportChatToPDF = () => {
@@ -743,6 +755,20 @@ const ImarApp: React.FC = () => {
           </div>
         </div>
 
+        {/* Geçmiş Butonu */}
+        {user && (
+          <button
+            onClick={() => {
+              setShowHistoryModal(true);
+              setIsMobileMenuOpen(false);
+            }}
+            className="w-full mb-6 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm group"
+          >
+            <History size={14} className="text-indigo-500 group-hover:scale-110 transition-transform" />
+            SOHBET GEÇMİŞİ
+          </button>
+        )}
+
         <div className="space-y-4">
           <div className="flex items-center justify-between px-2">
             <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">KÜTÜPHANE</h3>
@@ -984,6 +1010,16 @@ const ImarApp: React.FC = () => {
 
       {/* Auth Modal */}
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+
+      {showHistoryModal && (
+        <HistoryModal
+          onClose={() => setShowHistoryModal(false)}
+          onSelectSession={(historyMessages) => {
+            setMessages(historyMessages);
+            setShowHistoryModal(false);
+          }}
+        />
+      )}
     </div >
   );
 };
