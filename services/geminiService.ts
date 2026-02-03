@@ -40,9 +40,9 @@ export class GeminiService {
     `;
 
     try {
-      // Using gemini-2.0-flash-exp for complex Turkish Zoning Law reasoning.
+      // Using gemini-1.5-pro for complex Turkish Zoning Law reasoning.
       const response = await ai.models.generateContent({
-        model: 'gemini-2.0-flash-exp',
+        model: 'gemini-1.5-pro',
         contents: `KÜTÜPHANE İÇERİĞİ:\n\n${contextText}\n\nKULLANICI SORUSU: ${question}`,
         config: {
           systemInstruction: systemInstruction.trim(),
@@ -60,9 +60,9 @@ export class GeminiService {
   async summarizeDocument(doc: DocumentFile): Promise<string> {
     const ai = this.getClient();
     try {
-      // Using gemini-2.0-flash-exp for basic summarization tasks.
+      // Using gemini-1.5-flash for basic summarization tasks.
       const response = await ai.models.generateContent({
-        model: 'gemini-2.0-flash-exp',
+        model: 'gemini-1.5-flash',
         contents: `Aşağıdaki imar mevzuatı dökümanını profesyonel bir şekilde özetle:\n\n${doc.content}`,
         config: {
           systemInstruction: "Sen bir hukuk asistanısın. Kısa ve net özetler çıkarırsın.",
@@ -77,9 +77,9 @@ export class GeminiService {
   async askGeneral(question: string): Promise<{ text: string, sources: any[] }> {
     const ai = this.getClient();
     try {
-      // Using gemini-2.0-flash-exp for better speed/cost in general search
+      // Using gemini-1.5-flash with googleSearch for real-time grounding.
       const response = await ai.models.generateContent({
-        model: 'gemini-2.0-flash-exp',
+        model: 'gemini-1.5-flash',
         contents: question,
         config: {
           systemInstruction: "Türkiye imar mevzuatı ve güncel belediye/bakanlık kararları hakkında web araştırması yaparak bilgi ver.",
@@ -138,9 +138,9 @@ export class GeminiService {
     `;
 
     try {
-      // Using gemini-2.0-flash-exp for smart reasoning and web capabilities
+      // Using gemini-1.5-pro for smart reasoning and web capabilities
       const response = await ai.models.generateContent({
-        model: 'gemini-2.0-flash-exp',
+        model: 'gemini-1.5-pro',
         contents: prompt,
         config: {
           tools: [{ googleSearch: {} }], // Web arama yeteneği aktif
