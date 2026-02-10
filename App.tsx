@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import {
   FileText, Send, Trash2, Plus, BookOpen, Loader2, Scale,
   ShieldCheck, Sun, Moon, CheckSquare,
-  Square, Globe, ExternalLink, Zap, Sparkles, Key, AlertTriangle,
+  Square, Globe, ExternalLink, Zap, Sparkles, Key, AlertTriangle, Home, RotateCcw,
   ChevronRight, X, Download, Search, Menu, Link2, GitBranch, Gavel, ArrowRight, Hash
 } from 'lucide-react';
 import { DocumentFile, Message } from './types';
@@ -436,6 +436,15 @@ const ImarApp: React.FC = () => {
     } finally {
       setIsTyping(false);
       setLinkUrl('');
+    }
+  };
+
+  const handleNewChat = () => {
+    if (messages.length > 0) {
+      if (user) {
+        saveChatHistory(user.uid, messages, user.email || undefined);
+      }
+      setMessages([]);
     }
   };
 
@@ -960,9 +969,18 @@ const ImarApp: React.FC = () => {
               <Menu size={20} />
             </button>
             <ShieldCheck className="text-emerald-500 hidden sm:block" size={18} />
-            <div>
-              <h2 className="text-xs font-bold dark:text-white leading-none">Mevzuat Analiz Odası</h2>
-              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 hidden sm:block">Aktif Belge: {documents.filter(d => d.isActive).length}</p>
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center gap-3">
+                <h2 className="text-sm font-bold dark:text-white leading-none">Mevzuat Analiz Odası</h2>
+                <button
+                  onClick={handleNewChat}
+                  className="inline-flex items-center justify-center p-2 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 rounded-xl transition-all hover:scale-110 active:scale-95 shadow-sm border border-indigo-100/50 dark:border-indigo-700/30 touch-manipulation group"
+                  title="Yeni Sohbet Başlat"
+                >
+                  <Home size={22} className="group-hover:rotate-6 transition-transform" />
+                </button>
+              </div>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1.5 hidden sm:block">Aktif Belge: {documents.filter(d => d.isActive).length}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 lg:gap-3">
