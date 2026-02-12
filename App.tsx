@@ -994,7 +994,7 @@ const ImarApp: React.FC = () => {
       </aside>
 
       {/* Sidebar - Mobile (Slide-in, always expanded) */}
-      <aside className={`fixed inset-y-0 left-0 w-[280px] max-w-[85vw] border-r border-dark-border bg-dark-secondary flex flex-col h-[100dvh] z-[60] transform transition-transform duration-300 lg:hidden ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 w-[280px] max-w-[85vw] border-r border-dark-border bg-dark-secondary flex flex-col h-[100dvh] z-[60] transform transition-transform duration-300 lg:hidden overflow-y-auto pb-24 pb-safe ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <SidebarContent isMobile={true} />
       </aside>
 
