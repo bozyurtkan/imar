@@ -4,11 +4,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>İmarMevzuat.ai</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>İmarMevzuat.ai — Profesyonel Mevzuat Asistanı</title>
+  <meta name="description" content="Türkiye'nin en gelişmiş imar mevzuatı yapay zeka asistanı. Kanun, yönetmelik ve genelge analizi.">
+  <meta name="theme-color" content="#1a1012">
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -17,40 +23,43 @@
           fontFamily: {
             sans: ['Inter', 'sans-serif'],
           },
+          colors: {
+            dark: {
+              primary: '#1a1012',
+              secondary: '#231519',
+              tertiary: '#2d1b20',
+              surface: '#321f25',
+              'surface-hover': '#3d2630',
+              elevated: '#42292f',
+              border: '#4a2f36',
+              'border-subtle': '#3a2329',
+            },
+            warm: {
+              50: '#f5e6ea',
+              100: '#e8cfd5',
+              200: '#d4a8b2',
+              300: '#c9a3ac',
+              400: '#8b6b73',
+              500: '#6b5058',
+              600: '#5a3f47',
+              700: '#4a2f36',
+              800: '#3a2329',
+              900: '#2d1b20',
+              950: '#1a1012',
+            },
+            accent: {
+              DEFAULT: '#e8734a',
+              hover: '#f08860',
+              dark: '#d4553a',
+            }
+          },
         },
       },
     }
   </script>
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-    }
 
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-    }
+  <link rel="stylesheet" href="/index.css">
 
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #e2e8f0;
-      border-radius: 10px;
-    }
-
-    .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #334155;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: #cbd5e1;
-    }
-
-    .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: #475569;
-    }
-  </style>
   <script type="importmap">
 {
   "imports": {
@@ -61,12 +70,10 @@
     "@google/genai": "https://esm.sh/@google/genai@^1.37.0"
   }
 }
-</script>
-  <link rel="stylesheet" href="/index.css">
+  </script>
 </head>
 
-<body
-  class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 h-screen overflow-hidden transition-colors duration-200">
+<body class="dark">
   <div id="root"></div>
   <!-- pdf.js and mammoth.js for file parsing -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
