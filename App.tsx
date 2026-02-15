@@ -4,7 +4,8 @@ import {
   FileText, Send, Trash2, Plus, BookOpen, Loader2, Scale,
   ShieldCheck, Sun, Moon, CheckSquare,
   Square, Globe, ExternalLink, Zap, Sparkles, Key, AlertTriangle, Home, RotateCcw,
-  ChevronRight, X, Download, Search, Menu, Link2, GitBranch, Gavel, ArrowRight, Hash
+  ChevronRight, X, Download, Search, Menu, Link2, GitBranch, Gavel, ArrowRight, Hash,
+  Mic, MicOff
 } from 'lucide-react';
 import { DocumentFile, Message } from './types';
 import { parseFile, formatBytes } from './utils/fileParser';
@@ -58,6 +59,8 @@ const ImarApp: React.FC = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
+  const [isListening, setIsListening] = useState(false);
 
   // Filtrelenmiş belgeler
   const filteredDocuments = useMemo(() => {
@@ -1143,22 +1146,86 @@ const ImarApp: React.FC = () => {
         {/* Chat Input - Glassmorphism */}
         <div className="chat-input-wrapper p-3 lg:p-5 z-10" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 12px)' }}>
           <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto relative">
-            <div className="relative bg-dark-surface border border-dark-border rounded-2xl overflow-hidden transition-all focus-within:border-accent/40 focus-within:shadow-[0_0_0_3px_rgba(232,115,74,0.1)]">
+            <div className={`relative bg-dark-surface border rounded-2xl overflow-hidden transition-all focus-within:border-accent/40 focus-within:shadow-[0_0_0_3px_rgba(232,115,74,0.1)] ${isListening ? 'border-red-500/60 shadow-[0_0_0_3px_rgba(239,68,68,0.15)]' : 'border-dark-border'}`}>
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder="İmar mevzuatı hakkında soru sorun..."
+                placeholder={isListening ? 'Dinleniyor... Konuşun' : 'İmar mevzuatı hakkında soru sorun...'}
                 disabled={isTyping}
-                className="w-full bg-transparent pl-5 pr-14 py-4 text-sm text-warm-50 placeholder-warm-600 focus:outline-none disabled:opacity-50"
+                className="w-full bg-transparent pl-5 pr-24 py-4 text-sm text-warm-50 placeholder-warm-600 focus:outline-none disabled:opacity-50"
               />
-              <button
-                type="submit"
-                disabled={!inputValue.trim() || isTyping}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-xl bg-gradient-to-br from-accent to-accent-dark text-white flex items-center justify-center shadow-lg shadow-accent/20 active:scale-95 transition-all hover:shadow-accent/30 disabled:opacity-20 disabled:shadow-none"
-              >
-                <Send size={16} />
-              </button>
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                {/* Microphone Button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isListening) {
+                      // Stop listening
+                      if (recognitionRef.current) {
+                        recognitionRef.current.stop();
+                      }
+                      setIsListening(false);
+                    } else {
+                      // Start listening
+                      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+                      if (!SpeechRecognition) {
+                        alert('Tarayıcınız sesli girişi desteklemiyor.');
+                        return;
+                      }
+                      const recognition = new SpeechRecognition();
+                      recognition.lang = 'tr-TR';
+                      recognition.interimResults = true;
+                      recognition.continuous = true;
+                      recognition.maxAlternatives = 1;
+
+                      let finalTranscript = inputValue;
+
+                      recognition.onresult = (event: any) => {
+                        let interimTranscript = '';
+                        for (let i = event.resultIndex; i < event.results.length; i++) {
+                          const transcript = event.results[i][0].transcript;
+                          if (event.results[i].isFinal) {
+                            finalTranscript += (finalTranscript ? ' ' : '') + transcript;
+                          } else {
+                            interimTranscript += transcript;
+                          }
+                        }
+                        setInputValue(finalTranscript + (interimTranscript ? ' ' + interimTranscript : ''));
+                      };
+
+                      recognition.onerror = (event: any) => {
+                        console.error('Speech recognition error:', event.error);
+                        setIsListening(false);
+                      };
+
+                      recognition.onend = () => {
+                        setIsListening(false);
+                      };
+
+                      recognitionRef.current = recognition;
+                      recognition.start();
+                      setIsListening(true);
+                    }
+                  }}
+                  disabled={isTyping}
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-20 ${isListening
+                      ? 'bg-red-500 text-white mic-pulse shadow-lg shadow-red-500/30'
+                      : 'text-warm-400 hover:text-warm-50 hover:bg-dark-elevated'
+                    }`}
+                  title={isListening ? 'Kaydı Durdur' : 'Sesli Giriş'}
+                >
+                  {isListening ? <MicOff size={16} /> : <Mic size={16} />}
+                </button>
+                {/* Send Button */}
+                <button
+                  type="submit"
+                  disabled={!inputValue.trim() || isTyping}
+                  className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent to-accent-dark text-white flex items-center justify-center shadow-lg shadow-accent/20 active:scale-95 transition-all hover:shadow-accent/30 disabled:opacity-20 disabled:shadow-none"
+                >
+                  <Send size={16} />
+                </button>
+              </div>
             </div>
           </form>
           <div className="mt-2 text-center text-[10px] text-warm-600 font-medium">
