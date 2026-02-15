@@ -43,8 +43,17 @@ export const saveChatHistory = async (userId: string, messages: any[], userEmail
     const preview = lastUserMessage ? lastUserMessage.text.substring(0, 100) : "Sohbet";
 
     const sessionRef = doc(db, "users", userId, "history", dateId);
+    const userRef = doc(db, "users", userId);
 
     try {
+        // 1. Ana kullanıcı dokümanını güncelle (Admin listesinde görünmesi için)
+        await setDoc(userRef, {
+            email: userEmail || null,
+            lastActivity: serverTimestamp(),
+            uid: userId
+        }, { merge: true });
+
+        // 2. Sohbet oturumunu kaydet
         await setDoc(sessionRef, {
             date: dateId,
             updatedAt: serverTimestamp(),

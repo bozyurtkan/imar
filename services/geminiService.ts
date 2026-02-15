@@ -1,5 +1,5 @@
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { DocumentFile, Message } from "../types";
 
 export class GeminiService {
@@ -9,7 +9,7 @@ export class GeminiService {
     if (!apiKey) {
       throw new Error("API Anahtarı bulunamadı. Lütfen Cloudflare ortam değişkenlerinde veya .env dosyasında VITE_GEMINI_API_KEY tanımlı olduğundan emin olun.");
     }
-    return new GoogleGenAI({ apiKey });
+    return new GoogleGenerativeAI(apiKey);
   }
 
   async askQuestion(
@@ -40,17 +40,14 @@ export class GeminiService {
     `;
 
     try {
-      // Using gemini-1.5-flash for complex Turkish Zoning Law reasoning. (Stable)
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: `KÜTÜPHANE İÇERİĞİ:\n\n${contextText}\n\nKULLANICI SORUSU: ${question}`,
-        config: {
-          systemInstruction: systemInstruction.trim(),
-          temperature: 0.1,
-        },
+      const model = ai.getGenerativeModel({
+        model: "gemini-1.5-flash",
+        systemInstruction: systemInstruction.trim()
       });
 
-      return response.text || "Yüklediğiniz mevzuat dökümanlarından bir yanıt üretilemedi.";
+      const result = await model.generateContent(`KÜTÜPHANE İÇERİĞİ:\n\n${contextText}\n\nKULLANICI SORUSU: ${question}`);
+      const response = await result.response;
+      return response.text() || "Yüklediğiniz mevzuat dökümanlarından bir yanıt üretilemedi.";
     } catch (error: any) {
       console.error("Gemini API Error:", error);
       throw new Error(error?.message || "Mevzuat servisi şu an yanıt veremiyor.");
@@ -60,15 +57,13 @@ export class GeminiService {
   async summarizeDocument(doc: DocumentFile): Promise<string> {
     const ai = this.getClient();
     try {
-      // Using gemini-1.5-flash for basic summarization tasks.
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: `Aşağıdaki imar mevzuatı dökümanını profesyonel bir şekilde özetle:\n\n${doc.content}`,
-        config: {
-          systemInstruction: "Sen bir hukuk asistanısın. Kısa ve net özetler çıkarırsın.",
-        }
+      const model = ai.getGenerativeModel({
+        model: "gemini-1.5-flash",
+        systemInstruction: "Sen bir hukuk asistanısın. Kısa ve net özetler çıkarırsın."
       });
-      return response.text || "Özet çıkarılamadı.";
+      const result = await model.generateContent(`Aşağıdaki imar mevzuatı dökümanını profesyonel bir şekilde özetle:\n\n${doc.content}`);
+      const response = await result.response;
+      return response.text() || "Özet çıkarılamadı.";
     } catch (e: any) {
       throw new Error(e?.message || "Özetleme hatası.");
     }
@@ -77,18 +72,16 @@ export class GeminiService {
   async askGeneral(question: string): Promise<{ text: string, sources: any[] }> {
     const ai = this.getClient();
     try {
-      // Using gemini-1.5-flash with googleSearch for real-time grounding.
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: question,
-        config: {
-          systemInstruction: "Türkiye imar mevzuatı ve güncel belediye/bakanlık kararları hakkında web araştırması yaparak bilgi ver.",
-          tools: [{ googleSearch: {} }],
-        },
+      const model = ai.getGenerativeModel({
+        model: "gemini-1.5-flash",
+        systemInstruction: "Türkiye imar mevzuatı ve güncel belediye/bakanlık kararları hakkında web araştırması yaparak bilgi ver."
       });
 
+      const result = await model.generateContent(question);
+      const response = await result.response;
+
       const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
-      return { text: response.text || "Güncel bilgi bulunamadı.", sources };
+      return { text: response.text() || "Güncel bilgi bulunamadı.", sources };
     } catch (error: any) {
       throw new Error("Web araştırması şu an meşgul: " + error.message);
     }
@@ -97,7 +90,6 @@ export class GeminiService {
   async compareLegislation(newRegulationUrl: string, libraryDocs: DocumentFile[]): Promise<string> {
     const ai = this.getClient();
 
-    // Kütüphane bağlamını oluştur
     const libraryContext = libraryDocs
       .filter(doc => doc.isActive)
       .map(doc => `[MEVCUT BELGE: ${doc.name}]\n${doc.description}`)
@@ -107,64 +99,19 @@ export class GeminiService {
 
     const prompt = `
       BUGÜNÜN TARİHİ: ${today}
-      
       ÖNEMLİ: Sen bir AI modelisin ve eğitim verilerin eski olabilir. Ama bugün ${today}. Kullanıcının verdiği linklerdeki tarihler (2025, 2026 vb.) geçerlidir. Tarihi sorgulamadan analiz yap.
-
-      SEN: Türkiye'nin en deneyimli imar hukuku uzmanısın. Mevzuat değişikliklerini analiz etmekte 20 yıllık tecrüben var.
-
-      GÖREV: Aşağıdaki Resmi Gazete linkindeki yeni düzenlemeyi derinlemesine analiz et.
-
-      YENİ DÜZENLEME LİNKİ: ${newRegulationUrl}
-      
-      KULLANICININ KÜTÜPHANESİ (varsa):
-      ${libraryContext || "Kütüphanede belge yok."}
-
-      ANALİZ ADIMLARI:
-      1. Önce verilen URL'yi oku ve hangi yönetmelik/kanunun değiştirildiğini tespit et.
-      2. Değiştirilen her madde için:
-         - ESKİ HALİNİ bul (kütüphanede yoksa Google ile ara)
-         - YENİ HALİNİ belirle
-         - Değişikliğin PRATİK ETKİSİNİ yorumla (mimar/mühendis perspektifinden)
-      3. Önemli değişiklikleri önce listele.
-
-      ÇIKTI FORMATI (Türkçe):
-      
-      # 📋 Mevzuat Değişiklik Analizi
-      
-      **Değiştirilen Mevzuat:** [Tam adı]
-      **Resmi Gazete Tarihi:** [Tarih]
-      **Kaynak:** ${libraryContext ? "Kütüphaneden + Web Araştırması" : "Web Araştırması"}
-
-      ---
-
-      ## 🔄 Değişiklik 1: [Madde No - Konu Başlığı]
-      
-      | ESKİ HALİ | YENİ HALİ |
-      |-----------|-----------|
-      | [Önceki düzenlemenin özeti] | [Yeni düzenlemenin özeti] |
-      
-      **💡 Pratik Etki:** [Bu değişiklik mimarları/mühendisleri nasıl etkiler?]
-
-      ---
-
-      (Diğer değişiklikler için aynı formatı tekrarla)
-
-      ## 📌 Özet ve Öneriler
-      [Genel değerlendirme ve dikkat edilmesi gereken hususlar]
+      SEN: Türkiye'nin en deneyimli imar hukuku uzmanısın. Mevzuat değişikliklerini analiz etmekte 20 yıllık tecrüben var. İmar hukuku konularında derinlemesine analiz yap.
     `;
 
     try {
-      // Karşılaştırma için en akıllı model: gemini-2.5-pro
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-pro',
-        contents: prompt,
-        config: {
-          tools: [{ googleSearch: {} }],
-          temperature: 0.2 // Daha tutarlı ve detaylı yanıtlar için
-        },
+      const model = ai.getGenerativeModel({
+        model: "gemini-1.5-pro"
       });
 
-      return response.text || "Karşılaştırma yapılamadı.";
+      const result = await model.generateContent(`${prompt}\n\nYENİ DÜZENLEME LİNKİ: ${newRegulationUrl}\n\nKÜTÜPHANE: ${libraryContext}`);
+      const response = await result.response;
+
+      return response.text() || "Karşılaştırma yapılamadı.";
     } catch (error: any) {
       console.error("Comparison Error:", error);
       throw new Error("Karşılaştırma sırasında hata: " + error.message);

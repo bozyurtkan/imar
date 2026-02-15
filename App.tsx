@@ -15,7 +15,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AuthModal } from './components/AuthModal';
 import { HistoryModal } from './components/HistoryModal';
 import { AdminPanel } from './components/AdminPanel';
-import { db, saveChatHistory } from './services/firebase';
+import { db, saveChatHistory, getChatSession } from './services/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { User, LogOut, LogIn, Clock, History, Shield } from 'lucide-react';
 
@@ -166,13 +166,12 @@ const ImarApp: React.FC = () => {
     const syncData = async () => {
       if (user) {
         try {
+          // 1. Belgeleri Yükle
           const docRef = doc(db, "users", user.uid);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists() && docSnap.data().documents) {
             setDocuments(docSnap.data().documents);
           } else {
-            // Yeni kullanıcı veya boş veri
-            // Eğer localde veri varsa ve cloud boşsa, buluta aktar (Onboarding)
             const localDocs = localStorage.getItem('imar_docs');
             if (localDocs) {
               const parsed = JSON.parse(localDocs);
@@ -184,12 +183,24 @@ const ImarApp: React.FC = () => {
               setDocuments([]);
             }
           }
-        } catch (e) { console.error(e); }
+
+          // 2. Bugünün Sohbet Geçmişini Yükle (Eşitleme İçin)
+          const todayId = new Date().toISOString().split('T')[0];
+          const sessionMessages = await getChatSession(user.uid, todayId);
+          if (sessionMessages && sessionMessages.length > 0) {
+            // Sadece şu anki mesajlar boşsa veya Firestore'daki daha güncelse yükle
+            // Pratiklik açısından, giriş yapıldığında ilk yükleme olarak yapıyoruz
+            setMessages(sessionMessages);
+          }
+        } catch (e) {
+          console.error("Sync data error:", e);
+        }
       } else {
         // Logout olduğunda local'e dön
         const savedDocs = localStorage.getItem('imar_docs');
         if (savedDocs) setDocuments(JSON.parse(savedDocs));
         else setDocuments([]);
+        setMessages([]); // Çıkış yapıldığında sohbeti temizle
       }
     };
     syncData();
@@ -198,12 +209,33 @@ const ImarApp: React.FC = () => {
   const scrollToBottom = () => chatEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   useEffect(() => { scrollToBottom(); }, [messages, isTyping]);
 
+  // iOS Safari viewport height fix
+  useEffect(() => {
+    const setAppHeight = () => {
+      const vh = window.visualViewport?.height || window.innerHeight;
+      document.documentElement.style.setProperty('--app-height', `${vh}px`);
+    };
+    setAppHeight();
+    window.addEventListener('resize', setAppHeight);
+    window.addEventListener('orientationchange', setAppHeight);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', setAppHeight);
+    }
+    return () => {
+      window.removeEventListener('resize', setAppHeight);
+      window.removeEventListener('orientationchange', setAppHeight);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', setAppHeight);
+      }
+    };
+  }, []);
+
   // Otomatik Geçmiş Kaydetme
   useEffect(() => {
     if (user && messages.length > 0) {
       const timer = setTimeout(() => {
         saveChatHistory(user.uid, messages, user.email || undefined);
-      }, 2000); // 2 saniye gecikmeli kaydet (debounce)
+      }, 500); // 500ms gecikmeli kaydet (daha hızlı senkronizasyon)
       return () => clearTimeout(timer);
     }
   }, [messages, user]);
@@ -486,6 +518,7 @@ const ImarApp: React.FC = () => {
   };
 
   const renderText = (text: string) => {
+    if (!text) return null;
     const parts = text.split(/(\[MADDE: .*?\]|\*\*.*?\*\*)/g);
     return parts.map((part, i) => {
       if (part.startsWith('[MADDE:')) {
@@ -830,12 +863,12 @@ const ImarApp: React.FC = () => {
         </div>
 
         {/* Expandable content sections */}
-        <div className="sidebar-section">
+        <div className="sidebar-section flex flex-col flex-1 min-h-0">
           {/* Divider */}
           <div className="mx-3 border-t border-dark-border" />
 
           {/* Search */}
-          <div className="px-3 pt-3">
+          <div className="px-3 pt-3 flex-shrink-0">
             <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-warm-500" />
               <input
@@ -853,22 +886,11 @@ const ImarApp: React.FC = () => {
             </div>
           </div>
 
-          {/* Documents Library */}
-          <div className="flex-1 overflow-y-auto px-3 pt-3 pb-3 custom-scrollbar" style={{ maxHeight: 'calc(100vh - 400px)' }}>
+          {/* Documents Library - scrollable */}
+          <div className="flex-1 overflow-y-auto px-3 pt-3 pb-3 custom-scrollbar min-h-0">
             <div className="flex items-center justify-between px-1 mb-2">
               <span className="text-[10px] font-bold text-warm-500 uppercase tracking-widest">Kütüphane</span>
               <span className="text-[9px] bg-dark-surface text-warm-400 px-2 py-0.5 rounded-full font-bold">{documents.length}</span>
-            </div>
-
-            {/* Usage Bar */}
-            <div className="mb-3 p-3 bg-dark-surface rounded-xl border border-dark-border">
-              <div className="flex justify-between items-center mb-1.5">
-                <span className="text-[10px] font-semibold text-warm-400">Günlük Kullanım</span>
-                <span className="text-[10px] font-bold text-accent">{usageCount}/{DAILY_LIMIT}</span>
-              </div>
-              <div className="h-1 w-full bg-dark-elevated rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-accent to-accent-dark rounded-full transition-all duration-700" style={{ width: `${(usageCount / DAILY_LIMIT) * 100}%` }}></div>
-              </div>
             </div>
 
             {!hasKey && (
@@ -890,15 +912,15 @@ const ImarApp: React.FC = () => {
                 <div className="p-4 text-center border border-dashed border-dark-border rounded-xl text-warm-500 text-[10px]">"{searchQuery}" için sonuç yok</div>
               ) : (
                 filteredDocuments.map(doc => (
-                  <div key={doc.id} className={`p-3 rounded-xl border transition-all cursor-default ${doc.isActive ? 'bg-accent/5 border-accent/20' : 'bg-dark-surface border-dark-border hover:border-warm-700'}`}>
-                    <div className="flex gap-2.5">
-                      <div onClick={() => saveDocuments(documents.map(d => d.id === doc.id ? { ...d, isActive: !d.isActive } : d))} className="mt-0.5 cursor-pointer">
-                        {doc.isActive ? <CheckSquare size={15} className="text-accent" /> : <Square size={15} className="text-warm-600" />}
+                  <div key={doc.id} className={`p-2.5 rounded-xl border transition-all cursor-default ${doc.isActive ? 'bg-accent/5 border-accent/20' : 'bg-dark-surface border-dark-border hover:border-warm-700'}`}>
+                    <div className="flex gap-2">
+                      <div onClick={() => saveDocuments(documents.map(d => d.id === doc.id ? { ...d, isActive: !d.isActive } : d))} className="mt-0.5 cursor-pointer flex-shrink-0">
+                        {doc.isActive ? <CheckSquare size={14} className="text-accent" /> : <Square size={14} className="text-warm-600" />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[11px] font-semibold truncate text-warm-100 mb-0.5">{doc.name}</p>
+                        <p className="text-[11px] font-semibold truncate text-warm-100">{doc.name}</p>
                         <p className="text-[9px] text-warm-500 truncate">{doc.description}</p>
-                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-dark-border/50">
+                        <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t border-dark-border/50">
                           <button onClick={() => handleSummarize(doc)} className="text-[9px] font-bold text-accent hover:text-accent-hover flex items-center gap-1 transition-colors"><Sparkles size={10} /> Özetle</button>
                           <button onClick={() => saveDocuments(documents.filter(x => x.id !== doc.id))} className="text-warm-600 hover:text-red-400 transition-colors"><Trash2 size={11} /></button>
                         </div>
@@ -911,11 +933,9 @@ const ImarApp: React.FC = () => {
           </div>
         </div>
 
-        {/* Spacer */}
-        <div className="flex-1" />
 
         {/* Sidebar Footer */}
-        <div className="p-2 border-t border-dark-border">
+        <div className="sidebar-footer p-2 border-t border-dark-border">
           <input type="file" ref={fileInputRef} onChange={(e) => e.target.files && setUploadPendingFiles(Array.from(e.target.files))} className="hidden" multiple accept=".pdf,.docx,.jpg,.jpeg,.png" />
 
           {expanded ? (
@@ -969,7 +989,7 @@ const ImarApp: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen h-[100dvh] w-full bg-dark-primary overflow-hidden">
+    <div className="app-container flex w-full bg-dark-primary overflow-hidden" style={{ height: 'var(--app-height, 100dvh)' }}>
       {/* Mobile Overlay */}
       {isMobileMenuOpen && (
         <div
@@ -994,7 +1014,7 @@ const ImarApp: React.FC = () => {
       </aside>
 
       {/* Sidebar - Mobile (Slide-in, always expanded) */}
-      <aside className={`fixed inset-y-0 left-0 w-[280px] max-w-[85vw] border-r border-dark-border bg-dark-secondary flex flex-col h-[100dvh] z-[60] transform transition-transform duration-300 lg:hidden overflow-y-auto pb-24 pb-safe ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 w-[280px] max-w-[85vw] border-r border-dark-border bg-dark-secondary flex flex-col z-[60] transform transition-transform duration-300 lg:hidden overflow-y-auto pb-safe ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`} style={{ height: 'var(--app-height, 100dvh)' }}>
         <SidebarContent isMobile={true} />
       </aside>
 
@@ -1017,6 +1037,14 @@ const ImarApp: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Günlük Kullanım - Header'da */}
+            <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-dark-surface border border-dark-border rounded-xl">
+              <span className="text-[10px] font-semibold text-warm-400">Kullanım</span>
+              <div className="w-16 h-1.5 bg-dark-elevated rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-accent to-accent-dark rounded-full transition-all duration-700" style={{ width: `${(usageCount / DAILY_LIMIT) * 100}%` }}></div>
+              </div>
+              <span className="text-[10px] font-bold text-accent">{usageCount}/{DAILY_LIMIT}</span>
+            </div>
             {messages.length > 0 && (
               <button
                 onClick={exportChatToPDF}
@@ -1113,7 +1141,7 @@ const ImarApp: React.FC = () => {
         </div>
 
         {/* Chat Input - Glassmorphism */}
-        <div className="p-3 lg:p-5 z-10 safe-bottom">
+        <div className="chat-input-wrapper p-3 lg:p-5 z-10" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 12px)' }}>
           <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto relative">
             <div className="relative bg-dark-surface border border-dark-border rounded-2xl overflow-hidden transition-all focus-within:border-accent/40 focus-within:shadow-[0_0_0_3px_rgba(232,115,74,0.1)]">
               <input

@@ -113,7 +113,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     return (
         <div className="fixed inset-0 z-[150] flex modal-overlay" onClick={onClose}>
             <div
-                className="w-full h-full max-w-7xl mx-auto my-4 bg-dark-tertiary border border-dark-border rounded-2xl shadow-2xl overflow-hidden flex flex-col scale-in"
+                className="w-full h-[calc(100vh-2rem)] max-w-7xl mx-auto my-4 bg-dark-tertiary border border-dark-border rounded-2xl shadow-2xl overflow-hidden flex flex-col scale-in"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
@@ -232,7 +232,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                             )}
 
                             {/* Liste */}
-                            <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
+                            <div className="flex-1 overflow-y-auto p-3 pb-10 space-y-2 custom-scrollbar">
                                 {activeTab === 'today' ? (
                                     todayActivity.length === 0 ? (
                                         <div className="text-center py-8 text-warm-500">
@@ -349,7 +349,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                                     </div>
 
                                     {/* Messages */}
-                                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-dark-primary custom-scrollbar">
+                                    <div className="flex-1 overflow-y-auto p-4 pb-20 space-y-4 bg-dark-primary custom-scrollbar">
                                         {selectedSession.messages?.map((msg: any, idx: number) => (
                                             <div
                                                 key={idx}
@@ -401,7 +401,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                                     </div>
 
                                     {/* User Sessions */}
-                                    <div className="flex-1 overflow-y-auto p-4 bg-dark-primary custom-scrollbar">
+                                    <div className="flex-1 overflow-y-auto p-4 pb-10 bg-dark-primary custom-scrollbar">
                                         <div className="space-y-3">
                                             {selectedUserHistory.map((session) => (
                                                 <button

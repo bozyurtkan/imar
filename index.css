@@ -51,6 +51,8 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* iOS Safari viewport fix: use CSS custom property set by JS */
+  --app-height: 100dvh;
 }
 
 body {
@@ -60,10 +62,16 @@ body {
   overflow: hidden;
   height: 100vh;
   height: 100dvh;
+  height: var(--app-height, 100dvh);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
 }
 
 #root {
   height: 100%;
+  overflow: hidden;
 }
 
 /* Selection Styling */
@@ -296,6 +304,12 @@ body {
   }
 }
 
+/* iOS Safari chat input fix */
+.chat-input-wrapper {
+  flex-shrink: 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 /* ============================================
    GRADIENT BACKGROUNDS
    ============================================ */
@@ -347,13 +361,23 @@ body {
   max-height: 0;
   overflow: hidden;
   visibility: hidden;
-  transition: opacity 0.2s ease, max-height 0.3s ease, visibility 0.2s ease;
+  flex: 0 0 0px;
+  transition: opacity 0.2s ease, max-height 0.3s ease, visibility 0.2s ease, flex 0.3s ease;
 }
 
 .sidebar.expanded .sidebar-section {
   opacity: 1;
-  max-height: 2000px;
+  max-height: none;
+  overflow: visible;
   visibility: visible;
+  flex: 1 1 0%;
+  min-height: 0;
+}
+
+/* Sidebar footer - always at bottom */
+.sidebar-footer {
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 /* Sidebar nav item */
@@ -619,9 +643,23 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Viewport height fix */
+/* Viewport height fix for iOS Safari */
 @supports (-webkit-touch-callout: none) {
   .h-screen {
     height: -webkit-fill-available;
+  }
+
+  /* Ensure main app container uses real viewport height */
+  .app-container {
+    height: 100vh;
+    height: -webkit-fill-available;
+    height: 100dvh;
+    height: var(--app-height, 100dvh);
+  }
+
+  /* Prevent iOS bounce/overscroll */
+  body {
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
   }
 }
