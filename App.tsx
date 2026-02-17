@@ -79,18 +79,24 @@ const ImarApp: React.FC = () => {
     // Verileri Yükle (Cloud veya Local)
     const loadData = async () => {
       if (user) {
-        // Kullanıcı giriş yapmışsa Firestore'dan çek
+        // Kullanıcı giriş yapmışsa Firestore'dan çek (ayrı doküman: users/{uid}/data/library)
         try {
-          const docRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists() && docSnap.data().documents) {
-            setDocuments(docSnap.data().documents);
+          const libraryRef = doc(db, "users", user.uid, "data", "library");
+          const librarySnap = await getDoc(libraryRef);
+          if (librarySnap.exists() && librarySnap.data().documents) {
+            setDocuments(librarySnap.data().documents);
           } else {
-            // Firestore boşsa ve localde veri varsa, opsiyonel olarak merge edilebilir
-            // Şimdilik boş bırakıyoruz veya local'den başlatmıyoruz temiz bir sayfa için
-            // Ancak kullanıcı deneyimi için, boşsa localdekileri oraya aktarmak mantıklı olabilir.
-            // Bu örnekte sadece Firestore'u baz alıyoruz.
-            setDocuments([]);
+            // Eski yapıdan migration: root dokümandaki documents varsa taşı
+            const oldDocRef = doc(db, "users", user.uid);
+            const oldDocSnap = await getDoc(oldDocRef);
+            if (oldDocSnap.exists() && oldDocSnap.data().documents && oldDocSnap.data().documents.length > 0) {
+              const oldDocs = oldDocSnap.data().documents;
+              setDocuments(oldDocs);
+              // Yeni konuma kaydet
+              await setDoc(libraryRef, { documents: oldDocs }, { merge: true });
+            } else {
+              setDocuments([]);
+            }
           }
         } catch (e) {
           console.error("Firestore loading error:", e);
@@ -132,9 +138,10 @@ const ImarApp: React.FC = () => {
     setDocuments(newDocs);
 
     if (user) {
-      // Cloud'a kaydet
+      // Cloud'a kaydet (ayrı doküman: users/{uid}/data/library)
       try {
-        await setDoc(doc(db, "users", user.uid), { documents: newDocs }, { merge: true });
+        const libraryRef = doc(db, "users", user.uid, "data", "library");
+        await setDoc(libraryRef, { documents: newDocs }, { merge: true });
       } catch (e) {
         console.error("Error saving to cloud:", e);
       }
@@ -169,21 +176,30 @@ const ImarApp: React.FC = () => {
     const syncData = async () => {
       if (user) {
         try {
-          // 1. Belgeleri Yükle
-          const docRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists() && docSnap.data().documents) {
-            setDocuments(docSnap.data().documents);
+          // 1. Belgeleri Yükle (ayrı doküman: users/{uid}/data/library)
+          const libraryRef = doc(db, "users", user.uid, "data", "library");
+          const librarySnap = await getDoc(libraryRef);
+          if (librarySnap.exists() && librarySnap.data().documents) {
+            setDocuments(librarySnap.data().documents);
           } else {
-            const localDocs = localStorage.getItem('imar_docs');
-            if (localDocs) {
-              const parsed = JSON.parse(localDocs);
-              if (parsed.length > 0) {
-                await setDoc(doc(db, "users", user.uid), { documents: parsed }, { merge: true });
-                setDocuments(parsed);
-              }
+            // Eski yapıdan migration veya localStorage'dan aktar
+            const oldDocRef = doc(db, "users", user.uid);
+            const oldDocSnap = await getDoc(oldDocRef);
+            if (oldDocSnap.exists() && oldDocSnap.data().documents && oldDocSnap.data().documents.length > 0) {
+              const oldDocs = oldDocSnap.data().documents;
+              await setDoc(libraryRef, { documents: oldDocs }, { merge: true });
+              setDocuments(oldDocs);
             } else {
-              setDocuments([]);
+              const localDocs = localStorage.getItem('imar_docs');
+              if (localDocs) {
+                const parsed = JSON.parse(localDocs);
+                if (parsed.length > 0) {
+                  await setDoc(libraryRef, { documents: parsed }, { merge: true });
+                  setDocuments(parsed);
+                }
+              } else {
+                setDocuments([]);
+              }
             }
           }
 
@@ -1205,8 +1221,8 @@ const ImarApp: React.FC = () => {
                   }}
                   disabled={isTyping}
                   className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-20 ${isListening
-                      ? 'bg-red-500 text-white mic-pulse shadow-lg shadow-red-500/30'
-                      : 'text-warm-400 hover:text-warm-50 hover:bg-dark-elevated'
+                    ? 'bg-red-500 text-white mic-pulse shadow-lg shadow-red-500/30'
+                    : 'text-warm-400 hover:text-warm-50 hover:bg-dark-elevated'
                     }`}
                   title={isListening ? 'Kaydı Durdur' : 'Sesli Giriş'}
                 >
