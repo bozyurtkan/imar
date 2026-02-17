@@ -187,14 +187,9 @@ const ImarApp: React.FC = () => {
             }
           }
 
-          // 2. Bugünün Sohbet Geçmişini Yükle (Eşitleme İçin)
-          const todayId = new Date().toISOString().split('T')[0];
-          const sessionMessages = await getChatSession(user.uid, todayId);
-          if (sessionMessages && sessionMessages.length > 0) {
-            // Sadece şu anki mesajlar boşsa veya Firestore'daki daha güncelse yükle
-            // Pratiklik açısından, giriş yapıldığında ilk yükleme olarak yapıyoruz
-            setMessages(sessionMessages);
-          }
+          // 2. İlk girişte ana sayfa (temiz sohbet) açılsın
+          // Önceki sohbet geçmişi otomatik yüklenmiyor, kullanıcı Geçmiş butonundan erişebilir
+          setMessages([]);
         } catch (e) {
           console.error("Sync data error:", e);
         }
