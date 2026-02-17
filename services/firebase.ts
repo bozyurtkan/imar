@@ -103,3 +103,40 @@ export const getChatSession = async (userId: string, sessionId: string) => {
         return null;
     }
 };
+
+// ========== KÜTÜPHANE BELGE İŞLEMLERİ ==========
+// Her belge ayrı Firestore dokümanı olarak saklanır: users/{uid}/documents/{docId}
+// Bu sayede tek doküman 1MB sınırına takılmaz.
+
+// Tek bir belgeyi kaydet veya güncelle
+export const saveDocToLibrary = async (userId: string, document: any) => {
+    try {
+        const docRef = doc(db, "users", userId, "documents", document.id);
+        await setDoc(docRef, document);
+    } catch (error) {
+        console.error("Belge kaydedilemedi:", error);
+        throw error;
+    }
+};
+
+// Tek bir belgeyi sil
+export const deleteDocFromLibrary = async (userId: string, documentId: string) => {
+    try {
+        await deleteDoc(doc(db, "users", userId, "documents", documentId));
+    } catch (error) {
+        console.error("Belge silinemedi:", error);
+        throw error;
+    }
+};
+
+// Tüm belgeleri yükle
+export const loadLibraryDocs = async (userId: string): Promise<any[]> => {
+    try {
+        const docsRef = collection(db, "users", userId, "documents");
+        const snapshot = await getDocs(docsRef);
+        return snapshot.docs.map(d => d.data());
+    } catch (error) {
+        console.error("Kütüphane yüklenemedi:", error);
+        return [];
+    }
+};

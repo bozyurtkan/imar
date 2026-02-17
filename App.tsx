@@ -16,7 +16,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AuthModal } from './components/AuthModal';
 import { HistoryModal } from './components/HistoryModal';
 import { AdminPanel } from './components/AdminPanel';
-import { db, saveChatHistory, getChatSession } from './services/firebase';
+import { db, saveChatHistory, getChatSession, saveDocToLibrary, deleteDocFromLibrary, loadLibraryDocs } from './services/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { User, LogOut, LogIn, Clock, History, Shield } from 'lucide-react';
 
@@ -79,21 +79,33 @@ const ImarApp: React.FC = () => {
     // Verileri Yükle (Cloud veya Local)
     const loadData = async () => {
       if (user) {
-        // Kullanıcı giriş yapmışsa Firestore'dan çek (ayrı doküman: users/{uid}/data/library)
+        // Her belge ayrı doküman: users/{uid}/documents/{docId}
         try {
-          const libraryRef = doc(db, "users", user.uid, "data", "library");
-          const librarySnap = await getDoc(libraryRef);
-          if (librarySnap.exists() && librarySnap.data().documents) {
-            setDocuments(librarySnap.data().documents);
+          const libraryDocs = await loadLibraryDocs(user.uid);
+          if (libraryDocs.length > 0) {
+            setDocuments(libraryDocs);
           } else {
-            // Eski yapıdan migration: root dokümandaki documents varsa taşı
-            const oldDocRef = doc(db, "users", user.uid);
-            const oldDocSnap = await getDoc(oldDocRef);
-            if (oldDocSnap.exists() && oldDocSnap.data().documents && oldDocSnap.data().documents.length > 0) {
-              const oldDocs = oldDocSnap.data().documents;
+            // Migration: eski yapılardan veri taşıma
+            let oldDocs: DocumentFile[] = [];
+            // 1. users/{uid}/data/library'den kontrol et
+            const libraryRef = doc(db, "users", user.uid, "data", "library");
+            const librarySnap = await getDoc(libraryRef);
+            if (librarySnap.exists() && librarySnap.data().documents?.length > 0) {
+              oldDocs = librarySnap.data().documents;
+            } else {
+              // 2. users/{uid} root'dan kontrol et
+              const oldDocRef = doc(db, "users", user.uid);
+              const oldDocSnap = await getDoc(oldDocRef);
+              if (oldDocSnap.exists() && oldDocSnap.data().documents?.length > 0) {
+                oldDocs = oldDocSnap.data().documents;
+              }
+            }
+            if (oldDocs.length > 0) {
+              // Yeni yapıya migre et (her belge ayrı doküman)
+              for (const d of oldDocs) {
+                await saveDocToLibrary(user.uid, d);
+              }
               setDocuments(oldDocs);
-              // Yeni konuma kaydet
-              await setDoc(libraryRef, { documents: oldDocs }, { merge: true });
             } else {
               setDocuments([]);
             }
@@ -134,14 +146,26 @@ const ImarApp: React.FC = () => {
   }, [isDarkMode]);
 
   // Verileri Kaydet (Cloud veya Local)
+  // Her belge ayrı Firestore dokümanı olarak saklanır → 1MB sınırı sorun olmaz
   const saveDocuments = async (newDocs: DocumentFile[]) => {
+    const oldDocs = documents; // mevcut state (güncelleme öncesi)
     setDocuments(newDocs);
 
     if (user) {
-      // Cloud'a kaydet (ayrı doküman: users/{uid}/data/library)
       try {
-        const libraryRef = doc(db, "users", user.uid, "data", "library");
-        await setDoc(libraryRef, { documents: newDocs }, { merge: true });
+        // Eklenen veya değişen belgeleri kaydet
+        for (const newDoc of newDocs) {
+          const oldDoc = oldDocs.find(d => d.id === newDoc.id);
+          if (!oldDoc || oldDoc.isActive !== newDoc.isActive || oldDoc.content !== newDoc.content) {
+            await saveDocToLibrary(user.uid, newDoc);
+          }
+        }
+        // Silinen belgeleri Firestore'dan da kaldır
+        for (const oldDoc of oldDocs) {
+          if (!newDocs.find(d => d.id === oldDoc.id)) {
+            await deleteDocFromLibrary(user.uid, oldDoc.id);
+          }
+        }
       } catch (e) {
         console.error("Error saving to cloud:", e);
       }
@@ -176,30 +200,37 @@ const ImarApp: React.FC = () => {
     const syncData = async () => {
       if (user) {
         try {
-          // 1. Belgeleri Yükle (ayrı doküman: users/{uid}/data/library)
-          const libraryRef = doc(db, "users", user.uid, "data", "library");
-          const librarySnap = await getDoc(libraryRef);
-          if (librarySnap.exists() && librarySnap.data().documents) {
-            setDocuments(librarySnap.data().documents);
+          // 1. Belgeleri Yükle (her belge ayrı doküman: users/{uid}/documents/{docId})
+          const libraryDocs = await loadLibraryDocs(user.uid);
+          if (libraryDocs.length > 0) {
+            setDocuments(libraryDocs);
           } else {
-            // Eski yapıdan migration veya localStorage'dan aktar
-            const oldDocRef = doc(db, "users", user.uid);
-            const oldDocSnap = await getDoc(oldDocRef);
-            if (oldDocSnap.exists() && oldDocSnap.data().documents && oldDocSnap.data().documents.length > 0) {
-              const oldDocs = oldDocSnap.data().documents;
-              await setDoc(libraryRef, { documents: oldDocs }, { merge: true });
+            // Migration: eski yapılardan veri taşıma
+            let oldDocs: DocumentFile[] = [];
+            const libraryRef = doc(db, "users", user.uid, "data", "library");
+            const librarySnap = await getDoc(libraryRef);
+            if (librarySnap.exists() && librarySnap.data().documents?.length > 0) {
+              oldDocs = librarySnap.data().documents;
+            } else {
+              const oldDocRef = doc(db, "users", user.uid);
+              const oldDocSnap = await getDoc(oldDocRef);
+              if (oldDocSnap.exists() && oldDocSnap.data().documents?.length > 0) {
+                oldDocs = oldDocSnap.data().documents;
+              } else {
+                const localDocs = localStorage.getItem('imar_docs');
+                if (localDocs) {
+                  const parsed = JSON.parse(localDocs);
+                  if (parsed.length > 0) oldDocs = parsed;
+                }
+              }
+            }
+            if (oldDocs.length > 0) {
+              for (const d of oldDocs) {
+                await saveDocToLibrary(user.uid, d);
+              }
               setDocuments(oldDocs);
             } else {
-              const localDocs = localStorage.getItem('imar_docs');
-              if (localDocs) {
-                const parsed = JSON.parse(localDocs);
-                if (parsed.length > 0) {
-                  await setDoc(libraryRef, { documents: parsed }, { merge: true });
-                  setDocuments(parsed);
-                }
-              } else {
-                setDocuments([]);
-              }
+              setDocuments([]);
             }
           }
 
