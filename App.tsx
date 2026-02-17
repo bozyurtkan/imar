@@ -1083,8 +1083,8 @@ const ImarApp: React.FC = () => {
           </div>
           <div className="flex items-center gap-2">
             {/* Günlük Kullanım - Header'da */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-dark-surface border border-dark-border rounded-xl">
-              <span className="text-[10px] font-semibold text-warm-400">Kullanım</span>
+            <div className="flex items-center gap-2 px-3 py-2 bg-dark-surface border border-dark-border rounded-xl">
+              <span className="text-[10px] font-semibold text-warm-400">Kredi</span>
               <div className="w-16 h-1.5 bg-dark-elevated rounded-full overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-accent to-accent-dark rounded-full transition-all duration-700" style={{ width: `${(usageCount / DAILY_LIMIT) * 100}%` }}></div>
               </div>
