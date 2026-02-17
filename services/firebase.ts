@@ -32,17 +32,21 @@ export interface ChatSession {
 }
 
 // Sohbeti Kaydet (Günlük)
-export const saveChatHistory = async (userId: string, messages: any[], userEmail?: string) => {
+// Sohbeti Kaydet (Günlük ve Oturum Bazlı)
+export const saveChatHistory = async (userId: string, messages: any[], userEmail?: string, sessionId?: string) => {
     if (!userId || messages.length === 0) return;
 
     const today = new Date();
-    const dateId = today.toISOString().split('T')[0]; // YYYY-MM-DD
+    // const dateId = today.toISOString().split('T')[0]; // İptal: Artık sessionId kullanıyoruz
+
+    // Eğer sessionId gelmezse (eski versiyon uyumluluğu) timestamp bazlı üret
+    const docId = sessionId || Date.now().toString();
 
     // Basit bir önizleme metni oluştur (son kullanıcı mesajı veya ilk mesaj)
     const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
     const preview = lastUserMessage ? lastUserMessage.text.substring(0, 100) : "Sohbet";
 
-    const sessionRef = doc(db, "users", userId, "history", dateId);
+    const sessionRef = doc(db, "users", userId, "history", docId);
     const userRef = doc(db, "users", userId);
 
     try {
@@ -55,7 +59,8 @@ export const saveChatHistory = async (userId: string, messages: any[], userEmail
 
         // 2. Sohbet oturumunu kaydet
         await setDoc(sessionRef, {
-            date: dateId,
+            id: docId,
+            date: today.toISOString(), // Tam tarih saat
             updatedAt: serverTimestamp(),
             messages: messages,
             preview: preview,
@@ -72,7 +77,7 @@ export const getChatHistory = async (userId: string): Promise<ChatSession[]> => 
     if (!userId) return [];
 
     const historyRef = collection(db, "users", userId, "history");
-    const q = query(historyRef, orderBy("date", "desc")); // En yeniden eskiye
+    const q = query(historyRef, orderBy("updatedAt", "desc")); // En yeniden eskiye (güncelleme zamanına göre)
 
     try {
         const querySnapshot = await getDocs(q);

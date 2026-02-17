@@ -46,6 +46,7 @@ const ImarApp: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [documents, setDocuments] = useState<DocumentFile[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [sessionId, setSessionId] = useState<string>(() => Date.now().toString(36) + Math.random().toString(36).substr(2, 5));
   const [inputValue, setInputValue] = useState('');
   const [isParsing, setIsParsing] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -340,8 +341,8 @@ const ImarApp: React.FC = () => {
   useEffect(() => {
     if (user && messages.length > 0) {
       const timer = setTimeout(() => {
-        saveChatHistory(user.uid, messages, user.email || undefined);
-      }, 500); // 500ms gecikmeli kaydet (daha hızlı senkronizasyon)
+        saveChatHistory(user.uid, messages, user.email || undefined, sessionId);
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [messages, user]);
@@ -770,9 +771,10 @@ const ImarApp: React.FC = () => {
   const handleNewChat = () => {
     if (messages.length > 0) {
       if (user) {
-        saveChatHistory(user.uid, messages, user.email || undefined);
+        saveChatHistory(user.uid, messages, user.email || undefined, sessionId);
       }
       setMessages([]);
+      setSessionId(Date.now().toString(36) + Math.random().toString(36).substr(2, 5));
     }
   };
 

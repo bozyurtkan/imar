@@ -5,11 +5,14 @@ import { useAuth } from '../contexts/AuthContext';
 import { getChatHistory, ChatSession } from '../services/firebase';
 
 interface HistoryModalProps {
+    show: boolean;
     onClose: () => void;
     onSelectSession: (messages: any[]) => void;
 }
 
-export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose, onSelectSession }) => {
+export const HistoryModal: React.FC<HistoryModalProps> = ({ show, onClose, onSelectSession }) => {
+    if (!show) return null;
+
     const { user } = useAuth();
     const [history, setHistory] = useState<ChatSession[]>([]);
     const [loading, setLoading] = useState(true);
@@ -27,13 +30,22 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose, onSelectSes
     }, [user]);
 
     const formatDate = (dateString: string) => {
-        const options: Intl.DateTimeFormatOptions = {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            weekday: 'long'
-        };
-        return new Date(dateString).toLocaleDateString('tr-TR', options);
+        try {
+            const date = new Date(dateString);
+            // Geçersiz tarih kontrolü
+            if (isNaN(date.getTime())) return dateString;
+
+            const options: Intl.DateTimeFormatOptions = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return date.toLocaleDateString('tr-TR', options);
+        } catch (e) {
+            return dateString;
+        }
     };
 
     return (
