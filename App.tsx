@@ -172,17 +172,6 @@ const ImarApp: React.FC = () => {
     loadData();
     const savedTheme = localStorage.getItem('imar_theme');
     setIsDarkMode(savedTheme !== 'false');
-
-    // Kredi bilgisini yükle (giriş yapmamış kullanıcı için localStorage)
-    if (!user) {
-      const today = new Date().toDateString();
-      const savedUsage = localStorage.getItem('imar_usage_data');
-      if (savedUsage) {
-        const { date, count } = JSON.parse(savedUsage);
-        if (date === today) setUsageCount(count);
-        else setUsageCount(0);
-      }
-    }
   }, []);
 
   const handleOpenKeySelector = async () => {
@@ -234,33 +223,6 @@ const ImarApp: React.FC = () => {
     // Theme
     const savedTheme = localStorage.getItem('imar_theme');
     setIsDarkMode(savedTheme !== 'false');
-
-    // Usage - Kredi bilgisini yükle
-    if (user) {
-      (async () => {
-        try {
-          const today = new Date().toDateString();
-          const usageRef = doc(db, "users", user.uid, "data", "usage");
-          const usageSnap = await getDoc(usageRef);
-          if (usageSnap.exists() && usageSnap.data().date === today) {
-            setUsageCount(usageSnap.data().count || 0);
-          } else {
-            setUsageCount(0);
-          }
-        } catch (e) {
-          console.error("Usage load error:", e);
-          setUsageCount(0);
-        }
-      })();
-    } else {
-      const today = new Date().toDateString();
-      const savedUsage = localStorage.getItem('imar_usage_data');
-      if (savedUsage) {
-        const { date, count } = JSON.parse(savedUsage);
-        if (date === today) setUsageCount(count);
-        else setUsageCount(0);
-      }
-    }
   }, []);
 
   // User auth state değişince verileri güncelle
@@ -268,12 +230,11 @@ const ImarApp: React.FC = () => {
     const syncData = async () => {
       if (user) {
         try {
-          // 1. Belgeleri Yükle (her belge ayrı doküman: users/{uid}/documents/{docId})
+          // 1. Belgeleri Yükle
           const libraryDocs = await loadLibraryDocs(user.uid);
           if (libraryDocs.length > 0) {
             setDocuments(libraryDocs);
           } else {
-            // Migration: eski yapılardan veri taşıma
             let oldDocs: DocumentFile[] = [];
             const libraryRef = doc(db, "users", user.uid, "data", "library");
             const librarySnap = await getDoc(libraryRef);
@@ -302,8 +263,29 @@ const ImarApp: React.FC = () => {
             }
           }
 
-          // 2. İlk girişte ana sayfa (temiz sohbet) açılsın
-          // Önceki sohbet geçmişi otomatik yüklenmiyor, kullanıcı Geçmiş butonundan erişebilir
+          // 2. Kredi bilgisini Firestore'dan yükle
+          const today = new Date().toDateString();
+          const usageRef = doc(db, "users", user.uid, "data", "usage");
+          const usageSnap = await getDoc(usageRef);
+          if (usageSnap.exists() && usageSnap.data().date === today) {
+            setUsageCount(usageSnap.data().count || 0);
+          } else {
+            // Migration: localStorage'daki eski kredi bilgisini Firestore'a taşı
+            const savedUsage = localStorage.getItem('imar_usage_data');
+            if (savedUsage) {
+              const { date, count } = JSON.parse(savedUsage);
+              if (date === today && count > 0) {
+                setUsageCount(count);
+                await setDoc(usageRef, { date: today, count });
+              } else {
+                setUsageCount(0);
+              }
+            } else {
+              setUsageCount(0);
+            }
+          }
+
+          // 3. Temiz sohbet
           setMessages([]);
         } catch (e) {
           console.error("Sync data error:", e);
@@ -313,7 +295,18 @@ const ImarApp: React.FC = () => {
         const savedDocs = localStorage.getItem('imar_docs');
         if (savedDocs) setDocuments(JSON.parse(savedDocs));
         else setDocuments([]);
-        setMessages([]); // Çıkış yapıldığında sohbeti temizle
+        setMessages([]);
+
+        // Giriş yapmamış kullanıcı: localStorage'dan kredi bilgisini oku
+        const today = new Date().toDateString();
+        const savedUsage = localStorage.getItem('imar_usage_data');
+        if (savedUsage) {
+          const { date, count } = JSON.parse(savedUsage);
+          if (date === today) setUsageCount(count);
+          else setUsageCount(0);
+        } else {
+          setUsageCount(0);
+        }
       }
     };
     syncData();
