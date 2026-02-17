@@ -148,7 +148,19 @@ const ImarApp: React.FC = () => {
           if (usageSnap.exists() && usageSnap.data().date === today) {
             setUsageCount(usageSnap.data().count || 0);
           } else {
-            setUsageCount(0);
+            // Migration: localStorage'daki eski kredi bilgisini Firestore'a taşı
+            const savedUsage = localStorage.getItem('imar_usage_data');
+            if (savedUsage) {
+              const { date, count } = JSON.parse(savedUsage);
+              if (date === today && count > 0) {
+                setUsageCount(count);
+                await setDoc(usageRef, { date: today, count });
+              } else {
+                setUsageCount(0);
+              }
+            } else {
+              setUsageCount(0);
+            }
           }
         } catch (e) {
           console.error("Usage load error:", e);
