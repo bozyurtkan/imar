@@ -13,6 +13,18 @@ export default defineConfig(({ mode }) => {
       alias: {
         '@': path.resolve(process.cwd(), '.'),
       }
+    },
+    build: {
+      chunkSizeWarningLimit: 2000,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-react': ['react', 'react-dom'],
+            'vendor-firebase': ['firebase/app', 'firebase/firestore', 'firebase/auth'],
+            'vendor-icons': ['lucide-react']
+          }
+        }
+      }
     }
   };
 });
