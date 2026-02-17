@@ -514,7 +514,7 @@ const ImarApp: React.FC = () => {
             margin-bottom: 20px;
             padding: 15px;
             border-radius: 8px;
-            page-break-inside: avoid;
+            /* page-break-inside: avoid; kaldırıldı, böylece uzun cevaplar sayfalar arasına yayılabilir */
           }
           .message.user {
             background: ${themeStyles.userBg};
@@ -533,6 +533,7 @@ const ImarApp: React.FC = () => {
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: ${themeStyles.aiLabel};
+            page-break-after: avoid; /* Başlık cevaptan ayrılmasın */
           }
           .content { white-space: pre-wrap; }
           .footer {
