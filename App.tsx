@@ -22,6 +22,15 @@ import { User, LogOut, LogIn, Clock, History, Shield } from 'lucide-react';
 
 const DAILY_LIMIT = 50;
 
+interface PDFExportSettings {
+  fontSize: 'small' | 'medium' | 'large';
+  theme: 'professional' | 'modern' | 'classic';
+  title: string;
+  showLogo: boolean;
+  showDate: boolean;
+  showIcons: boolean;
+}
+
 declare global {
   interface Window {
     aistudio?: {
@@ -61,6 +70,15 @@ const ImarApp: React.FC = () => {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const [isListening, setIsListening] = useState(false);
+  const [showPDFModal, setShowPDFModal] = useState(false);
+  const [pdfSettings, setPdfSettings] = useState<PDFExportSettings>({
+    fontSize: 'medium',
+    theme: 'modern',
+    title: 'İmarMevzuat.ai - Sohbet Geçmişi',
+    showLogo: true,
+    showDate: true,
+    showIcons: true
+  });
 
   // Filtrelenmiş belgeler
   const filteredDocuments = useMemo(() => {
@@ -285,17 +303,122 @@ const ImarApp: React.FC = () => {
     }
   }, [messages, user]);
 
-  // PDF Export fonksiyonu - Türkçe karakter destekli
-  const exportChatToPDF = () => {
-    if (messages.length === 0) {
-      alert("Dışa aktarılacak sohbet bulunmuyor.");
-      return;
-    }
+  // PDF Ayarları Modalı
+  const PDFSettingsModal = () => {
+    if (!showPDFModal) return null;
 
-    // Yeni pencere aç ve içeriği oluştur
+    return (
+      <div className="fixed inset-0 z-[120] flex items-center justify-center modal-overlay p-4" onClick={() => setShowPDFModal(false)}>
+        <div
+          className="bg-dark-tertiary border border-dark-border w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col scale-in"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="p-6 border-b border-dark-border">
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="text-xl font-bold text-warm-50 flex items-center gap-2">
+                <Download size={20} className="text-accent" /> PDF Çıktı Ayarları
+              </h3>
+              <button onClick={() => setShowPDFModal(false)} className="p-2 hover:bg-dark-surface rounded-xl transition-colors">
+                <X size={20} className="text-warm-400" />
+              </button>
+            </div>
+            <p className="text-xs text-warm-500">Çıktı almadan önce sayfa düzenini özelleştirin.</p>
+          </div>
+
+          <div className="p-6 space-y-6 flex-1 overflow-y-auto custom-scrollbar">
+            {/* Başlık */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-warm-500 uppercase tracking-widest">Belge Başlığı</label>
+              <input
+                type="text"
+                value={pdfSettings.title}
+                onChange={(e) => setPdfSettings({ ...pdfSettings, title: e.target.value })}
+                className="w-full px-4 py-2.5 bg-dark-surface border border-dark-border rounded-xl text-sm text-warm-50 focus:border-accent/50 outline-none transition-all"
+              />
+            </div>
+
+            {/* Yazı Boyutu ve Tema */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-warm-500 uppercase tracking-widest">Yazı Boyutu</label>
+                <select
+                  value={pdfSettings.fontSize}
+                  onChange={(e) => setPdfSettings({ ...pdfSettings, fontSize: e.target.value as any })}
+                  className="w-full px-3 py-2.5 bg-dark-surface border border-dark-border rounded-xl text-sm text-warm-50 focus:border-accent/50 outline-none transition-all cursor-pointer"
+                >
+                  <option value="small">Küçük (12px)</option>
+                  <option value="medium">Orta (14px)</option>
+                  <option value="large">Büyük (16px)</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-warm-500 uppercase tracking-widest">Tema</label>
+                <select
+                  value={pdfSettings.theme}
+                  onChange={(e) => setPdfSettings({ ...pdfSettings, theme: e.target.value as any })}
+                  className="w-full px-3 py-2.5 bg-dark-surface border border-dark-border rounded-xl text-sm text-warm-50 focus:border-accent/50 outline-none transition-all cursor-pointer"
+                >
+                  <option value="professional">Profesyonel (S&B)</option>
+                  <option value="modern">Modern (Renkli)</option>
+                  <option value="classic">Klasik (Sade)</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Görünürlük Ayarları */}
+            <div className="space-y-3 pt-2">
+              <label className="text-[10px] font-bold text-warm-500 uppercase tracking-widest block mb-1">Görünüm</label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <button
+                  onClick={() => setPdfSettings({ ...pdfSettings, showLogo: !pdfSettings.showLogo })}
+                  className={`flex items-center justify-center gap-2 p-3 rounded-xl border transition-all text-[11px] font-bold ${pdfSettings.showLogo ? 'bg-accent/10 border-accent/30 text-accent' : 'bg-dark-surface border-dark-border text-warm-500'}`}
+                >
+                  Logo {pdfSettings.showLogo ? 'Açık' : 'Kapalı'}
+                </button>
+                <button
+                  onClick={() => setPdfSettings({ ...pdfSettings, showDate: !pdfSettings.showDate })}
+                  className={`flex items-center justify-center gap-2 p-3 rounded-xl border transition-all text-[11px] font-bold ${pdfSettings.showDate ? 'bg-accent/10 border-accent/30 text-accent' : 'bg-dark-surface border-dark-border text-warm-500'}`}
+                >
+                  Tarih {pdfSettings.showDate ? 'Açık' : 'Kapalı'}
+                </button>
+                <button
+                  onClick={() => setPdfSettings({ ...pdfSettings, showIcons: !pdfSettings.showIcons })}
+                  className={`flex items-center justify-center gap-2 p-3 rounded-xl border transition-all text-[11px] font-bold ${pdfSettings.showIcons ? 'bg-accent/10 border-accent/30 text-accent' : 'bg-dark-surface border-dark-border text-warm-500'}`}
+                >
+                  İkonlar {pdfSettings.showIcons ? 'Açık' : 'Kapalı'}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 bg-dark-surface border-t border-dark-border flex gap-3">
+            <button
+              onClick={() => setShowPDFModal(false)}
+              className="flex-1 py-3 bg-dark-elevated hover:bg-dark-border text-warm-200 rounded-xl text-xs font-bold transition-all"
+            >
+              İptal
+            </button>
+            <button
+              onClick={() => {
+                setShowPDFModal(false);
+                setTimeout(startPDFExport, 100);
+              }}
+              className="flex-2 flex items-center justify-center gap-2 py-3 bg-accent hover:bg-accent-hover text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-accent/20"
+            >
+              <FileText size={16} /> Çıktı Al
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const startPDFExport = () => {
+    if (messages.length === 0) return;
+
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
-      alert("Pop-up engelleyici aktif olabilir. Lütfen izin verin.");
+      alert("Pop-up engelleyici aktif olabilir.");
       return;
     }
 
@@ -303,14 +426,49 @@ const ImarApp: React.FC = () => {
       day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
     });
 
+    // Tema Değişkenleri
+    const themeStyles = {
+      professional: {
+        userBg: '#f8fafc',
+        userBorder: '#e2e8f0',
+        userText: '#000',
+        aiBg: '#fff',
+        aiBorder: '#e2e8f0',
+        aiText: '#000',
+        accent: '#000',
+        aiLabel: '#64748b'
+      },
+      modern: {
+        userBg: '#f0f4ff',
+        userBorder: '#6366F1',
+        userText: '#1e1b4b',
+        aiBg: '#f0fdf4',
+        aiBorder: '#22C55E',
+        aiText: '#064e3b',
+        accent: '#6366F1',
+        aiLabel: '#22C55E'
+      },
+      classic: {
+        userBg: '#fff',
+        userBorder: '#ddd',
+        userText: '#333',
+        aiBg: '#fff',
+        aiBorder: '#ddd',
+        aiText: '#333',
+        accent: '#444',
+        aiLabel: '#777'
+      }
+    }[pdfSettings.theme];
+
+    const fontSize = { small: '12px', medium: '14px', large: '16px' }[pdfSettings.fontSize];
+
     const messagesHTML = messages.map(msg => `
-      <div style="margin-bottom: 20px; padding: 15px; border-radius: 12px; ${msg.role === 'user'
-        ? 'background: #EEF2FF; border-left: 4px solid #6366F1;'
-        : 'background: #F0FDF4; border-left: 4px solid #22C55E;'}">
-        <div style="font-size: 11px; font-weight: bold; color: ${msg.role === 'user' ? '#6366F1' : '#22C55E'}; margin-bottom: 8px; text-transform: uppercase;">
-          ${msg.role === 'user' ? '👤 KULLANICI' : '🤖 MEVZUAT ASİSTANI'}
+      <div class="message ${msg.role}">
+        <div class="role-header">
+          ${pdfSettings.showIcons ? (msg.role === 'user' ? '👤' : '🤖') : ''} 
+          ${msg.role === 'user' ? 'KULLANICI' : 'MEVZUAT ASİSTANI'}
         </div>
-        <div style="font-size: 14px; color: #1F2937; line-height: 1.6; white-space: pre-wrap;">
+        <div class="content">
           ${msg.text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}
         </div>
       </div>
@@ -321,63 +479,93 @@ const ImarApp: React.FC = () => {
       <html lang="tr">
       <head>
         <meta charset="UTF-8">
-        <title>İmarMevzuat.ai - Sohbet Geçmişi</title>
+        <title>${pdfSettings.title}</title>
         <style>
+          @page { size: A4; margin: 20mm; }
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            padding: 40px; 
             background: #fff;
-            color: #1F2937;
+            color: #333;
+            line-height: 1.6;
+            font-size: ${fontSize};
           }
+          .container { max-width: 800px; margin: 0 auto; }
           .header {
             text-align: center;
             margin-bottom: 30px;
             padding-bottom: 20px;
-            border-bottom: 2px solid #E5E7EB;
+            border-bottom: 2px solid ${themeStyles.accent};
           }
           .logo {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
-            color: #6366F1;
+            color: ${themeStyles.accent};
             margin-bottom: 5px;
+            display: ${pdfSettings.showLogo ? 'block' : 'none'};
           }
+          .title { font-size: 18px; font-weight: bold; margin: 10px 0; }
           .date {
-            font-size: 12px;
-            color: #6B7280;
+            font-size: 11px;
+            color: #666;
+            display: ${pdfSettings.showDate ? 'block' : 'none'};
           }
-          .messages {
-            max-width: 800px;
-            margin: 0 auto;
+          .message {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            page-break-inside: avoid;
           }
+          .message.user {
+            background: ${themeStyles.userBg};
+            border-left: 4px solid ${themeStyles.userBorder};
+            color: ${themeStyles.userText};
+          }
+          .message.assistant {
+            background: ${themeStyles.aiBg};
+            border-left: 4px solid ${themeStyles.aiBorder};
+            color: ${themeStyles.aiText};
+          }
+          .role-header {
+            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: ${themeStyles.aiLabel};
+          }
+          .content { white-space: pre-wrap; }
           .footer {
             text-align: center;
             margin-top: 40px;
             padding-top: 20px;
-            border-top: 1px solid #E5E7EB;
-            font-size: 11px;
-            color: #9CA3AF;
+            border-top: 1px solid #eee;
+            font-size: 10px;
+            color: #999;
           }
           @media print {
-            body { padding: 20px; }
-            .no-print { display: none; }
+            body { padding: 0; }
+            .message { border: 1px solid #eee; }
           }
         </style>
       </head>
       <body>
-        <div class="header">
-          <div class="logo">⚖️ İmarMevzuat.ai</div>
-          <div class="date">Sohbet Geçmişi - ${currentDate}</div>
-        </div>
-        <div class="messages">
-          ${messagesHTML}
-        </div>
-        <div class="footer">
-          İmarMevzuat.ai - Profesyonel Mevzuat Asistanı
+        <div class="container">
+          <div class="header">
+            <div class="logo">⚖️ İmarMevzuat.ai</div>
+            <div class="title">${pdfSettings.title}</div>
+            <div class="date">${currentDate}</div>
+          </div>
+          <div class="messages">
+            ${messagesHTML}
+          </div>
+          <div class="footer">
+            İmarMevzuat.ai - Profesyonel Mevzuat Danışmanı
+          </div>
         </div>
         <script>
           window.onload = function() {
-            window.print();
+            setTimeout(function() { window.print(); }, 500);
           }
         </script>
       </body>
@@ -386,6 +574,14 @@ const ImarApp: React.FC = () => {
 
     printWindow.document.write(htmlContent);
     printWindow.document.close();
+  };
+
+  const exportChatToPDF = () => {
+    if (messages.length === 0) {
+      alert("Dışa aktarılacak sohbet bulunmuyor.");
+      return;
+    }
+    setShowPDFModal(true);
   };
 
   const finalizeUpload = async () => {
@@ -1348,6 +1544,7 @@ const ImarApp: React.FC = () => {
 
       {showHistoryModal && (
         <HistoryModal
+          show={showHistoryModal}
           onClose={() => setShowHistoryModal(false)}
           onSelectSession={(historyMessages) => {
             setMessages(historyMessages);
@@ -1356,10 +1553,11 @@ const ImarApp: React.FC = () => {
         />
       )}
 
-      {/* Admin Panel */}
       {showAdminPanel && (
         <AdminPanel onClose={() => setShowAdminPanel(false)} />
       )}
+
+      <PDFSettingsModal />
     </div >
   );
 };
