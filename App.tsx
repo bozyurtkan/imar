@@ -138,18 +138,38 @@ const ImarApp: React.FC = () => {
           try { setDocuments(JSON.parse(savedDocs)); } catch (e) { console.error(e); }
         }
       }
+
+      // Kredi bilgisini Firestore'dan yükle (giriş yapan kullanıcı)
+      if (user) {
+        try {
+          const today = new Date().toDateString();
+          const usageRef = doc(db, "users", user.uid, "data", "usage");
+          const usageSnap = await getDoc(usageRef);
+          if (usageSnap.exists() && usageSnap.data().date === today) {
+            setUsageCount(usageSnap.data().count || 0);
+          } else {
+            setUsageCount(0);
+          }
+        } catch (e) {
+          console.error("Usage load error:", e);
+          setUsageCount(0);
+        }
+      }
     };
 
     loadData();
     const savedTheme = localStorage.getItem('imar_theme');
     setIsDarkMode(savedTheme !== 'false');
 
-    const today = new Date().toDateString();
-    const savedUsage = localStorage.getItem('imar_usage_data');
-    if (savedUsage) {
-      const { date, count } = JSON.parse(savedUsage);
-      if (date === today) setUsageCount(count);
-      else setUsageCount(0);
+    // Kredi bilgisini yükle (giriş yapmamış kullanıcı için localStorage)
+    if (!user) {
+      const today = new Date().toDateString();
+      const savedUsage = localStorage.getItem('imar_usage_data');
+      if (savedUsage) {
+        const { date, count } = JSON.parse(savedUsage);
+        if (date === today) setUsageCount(count);
+        else setUsageCount(0);
+      }
     }
   }, []);
 
@@ -203,13 +223,31 @@ const ImarApp: React.FC = () => {
     const savedTheme = localStorage.getItem('imar_theme');
     setIsDarkMode(savedTheme !== 'false');
 
-    // Usage
-    const today = new Date().toDateString();
-    const savedUsage = localStorage.getItem('imar_usage_data');
-    if (savedUsage) {
-      const { date, count } = JSON.parse(savedUsage);
-      if (date === today) setUsageCount(count);
-      else setUsageCount(0);
+    // Usage - Kredi bilgisini yükle
+    if (user) {
+      (async () => {
+        try {
+          const today = new Date().toDateString();
+          const usageRef = doc(db, "users", user.uid, "data", "usage");
+          const usageSnap = await getDoc(usageRef);
+          if (usageSnap.exists() && usageSnap.data().date === today) {
+            setUsageCount(usageSnap.data().count || 0);
+          } else {
+            setUsageCount(0);
+          }
+        } catch (e) {
+          console.error("Usage load error:", e);
+          setUsageCount(0);
+        }
+      })();
+    } else {
+      const today = new Date().toDateString();
+      const savedUsage = localStorage.getItem('imar_usage_data');
+      if (savedUsage) {
+        const { date, count } = JSON.parse(savedUsage);
+        if (date === today) setUsageCount(count);
+        else setUsageCount(0);
+      }
     }
   }, []);
 
@@ -664,7 +702,17 @@ const ImarApp: React.FC = () => {
 
       const newCount = usageCount + 1;
       setUsageCount(newCount);
-      localStorage.setItem('imar_usage_data', JSON.stringify({ date: new Date().toDateString(), count: newCount }));
+      if (user) {
+        // Firestore'a kaydet — tüm cihazlarda senkron
+        try {
+          const usageRef = doc(db, "users", user.uid, "data", "usage");
+          await setDoc(usageRef, { date: new Date().toDateString(), count: newCount });
+        } catch (e) {
+          console.error("Usage save error:", e);
+        }
+      } else {
+        localStorage.setItem('imar_usage_data', JSON.stringify({ date: new Date().toDateString(), count: newCount }));
+      }
     } catch (error: any) {
       const msg = error.message || "";
       if (msg.includes("API key") || msg.includes("not found")) {
