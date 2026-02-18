@@ -1,12 +1,17 @@
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { OfficialGazetteModal } from './components/OfficialGazetteModal';
 import {
   FileText, Send, Trash2, Plus, BookOpen, Loader2, Scale,
   ShieldCheck, Sun, Moon, CheckSquare,
   Square, Globe, ExternalLink, Zap, Sparkles, Key, AlertTriangle, Home, RotateCcw,
   ChevronRight, X, Download, Search, Menu, Link2, GitBranch, Gavel, ArrowRight, Hash,
-  Mic, MicOff
+  Mic, MicOff, ScrollText
 } from 'lucide-react';
+// ... rest of imports
+
+
+
 import { DocumentFile, Message } from './types';
 import { parseFile, formatBytes } from './utils/fileParser';
 import { geminiService } from './services/geminiService';
@@ -61,6 +66,7 @@ const ImarApp: React.FC = () => {
   const [selectedMadde, setSelectedMadde] = useState<MevzuatMaddesi | null>(null);
   const [showMaddeModal, setShowMaddeModal] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
+  const [showResmiGazeteModal, setShowResmiGazeteModal] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [showKnowledgeGraph, setShowKnowledgeGraph] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -1151,6 +1157,11 @@ const ImarApp: React.FC = () => {
             <span className="sidebar-label">Mevzuat Karşılaştır</span>
           </button>
 
+          <button onClick={() => { setShowResmiGazeteModal(true); setIsMobileMenuOpen(false); }} className="sidebar-nav-item" data-tip="Resmi Gazete Takip">
+            <ScrollText size={20} className="nav-icon text-red-400 flex-shrink-0" />
+            <span className="sidebar-label text-red-100">Resmi Gazete</span>
+          </button>
+
           {isAdmin && (
             <button onClick={() => { setShowAdminPanel(true); setIsMobileMenuOpen(false); }} className="sidebar-nav-item" data-tip="Admin Paneli">
               <Shield size={20} className="nav-icon flex-shrink-0" />
@@ -1594,6 +1605,9 @@ const ImarApp: React.FC = () => {
 
       {/* Knowledge Graph Modal */}
       <KnowledgeGraphModal />
+
+      {/* Official Gazette Modal */}
+      <OfficialGazetteModal isOpen={showResmiGazeteModal} onClose={() => setShowResmiGazeteModal(false)} />
 
       {/* Auth Modal */}
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />

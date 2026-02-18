@@ -41,7 +41,7 @@ export class GeminiService {
 
     try {
       const model = ai.getGenerativeModel({
-        model: "gemini-2.5-flash",
+        model: "gemini-1.5-flash",
         systemInstruction: systemInstruction.trim()
       });
 
@@ -58,7 +58,7 @@ export class GeminiService {
     const ai = this.getClient();
     try {
       const model = ai.getGenerativeModel({
-        model: "gemini-2.5-flash",
+        model: "gemini-1.5-flash",
         systemInstruction: "Sen bir hukuk asistanısın. Kısa ve net özetler çıkarırsın."
       });
       const result = await model.generateContent(`Aşağıdaki imar mevzuatı dökümanını profesyonel bir şekilde özetle:\n\n${doc.content}`);
@@ -73,7 +73,7 @@ export class GeminiService {
     const ai = this.getClient();
     try {
       const model = ai.getGenerativeModel({
-        model: "gemini-2.5-flash",
+        model: "gemini-1.5-flash",
         systemInstruction: "Türkiye imar mevzuatı ve güncel belediye/bakanlık kararları hakkında web araştırması yaparak bilgi ver."
       });
 
@@ -105,7 +105,7 @@ export class GeminiService {
 
     try {
       const model = ai.getGenerativeModel({
-        model: "gemini-2.5-flash"
+        model: "gemini-1.5-flash"
       });
 
       const result = await model.generateContent(`${prompt}\n\nYENİ DÜZENLEME LİNKİ: ${newRegulationUrl}\n\nKÜTÜPHANE: ${libraryContext}`);
@@ -115,6 +115,82 @@ export class GeminiService {
     } catch (error: any) {
       console.error("Comparison Error:", error);
       throw new Error("Karşılaştırma sırasında hata: " + error.message);
+    }
+  }
+  async filterResmiGazete(articles: { id: number, title: string, link: string }[], interests: string): Promise<number[]> {
+    const ai = this.getClient();
+    const json = JSON.stringify(articles.map(a => ({ id: a.id, metin: a.title })));
+
+    const prompt = `
+      GÖREV: Aşağıdaki Resmi Gazete başlıklarından hangilerinin şu ilgi alanlarıyla ilgili olduğunu belirle.
+      
+      İLGİ ALANLARI:
+      ${interests}
+      
+      BAŞLIKLAR LİSTESİ (JSON):
+      ${json}
+      
+      KURALLAR:
+      1. İlgi alanlarındaki HERHANGİ bir kelime veya kavram başlıkta geçiyorsa o başlığı dahil et.
+      2. Örneğin ilgi alanında "Üniversite" yazıyorsa, başlıkta "Üniversite" geçen TÜM maddeleri seç.
+      3. Geniş yorumla — emin olmadığın durumlarda dahil et.
+      4. Sadece ilgili başlıkların ID'lerini JSON dizisi olarak döndür. Örn: [1, 5, 12]
+      5. Hiçbiri ilgili değilse [] döndür.
+      6. Başka hiçbir metin veya açıklama ekleme. Sadece saf JSON dizisi ver.
+    `;
+
+    try {
+      // JSON mode kullanmıyoruz — bazı modellerde desteklenmiyor
+      const model = ai.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text().trim();
+
+      // Yanıttan JSON dizisini çıkar (markdown code block içinde gelebilir)
+      const jsonMatch = text.match(/\[.*?\]/s);
+      if (!jsonMatch) {
+        console.warn("Gemini Filter: JSON dizisi bulunamadı. Yanıt:", text.substring(0, 200));
+        return [];
+      }
+      const ids = JSON.parse(jsonMatch[0]);
+      console.log("Gemini Filter IDs:", ids);
+      return Array.isArray(ids) ? ids : [];
+    } catch (error) {
+      console.error("Gemini Filter Error:", error);
+      return [];
+    }
+  }
+
+  async analyzeResmiGazete(title: string, content: string): Promise<string> {
+    const ai = this.getClient();
+    const prompt = `
+      GÖREV: Şu Resmi Gazete maddesini imar ve şehirleşme profesyoneli için analiz et: "${title}"
+      
+      İÇERİK:
+      ${content.substring(0, 15000)}
+      
+      ANALİZ FORMATI (Markdown):
+      **ÖZET**: (2-3 cümle ile içeriği özetle)
+      
+      **HUKUKİ YORUM**: (Mevzuat açısından ne anlama geliyor? Yönetmelik, tebliğ vs. hiyerarşisi nedir?)
+      
+      **ETKİ**: (Belediyeler, mimarlar veya inşaat sektörü için somut etkisi nedir?)
+      
+      **TAVSİYE**: (Profesyoneller ne yapmalı? Dikkat edilmesi gerekenler neler?)
+      
+      KURALLAR:
+      1. Gereksiz giriş/çıkış cümleleri kullanma.
+      2. Profesyonel, net ve hukuki bir dil kullan.
+      3. Emoji kullanma.
+    `;
+
+    try {
+      const model = ai.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return response.text();
+    } catch (error: any) {
+      return "Analiz yapılamadı: " + error.message;
     }
   }
 }

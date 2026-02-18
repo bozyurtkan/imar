@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFunctions } from "firebase/functions";
 import { getFirestore, doc, setDoc, collection, query, orderBy, getDocs, getDoc, serverTimestamp, deleteDoc, collectionGroup, where, limit } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -18,6 +19,7 @@ const app = initializeApp(firebaseConfig);
 // Kimlik doğrulama ve Veritabanı servislerini dışa aktar
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const functions = getFunctions(app, 'europe-west1');
 
 
 export default app;
@@ -143,5 +145,29 @@ export const loadLibraryDocs = async (userId: string): Promise<any[]> => {
     } catch (error) {
         console.error("Kütüphane yüklenemedi:", error);
         return [];
+    }
+};
+
+// ========== KULLANICI AYARLARI ==========
+export const saveUserSettings = async (userId: string | undefined, settings: any) => {
+    if (!userId) return;
+    try {
+        const settingsRef = doc(db, "users", userId, "data", "settings");
+        await setDoc(settingsRef, settings, { merge: true });
+    } catch (error) {
+        console.error("Ayarlar kaydedilemedi:", error);
+        throw error;
+    }
+}
+
+export const loadUserSettings = async (userId: string | undefined) => {
+    if (!userId) return {};
+    try {
+        const settingsRef = doc(db, "users", userId, "data", "settings");
+        const snapshot = await getDoc(settingsRef);
+        return snapshot.exists() ? snapshot.data() : {};
+    } catch (error) {
+        console.error("Ayarlar yüklenemedi:", error);
+        return {};
     }
 };
