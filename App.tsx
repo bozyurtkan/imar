@@ -1158,8 +1158,8 @@ const ImarApp: React.FC = () => {
           </button>
 
           <button onClick={() => { setShowResmiGazeteModal(true); setIsMobileMenuOpen(false); }} className="sidebar-nav-item" data-tip="Resmi Gazete Takip">
-            <ScrollText size={20} className="nav-icon text-red-400 flex-shrink-0" />
-            <span className="sidebar-label text-red-100">Resmi Gazete</span>
+            <ScrollText size={20} className="nav-icon flex-shrink-0" />
+            <span className="sidebar-label">Resmi Gazete</span>
           </button>
 
           {isAdmin && (
