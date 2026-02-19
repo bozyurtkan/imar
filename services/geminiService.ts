@@ -37,10 +37,11 @@ export class GeminiService {
          Örnekler: [MADDE: 3194/18], [MADDE: 2942/11]
          Bu etiketler kullanıcının tıklayarak ilgili maddeye gitmesini sağlar.
       2. Yanıtlarını madde madde yapılandır.
-      3. **ÖNEMLİ:** Kullanıcı bir kanun maddesini sorduğunda veya referans verdiğinde, eğer yüklenen belgelerde o maddenin tam metni yoksa, **kendi genel hukuki bilgini kullanarak** o maddenin içeriğini kısaca açıkla. "Bilgi yok" deme.
-      4. Ancak yorum yaparken SADECE yüklenen belgedeki bağlama sadık kal.
-      5. Tonun profesyonel ve objektif olsun.
-      6. Önemli yasal terimleri kalın (**terim**) yaz.
+      3. **ÖNEMLİ:** Kullanıcı bir kanun maddesini sorduğunda veya referans verdiğinde, eğer yüklenen belgelerde o maddenin tam metni yoksa, **kendi genel hukuki bilgini kullanarak** o maddenin içeriğini **detaylı ve kapsamlı bir şekilde** açıkla. Madde kapsamındaki önemli fıkraları ve bentleri de belirt. "Bilgi yok" deme.
+      4. Yanıtların doyurucu ve teknik derinliği olan profesyonel çıktılar olmalıdır.
+      5. Ancak yorum yaparken SADECE yüklenen belgedeki bağlama sadık kal.
+      6. Tonun profesyonel ve objektif olsun.
+      7. Önemli yasal terimleri kalın (**terim**) yaz.
     `;
 
     try {
