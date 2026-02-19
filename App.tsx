@@ -55,7 +55,10 @@ const ImarApp: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [isParsing, setIsParsing] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem('imar_theme');
+    return saved === 'dark';
+  });
   const [isGeneralMode, setIsGeneralMode] = useState(false);
   const [usageCount, setUsageCount] = useState(0);
   const [uploadPendingFiles, setUploadPendingFiles] = useState<File[]>([]);
@@ -96,6 +99,21 @@ const ImarApp: React.FC = () => {
       doc.description?.toLowerCase().includes(query)
     );
   }, [documents, searchQuery]);
+
+  // Theme toggle effect
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.add('theme-transition');
+    if (isDarkMode) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('imar_theme', isDarkMode ? 'dark' : 'light');
+    // Remove transition class after animation
+    const timer = setTimeout(() => root.classList.remove('theme-transition'), 350);
+    return () => clearTimeout(timer);
+  }, [isDarkMode]);
 
   useEffect(() => {
     // API anahtarı gömülü olduğu için her zaman var kabul ediyoruz.
@@ -1025,7 +1043,7 @@ const ImarApp: React.FC = () => {
                     y1={source.y}
                     x2={target.x}
                     y2={target.y}
-                    stroke={selectedMadde?.id === edge.source || selectedMadde?.id === edge.target ? '#e8734a' : '#4a2f36'}
+                    stroke={selectedMadde?.id === edge.source || selectedMadde?.id === edge.target ? (isDarkMode ? '#e8734a' : '#c4501a') : (isDarkMode ? '#4a2f36' : '#e0c8b8')}
                     strokeWidth={selectedMadde?.id === edge.source || selectedMadde?.id === edge.target ? 2 : 1}
                     strokeDasharray="4"
                     className="transition-all"
@@ -1049,8 +1067,8 @@ const ImarApp: React.FC = () => {
                       cx={pos.x}
                       cy={pos.y}
                       r={isSelected ? 35 : 30}
-                      fill={isSelected ? '#e8734a' : isRelated ? '#d4553a' : '#321f25'}
-                      stroke={isSelected ? '#f08860' : isRelated ? '#e8734a' : '#4a2f36'}
+                      fill={isSelected ? (isDarkMode ? '#e8734a' : '#c4501a') : isRelated ? (isDarkMode ? '#d4553a' : '#a8400f') : (isDarkMode ? '#321f25' : '#fff5ee')}
+                      stroke={isSelected ? (isDarkMode ? '#f08860' : '#d4652f') : isRelated ? (isDarkMode ? '#e8734a' : '#c4501a') : (isDarkMode ? '#4a2f36' : '#e0c8b8')}
                       strokeWidth={isSelected ? 2 : 1}
                       className="transition-all hover:scale-110"
                       style={{ transformOrigin: `${pos.x}px ${pos.y}px` }}
@@ -1060,7 +1078,7 @@ const ImarApp: React.FC = () => {
                       y={pos.y - 5}
                       textAnchor="middle"
                       className={`text-xs font-bold ${isSelected ? 'fill-white' : 'fill-warm-200'}`}
-                      style={{ fill: isSelected ? '#fff' : '#c9a3ac' }}
+                      style={{ fill: isSelected ? '#fff' : (isDarkMode ? '#c9a3ac' : '#5a4030') }}
                     >
                       Md. {node.maddeNo}
                     </text>
@@ -1069,7 +1087,7 @@ const ImarApp: React.FC = () => {
                       y={pos.y + 10}
                       textAnchor="middle"
                       className="text-[8px]"
-                      style={{ fill: isSelected ? 'rgba(255,255,255,0.8)' : '#8b6b73' }}
+                      style={{ fill: isSelected ? 'rgba(255,255,255,0.8)' : (isDarkMode ? '#8b6b73' : '#9a7b6a') }}
                     >
                       {node.baslik.slice(0, 12)}{node.baslik.length > 12 ? '...' : ''}
                     </text>
@@ -1090,7 +1108,7 @@ const ImarApp: React.FC = () => {
               <span className="text-xs text-warm-400">İlişkili Madde</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full" style={{ background: '#321f25', border: '1px solid #4a2f36' }}></div>
+              <div className="w-4 h-4 rounded-full" style={{ background: isDarkMode ? '#321f25' : '#fff5ee', border: `1px solid ${isDarkMode ? '#4a2f36' : '#e0c8b8'}` }}></div>
               <span className="text-xs text-warm-400">Diğer Maddeler</span>
             </div>
           </div>
@@ -1107,7 +1125,7 @@ const ImarApp: React.FC = () => {
     return (
       <>
         {/* Sidebar Header - Logo */}
-        <div className="p-3 flex items-center justify-center border-b border-dark-border" style={{ minHeight: '60px' }}>
+        <div className="h-14 flex items-center justify-center border-b border-dark-border flex-shrink-0">
           {expanded ? (
             <div className="flex items-center justify-between w-full px-1">
               <div className="flex items-center gap-3">
@@ -1331,7 +1349,7 @@ const ImarApp: React.FC = () => {
         <div className="absolute top-0 left-0 right-0 h-80 gradient-hero pointer-events-none z-0" />
 
         {/* Header - Minimal */}
-        <header className="h-14 flex items-center justify-between px-4 lg:px-6 z-10 flex-shrink-0">
+        <header className="h-14 flex items-center justify-between px-4 lg:px-6 z-10 flex-shrink-0 border-b border-dark-border">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
@@ -1368,6 +1386,13 @@ const ImarApp: React.FC = () => {
             >
               <Globe size={14} />
               <span className="hidden sm:inline">Web {isGeneralMode ? 'Açık' : 'Kapalı'}</span>
+            </button>
+            <button
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className="flex items-center gap-1.5 p-2 rounded-xl text-[11px] font-semibold transition-all bg-dark-surface text-warm-300 border border-dark-border hover:bg-dark-surface-hover hover:text-warm-50"
+              title={isDarkMode ? 'Light Mode' : 'Dark Mode'}
+            >
+              {isDarkMode ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} className="text-indigo-400" />}
             </button>
           </div>
         </header>
@@ -1451,7 +1476,7 @@ const ImarApp: React.FC = () => {
         {/* Chat Input - Glassmorphism */}
         <div className="chat-input-wrapper p-3 lg:p-5 z-10" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 12px)' }}>
           <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto relative">
-            <div className={`relative bg-dark-surface border rounded-2xl overflow-hidden transition-all focus-within:border-accent/40 focus-within:shadow-[0_0_0_3px_rgba(232,115,74,0.1)] ${isListening ? 'border-red-500/60 shadow-[0_0_0_3px_rgba(239,68,68,0.15)]' : 'border-dark-border'}`}>
+            <div className={`relative bg-dark-surface border rounded-2xl overflow-hidden transition-all focus-within:border-accent/40 focus-within:shadow-[0_0_0_3px_rgba(196,80,26,0.1)] ${isListening ? 'border-red-500/60 shadow-[0_0_0_3px_rgba(239,68,68,0.15)]' : 'border-dark-border'}`}>
               <input
                 type="text"
                 value={inputValue}

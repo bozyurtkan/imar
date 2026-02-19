@@ -1,10 +1,47 @@
 /* ============================================
-   İmarMevzuat.ai — Premium Dark Theme
-   Inspired by Yupp AI warm dark aesthetic
+   İmarMevzuat.ai — Dual Theme (Light + Dark)
+   Warm aesthetic inspired by Yupp AI
    ============================================ */
 
-/* CSS Variables */
+/* CSS Variables — Light Theme (default) */
 :root {
+  --bg-primary: #fdf6f0;
+  --bg-secondary: #f9ede4;
+  --bg-tertiary: #ffffff;
+  --bg-surface: #fff5ee;
+  --bg-surface-hover: #f5e8dd;
+  --bg-elevated: #f0ddd0;
+  --border-color: #e0c8b8;
+  --border-subtle: #ead5c6;
+  --text-primary: #2d1b12;
+  --text-secondary: #6b4a3a;
+  --text-muted: #9a7b6a;
+  --text-faint: #c4a998;
+  --accent-primary: #c4501a;
+  --accent-primary-hover: #d4652f;
+  --accent-gradient-start: #c4501a;
+  --accent-gradient-end: #a8400f;
+  --accent-glow: rgba(196, 80, 26, 0.15);
+  --accent-green: #16a34a;
+  --accent-purple: #7c3aed;
+  --accent-blue: #2563eb;
+  --accent-amber: #d97706;
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(224, 200, 184, 0.5);
+  --selection-bg: rgba(196, 80, 26, 0.2);
+  --modal-overlay: rgba(45, 27, 18, 0.3);
+  --shadow-strength: 0.08;
+  --sidebar-width-collapsed: 64px;
+  --sidebar-width-expanded: 260px;
+  --header-height: 56px;
+  --chat-input-height: 72px;
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* CSS Variables — Dark Theme */
+.dark {
   --bg-primary: #1a1012;
   --bg-secondary: #231519;
   --bg-tertiary: #2d1b20;
@@ -28,13 +65,17 @@
   --accent-amber: #fbbf24;
   --glass-bg: rgba(50, 31, 37, 0.65);
   --glass-border: rgba(74, 47, 54, 0.5);
-  --sidebar-width-collapsed: 64px;
-  --sidebar-width-expanded: 260px;
-  --header-height: 56px;
-  --chat-input-height: 72px;
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --selection-bg: rgba(232, 115, 74, 0.3);
+  --modal-overlay: rgba(10, 5, 7, 0.7);
+  --shadow-strength: 0.4;
+}
+
+/* Smooth theme transition */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
 }
 
 /* Global Resets */
@@ -76,7 +117,7 @@ body {
 
 /* Selection Styling */
 ::selection {
-  background: rgba(232, 115, 74, 0.3);
+  background: var(--selection-bg);
   color: var(--text-primary);
 }
 
@@ -279,10 +320,10 @@ body {
 }
 
 .glass-subtle {
-  background: rgba(35, 21, 25, 0.4);
+  background: var(--glass-bg);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(74, 47, 54, 0.3);
+  border: 1px solid var(--glass-border);
 }
 
 /* ============================================
@@ -340,7 +381,7 @@ body {
 
 .gradient-hero {
   background: radial-gradient(ellipse at 50% 0%,
-      rgba(232, 115, 74, 0.08) 0%,
+      rgba(196, 80, 26, 0.06) 0%,
       transparent 60%);
 }
 
@@ -456,7 +497,7 @@ body {
   z-index: 100;
   border: 1px solid var(--border-color);
   border-left: 3px solid var(--accent-primary);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(232, 115, 74, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, var(--shadow-strength)), 0 0 0 1px var(--accent-glow);
 }
 
 .sidebar:not(.expanded) .sidebar-nav-item[data-tip]:hover::after {
@@ -483,7 +524,7 @@ body {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 50;
   opacity: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, var(--shadow-strength));
 }
 
 .sidebar:hover .sidebar-toggle,
@@ -496,7 +537,7 @@ body {
   color: white;
   border-color: var(--accent-primary);
   transform: translateY(-50%) scale(1.25);
-  box-shadow: 0 4px 16px var(--accent-glow), 0 0 0 3px rgba(232, 115, 74, 0.15);
+  box-shadow: 0 4px 16px var(--accent-glow), 0 0 0 3px rgba(196, 80, 26, 0.1);
 }
 
 /* Logo click area in collapsed state */
@@ -596,7 +637,7 @@ body {
    MODAL OVERLAY
    ============================================ */
 .modal-overlay {
-  background: rgba(10, 5, 7, 0.7);
+  background: var(--modal-overlay);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
