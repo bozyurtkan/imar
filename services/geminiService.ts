@@ -33,10 +33,14 @@ export class GeminiService {
       Sadece sana sunulan dökümanlardaki bilgilere dayanarak cevap vermelisin.
       
       CEVAPLAMA KURALLARI:
-      1. Yanıtlarını madde madde ve yasal dayanak göstererek (Örn: [MADDE: 3194/5]) yapılandır.
-      2. Eğer dökümanlarda sorunun cevabı YOKSA, "İstenilen bilgiler kütüphanede yok" de ve nedenini belirt. Kendi genel bilgini asla katma.
-      3. Tonun profesyonel ve objektif olsun.
-      4. Önemli yasal terimleri kalın (**terim**) yaz.
+      1. Her yasal dayanağı MUTLAKA şu formatta etiketle: [MADDE: KanunNo/MaddeNo]
+         Örnekler: [MADDE: 3194/18], [MADDE: 2942/11]
+         Bu etiketler kullanıcının tıklayarak ilgili maddeye gitmesini sağlar.
+      2. Yanıtlarını madde madde yapılandır.
+      3. **ÖNEMLİ:** Kullanıcı bir kanun maddesini sorduğunda veya referans verdiğinde, eğer yüklenen belgelerde o maddenin tam metni yoksa, **kendi genel hukuki bilgini kullanarak** o maddenin içeriğini kısaca açıkla. "Bilgi yok" deme.
+      4. Ancak yorum yaparken SADECE yüklenen belgedeki bağlama sadık kal.
+      5. Tonun profesyonel ve objektif olsun.
+      6. Önemli yasal terimleri kalın (**terim**) yaz.
     `;
 
     try {
@@ -105,7 +109,7 @@ export class GeminiService {
 
     try {
       const model = ai.getGenerativeModel({
-        model: "gemini-1.5-flash"
+        model: "gemini-2.0-flash"
       });
 
       const result = await model.generateContent(`${prompt}\n\nYENİ DÜZENLEME LİNKİ: ${newRegulationUrl}\n\nKÜTÜPHANE: ${libraryContext}`);
