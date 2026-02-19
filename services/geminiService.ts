@@ -41,7 +41,7 @@ export class GeminiService {
 
     try {
       const model = ai.getGenerativeModel({
-        model: "gemini-1.5-flash",
+        model: "gemini-2.0-flash",
         systemInstruction: systemInstruction.trim()
       });
 
@@ -58,7 +58,7 @@ export class GeminiService {
     const ai = this.getClient();
     try {
       const model = ai.getGenerativeModel({
-        model: "gemini-1.5-flash",
+        model: "gemini-2.0-flash",
         systemInstruction: "Sen bir hukuk asistanısın. Kısa ve net özetler çıkarırsın."
       });
       const result = await model.generateContent(`Aşağıdaki imar mevzuatı dökümanını profesyonel bir şekilde özetle:\n\n${doc.content}`);
@@ -73,7 +73,7 @@ export class GeminiService {
     const ai = this.getClient();
     try {
       const model = ai.getGenerativeModel({
-        model: "gemini-1.5-flash",
+        model: "gemini-2.0-flash",
         systemInstruction: "Türkiye imar mevzuatı ve güncel belediye/bakanlık kararları hakkında web araştırması yaparak bilgi ver."
       });
 
