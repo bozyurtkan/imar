@@ -33,20 +33,37 @@ export interface ChatSession {
     preview: string;
 }
 
-// Sohbeti Kaydet (Günlük)
 // Sohbeti Kaydet (Günlük ve Oturum Bazlı)
 export const saveChatHistory = async (userId: string, messages: any[], userEmail?: string, sessionId?: string) => {
     if (!userId || messages.length === 0) return;
 
     const today = new Date();
-    // const dateId = today.toISOString().split('T')[0]; // İptal: Artık sessionId kullanıyoruz
 
     // Eğer sessionId gelmezse (eski versiyon uyumluluğu) timestamp bazlı üret
     const docId = sessionId || Date.now().toString();
 
-    // Basit bir önizleme metni oluştur (son kullanıcı mesajı veya ilk mesaj)
-    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
-    const preview = lastUserMessage ? lastUserMessage.text.substring(0, 100) : "Sohbet";
+    // İlk kullanıcı mesajını önizleme olarak kullan (daha anlamlı)
+    const firstUserMessage = messages.find(m => m.role === 'user');
+    const preview = firstUserMessage ? firstUserMessage.text.substring(0, 100) : "Sohbet";
+
+    // Mesajları Firestore'a kaydetmeden önce temizle:
+    // 1. Date nesnelerini string'e çevir
+    // 2. undefined değerleri kaldır (Firestore undefined kabul etmez!)
+    const serializableMessages = messages.map(m => {
+        const clean: any = {
+            id: m.id || Date.now().toString(),
+            role: m.role || 'user',
+            text: m.text || '',
+            timestamp: m.timestamp instanceof Date ? m.timestamp.toISOString() :
+                (m.timestamp?.toDate ? m.timestamp.toDate().toISOString() :
+                    (typeof m.timestamp === 'string' ? m.timestamp : new Date().toISOString()))
+        };
+        // references sadece varsa ekle (undefined Firestore'da hata verir)
+        if (m.references && Array.isArray(m.references) && m.references.length > 0) {
+            clean.references = m.references;
+        }
+        return clean;
+    });
 
     const sessionRef = doc(db, "users", userId, "history", docId);
     const userRef = doc(db, "users", userId);
@@ -64,11 +81,12 @@ export const saveChatHistory = async (userId: string, messages: any[], userEmail
             id: docId,
             date: today.toISOString(), // Tam tarih saat
             updatedAt: serverTimestamp(),
-            messages: messages,
+            messages: serializableMessages,
             preview: preview,
             userEmail: userEmail || null,
             messageCount: messages.length
         }, { merge: true });
+        console.log(`[ChatHistory] Oturum kaydedildi: ${docId}, ${messages.length} mesaj`);
     } catch (error) {
         console.error("Geçmiş kaydedilemedi:", error);
     }

@@ -399,10 +399,10 @@ const ImarApp: React.FC = () => {
     if (user && messages.length > 0) {
       const timer = setTimeout(() => {
         saveChatHistory(user.uid, messages, user.email || undefined, sessionId);
-      }, 500);
+      }, 1000); // 1 saniye debounce (daha güvenilir)
       return () => clearTimeout(timer);
     }
-  }, [messages, user]);
+  }, [messages, user, sessionId]);
 
   // PDF Ayarları Modalı
   const PDFSettingsModal = () => {
@@ -717,12 +717,20 @@ const ImarApp: React.FC = () => {
     if (isTyping) return;
     setIsTyping(true);
     setIsMobileMenuOpen(false);
-    setMessages(prev => [...prev, { id: Date.now().toString(), role: 'user', text: `${doc.name} belgesini özetle.`, timestamp: new Date() }]);
+    const userMsg = { id: Date.now().toString(), role: 'user' as const, text: `${doc.name} belgesini özetle.`, timestamp: new Date() };
+    setMessages(prev => [...prev, userMsg]);
     try {
       const summary = await geminiService.summarizeDocument(doc);
-      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: 'assistant', text: summary, timestamp: new Date() }]);
+      const aiMsg = { id: (Date.now() + 1).toString(), role: 'assistant' as const, text: summary, timestamp: new Date() };
+      setMessages(prev => [...prev, aiMsg]);
+
+      // Firestore'a kaydet (state callback dışında, güvenilir)
+      if (user) {
+        const allMessages = [...messages, userMsg, aiMsg];
+        await saveChatHistory(user.uid, allMessages, user.email || undefined, sessionId);
+      }
     } catch (e: any) {
-      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', text: "Hata: " + e.message, timestamp: new Date() }]);
+      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant' as const, text: "Hata: " + e.message, timestamp: new Date() }]);
     } finally {
       setIsTyping(false);
     }
@@ -757,18 +765,26 @@ const ImarApp: React.FC = () => {
         responseText = await geminiService.askQuestion(query, documents, messages);
       }
 
-      setMessages(prev => [...prev, {
+      const aiMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         text: responseText,
         timestamp: new Date(),
         references
-      }]);
+      };
+
+      setMessages(prev => [...prev, aiMsg]);
+
+      // Firestore'a AI yanıtı dahil tüm mesajları kaydet (state callback dışında)
+      if (user) {
+        const allMessages = [...messages, userMsg, aiMsg];
+        await saveChatHistory(user.uid, allMessages, user.email || undefined, sessionId);
+        console.log('[ChatHistory] Sohbet kaydedildi:', allMessages.length, 'mesaj');
+      }
 
       const newCount = usageCount + 1;
       setUsageCount(newCount);
       if (user) {
-        // Firestore'a kaydet — tüm cihazlarda senkron
         try {
           const usageRef = doc(db, "users", user.uid, "data", "usage");
           await setDoc(usageRef, { date: new Date().toDateString(), count: newCount });
@@ -799,25 +815,23 @@ const ImarApp: React.FC = () => {
 
     setShowLinkModal(false);
     setIsTyping(true);
-    setMessages(prev => [...prev, {
-      id: Date.now().toString(),
-      role: 'user',
-      text: `Şu linkteki mevzuat değişikliğini analiz et: ${linkUrl}`,
-      timestamp: new Date()
-    }]);
+    const userMsg = { id: Date.now().toString(), role: 'user' as const, text: `Şu linkteki mevzuat değişikliğini analiz et: ${linkUrl}`, timestamp: new Date() };
+    setMessages(prev => [...prev, userMsg]);
 
     try {
       const result = await geminiService.compareLegislation(linkUrl, documents);
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        text: result,
-        timestamp: new Date()
-      }]);
+      const aiMsg = { id: (Date.now() + 1).toString(), role: 'assistant' as const, text: result, timestamp: new Date() };
+      setMessages(prev => [...prev, aiMsg]);
+
+      // Firestore'a kaydet (state callback dışında)
+      if (user) {
+        const allMessages = [...messages, userMsg, aiMsg];
+        await saveChatHistory(user.uid, allMessages, user.email || undefined, sessionId);
+      }
     } catch (error: any) {
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
-        role: 'assistant',
+        role: 'assistant' as const,
         text: "Hata: " + error.message,
         timestamp: new Date()
       }]);

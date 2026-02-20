@@ -11,23 +11,29 @@ interface HistoryModalProps {
 }
 
 export const HistoryModal: React.FC<HistoryModalProps> = ({ show, onClose, onSelectSession }) => {
-    if (!show) return null;
-
     const { user } = useAuth();
     const [history, setHistory] = useState<ChatSession[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!show) return; // Modal kapalıysa veri çekme
+        setLoading(true);
         const fetchHistory = async () => {
             if (user) {
-                const data = await getChatHistory(user.uid);
-                setHistory(data);
+                try {
+                    const data = await getChatHistory(user.uid);
+                    setHistory(data);
+                } catch (error) {
+                    console.error('Geçmiş yüklenirken hata:', error);
+                }
             }
             setLoading(false);
         };
 
         fetchHistory();
-    }, [user]);
+    }, [user, show]);
+
+    if (!show) return null;
 
     // Tarihe göre gruplama fonksiyonu
     const groupHistoryByDate = (sessions: ChatSession[]) => {
