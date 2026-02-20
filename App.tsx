@@ -991,126 +991,338 @@ const ImarApp: React.FC = () => {
   const KnowledgeGraphModal = () => {
     if (!showKnowledgeGraph) return null;
 
-    const { nodes, edges } = getMevzuatGraph();
+    const [localGraphData, setLocalGraphData] = useState<{ nodes: any[], edges: any[] } | null>(null);
+    const [isAnalyzingGraph, setIsAnalyzingGraph] = useState(false);
+    const [selectedGraphDocId, setSelectedGraphDocId] = useState<string>("default");
+    const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
 
-    // Basit bir grid-based görselleştirme
+    // Varsayılan veri (3194)
+    const defaultGraph = useMemo(() => {
+      const { nodes, edges } = getMevzuatGraph();
+      return {
+        nodes: nodes.map(n => ({ id: n.id, label: `Md. ${n.maddeNo}`, desc: n.baslik, full: n })),
+        edges: edges
+      };
+    }, []);
+
+    // Gösterilecek veri
+    const displayData = localGraphData || defaultGraph;
+    const graphNodes = displayData.nodes;
+    const graphEdges = displayData.edges;
+
+    // Geliştirilmiş layout hesaplama
+    const CARD_W = 140;
+    const CARD_H = 54;
+    const H_GAP = 280;
+    const V_GAP = 160;
+    const PADDING = 80;
+    const cols = Math.min(4, Math.max(2, Math.ceil(Math.sqrt(graphNodes.length))));
+
     const nodePositions: Record<string, { x: number; y: number }> = {};
-    const cols = 3;
-    nodes.forEach((node, i) => {
+    graphNodes.forEach((node, i) => {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      // Satır kaydırması (honeycomb efekti) — çakışmayı önler
+      const offsetX = row % 2 === 1 ? H_GAP / 2 : 0;
       nodePositions[node.id] = {
-        x: (i % cols) * 200 + 100,
-        y: Math.floor(i / cols) * 120 + 60
+        x: PADDING + col * H_GAP + offsetX + CARD_W / 2,
+        y: PADDING + row * V_GAP + CARD_H / 2
       };
     });
+
+    const rows = Math.ceil(graphNodes.length / cols);
+    const svgW = cols * H_GAP + PADDING * 2 + H_GAP / 2;
+    const svgH = rows * V_GAP + PADDING * 2;
+
+    // Hangi edge'ler hovered node'a bağlı?
+    const connectedNodeIds = useMemo(() => {
+      if (!hoveredNodeId) return new Set<string>();
+      const ids = new Set<string>();
+      ids.add(hoveredNodeId);
+      graphEdges.forEach(e => {
+        if (e.source === hoveredNodeId) ids.add(e.target);
+        if (e.target === hoveredNodeId) ids.add(e.source);
+      });
+      return ids;
+    }, [hoveredNodeId, graphEdges]);
+
+    const handleAnalyzeGraph = async () => {
+      if (selectedGraphDocId === "default") {
+        setLocalGraphData(null);
+        return;
+      }
+
+      const doc = documents.find(d => d.id === selectedGraphDocId);
+      if (!doc) return;
+
+      setIsAnalyzingGraph(true);
+      try {
+        const result = await geminiService.extractGraphFromText(doc.content);
+        if (result.nodes.length > 0) {
+          setLocalGraphData(result);
+        } else {
+          alert("Bu belgeden ilişki grafiği çıkarılamadı.");
+        }
+      } catch (error: any) {
+        alert("Analiz hatası: " + error.message);
+      } finally {
+        setIsAnalyzingGraph(false);
+      }
+    };
+
+    // Bezier curve path oluştur (edge'ler için)
+    const getEdgePath = (sx: number, sy: number, tx: number, ty: number) => {
+      const dx = tx - sx;
+      const dy = ty - sy;
+      // Dikey mesafe fazlaysa dikey eğri, yoksa yatay eğri
+      if (Math.abs(dy) > Math.abs(dx)) {
+        const cp = Math.abs(dy) * 0.3;
+        return `M ${sx} ${sy} C ${sx} ${sy + cp}, ${tx} ${ty - cp}, ${tx} ${ty}`;
+      } else {
+        const cp = Math.abs(dx) * 0.3;
+        return `M ${sx} ${sy} C ${sx + cp} ${sy}, ${tx - cp} ${ty}, ${tx} ${ty}`;
+      }
+    };
 
     return (
       <div className="fixed inset-0 z-[110] flex items-center justify-center modal-overlay p-4" onClick={() => setShowKnowledgeGraph(false)}>
         <div
-          className="bg-dark-tertiary border border-dark-border w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col scale-in"
+          className="bg-dark-tertiary border border-dark-border w-full max-w-6xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col scale-in"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="p-4 border-b border-dark-border flex items-center justify-between">
+          <div className="p-4 border-b border-dark-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/20 rounded-xl flex items-center justify-center text-accent">
+              <div className="w-10 h-10 bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/20 rounded-xl flex items-center justify-center text-accent flex-shrink-0">
                 <GitBranch size={20} />
               </div>
               <div>
                 <h3 className="font-bold text-warm-50">Mevzuat İlişki Grafiği</h3>
-                <p className="text-xs text-warm-500">3194 Sayılı İmar Kanunu - Madde Bağlantıları</p>
+                <p className="text-xs text-warm-500">Madde üzerine gelin → bağlantıları görün</p>
               </div>
             </div>
-            <button
-              onClick={() => setShowKnowledgeGraph(false)}
-              className="p-2 hover:bg-dark-surface rounded-xl transition-colors"
-            >
-              <X size={20} className="text-warm-400" />
-            </button>
+
+            {/* Controls */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <select
+                value={selectedGraphDocId}
+                onChange={(e) => setSelectedGraphDocId(e.target.value)}
+                className="bg-dark-surface border border-dark-border text-warm-50 text-xs rounded-xl px-3 py-2 outline-none focus:border-accent/50 max-w-[220px] truncate"
+              >
+                <option value="default">Varsayılan (3194 İmar Kanunu)</option>
+                {documents.map(d => (
+                  <option key={d.id} value={d.id}>{d.name.length > 35 ? d.name.substring(0, 35) + '…' : d.name}</option>
+                ))}
+              </select>
+
+              <button
+                onClick={handleAnalyzeGraph}
+                disabled={isAnalyzingGraph || (selectedGraphDocId === "default" && !localGraphData)}
+                className="px-4 py-2 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2 whitespace-nowrap"
+              >
+                {isAnalyzingGraph ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                {selectedGraphDocId === "default" ? "Varsayılanı Yükle" : "Analiz Et"}
+              </button>
+
+              <button
+                onClick={() => setShowKnowledgeGraph(false)}
+                className="p-2 hover:bg-dark-surface rounded-xl transition-colors"
+              >
+                <X size={20} className="text-warm-400" />
+              </button>
+            </div>
           </div>
 
           {/* Graph Area */}
-          <div className="flex-1 overflow-auto p-6 bg-dark-primary">
-            <svg width="700" height={Math.ceil(nodes.length / cols) * 120 + 100} className="mx-auto">
-              {/* Edges */}
-              {edges.map((edge, i) => {
-                const source = nodePositions[edge.source];
-                const target = nodePositions[edge.target];
-                if (!source || !target) return null;
-                return (
-                  <line
-                    key={i}
-                    x1={source.x}
-                    y1={source.y}
-                    x2={target.x}
-                    y2={target.y}
-                    stroke={selectedMadde?.id === edge.source || selectedMadde?.id === edge.target ? (isDarkMode ? '#e8734a' : '#c4501a') : (isDarkMode ? '#4a2f36' : '#e0c8b8')}
-                    strokeWidth={selectedMadde?.id === edge.source || selectedMadde?.id === edge.target ? 2 : 1}
-                    strokeDasharray="4"
-                    className="transition-all"
-                  />
-                );
-              })}
+          <div className="flex-1 overflow-auto bg-dark-primary relative min-h-[450px]">
+            {isAnalyzingGraph ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-warm-400 gap-3">
+                <Loader2 size={32} className="animate-spin text-accent" />
+                <p className="text-sm font-medium">Yapay zeka mevzuatı analiz ediyor...</p>
+                <p className="text-xs text-warm-600">Bu işlem belgenin boyutuna göre zaman alabilir.</p>
+              </div>
+            ) : graphNodes.length === 0 ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-warm-500">
+                <GitBranch size={40} className="mb-3 opacity-30" />
+                <p className="text-sm">Gösterilecek veri bulunamadı.</p>
+                <p className="text-xs text-warm-600 mt-1">Kütüphaneden bir belge seçip "Analiz Et" butonuna basın.</p>
+              </div>
+            ) : (
+              <div className="p-4">
+                <svg
+                  viewBox={`0 0 ${svgW} ${svgH}`}
+                  width="100%"
+                  height={Math.max(svgH, 400)}
+                  className="mx-auto"
+                  style={{ maxWidth: `${svgW}px` }}
+                >
+                  {/* Grid pattern arka plan */}
+                  <defs>
+                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                      <path d="M 40 0 L 0 0 0 40" fill="none" stroke={isDarkMode ? '#1f1d2a' : '#f0e8e0'} strokeWidth="0.5" />
+                    </pattern>
+                  </defs>
+                  <rect width="100%" height="100%" fill="url(#grid)" rx="12" />
 
-              {/* Nodes */}
-              {nodes.map((node) => {
-                const pos = nodePositions[node.id];
-                const isSelected = selectedMadde?.id === node.id;
-                const isRelated = selectedMadde?.iliskiliMaddeler.includes(node.id);
+                  {/* Edges (Bezier curves) */}
+                  {graphEdges.map((edge, i) => {
+                    const sourcePos = nodePositions[edge.source];
+                    const targetPos = nodePositions[edge.target];
+                    if (!sourcePos || !targetPos) return null;
 
-                return (
-                  <g key={node.id} className="cursor-pointer" onClick={() => {
-                    setSelectedMadde(node);
-                    setShowKnowledgeGraph(false);
-                    setShowMaddeModal(true);
-                  }}>
-                    <circle
-                      cx={pos.x}
-                      cy={pos.y}
-                      r={isSelected ? 35 : 30}
-                      fill={isSelected ? (isDarkMode ? '#e8734a' : '#c4501a') : isRelated ? (isDarkMode ? '#d4553a' : '#a8400f') : (isDarkMode ? '#321f25' : '#fff5ee')}
-                      stroke={isSelected ? (isDarkMode ? '#f08860' : '#d4652f') : isRelated ? (isDarkMode ? '#e8734a' : '#c4501a') : (isDarkMode ? '#4a2f36' : '#e0c8b8')}
-                      strokeWidth={isSelected ? 2 : 1}
-                      className="transition-all hover:scale-110"
-                      style={{ transformOrigin: `${pos.x}px ${pos.y}px` }}
-                    />
-                    <text
-                      x={pos.x}
-                      y={pos.y - 5}
-                      textAnchor="middle"
-                      className={`text-xs font-bold ${isSelected ? 'fill-white' : 'fill-warm-200'}`}
-                      style={{ fill: isSelected ? '#fff' : (isDarkMode ? '#c9a3ac' : '#5a4030') }}
-                    >
-                      Md. {node.maddeNo}
-                    </text>
-                    <text
-                      x={pos.x}
-                      y={pos.y + 10}
-                      textAnchor="middle"
-                      className="text-[8px]"
-                      style={{ fill: isSelected ? 'rgba(255,255,255,0.8)' : (isDarkMode ? '#8b6b73' : '#9a7b6a') }}
-                    >
-                      {node.baslik.slice(0, 12)}{node.baslik.length > 12 ? '...' : ''}
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
+                    const isHighlighted = hoveredNodeId && (edge.source === hoveredNodeId || edge.target === hoveredNodeId);
+                    const isFaded = hoveredNodeId && !isHighlighted;
+
+                    const path = getEdgePath(sourcePos.x, sourcePos.y, targetPos.x, targetPos.y);
+                    const midX = (sourcePos.x + targetPos.x) / 2;
+                    const midY = (sourcePos.y + targetPos.y) / 2;
+
+                    return (
+                      <g key={`edge-${i}`} style={{ opacity: isFaded ? 0.15 : 1, transition: 'opacity 0.3s' }}>
+                        <path
+                          d={path}
+                          fill="none"
+                          stroke={isHighlighted ? (isDarkMode ? '#e8734a' : '#c4501a') : (isDarkMode ? '#3d3148' : '#d4c4b8')}
+                          strokeWidth={isHighlighted ? 2.5 : 1.2}
+                          strokeDasharray={isHighlighted ? 'none' : '6 3'}
+                          className="transition-all duration-300"
+                        />
+                        {/* İlişki etiketi */}
+                        {edge.relation && (
+                          <g>
+                            <rect
+                              x={midX - 24} y={midY - 8} width="48" height="16" rx="4"
+                              fill={isDarkMode ? '#1a1825' : '#faf6f2'}
+                              stroke={isDarkMode ? '#2d2a35' : '#e8ddd4'}
+                              strokeWidth="0.5"
+                              opacity="0.95"
+                            />
+                            <text
+                              x={midX} y={midY + 3}
+                              textAnchor="middle"
+                              fontSize="8"
+                              fontWeight="600"
+                              fill={isDarkMode ? '#8b7b94' : '#9a8b7a'}
+                            >
+                              {edge.relation.length > 8 ? edge.relation.substring(0, 8) + '..' : edge.relation}
+                            </text>
+                          </g>
+                        )}
+                      </g>
+                    );
+                  })}
+
+                  {/* Nodes (Rounded Rectangle Cards) */}
+                  {graphNodes.map((node) => {
+                    const pos = nodePositions[node.id];
+                    if (!pos) return null;
+
+                    const nx = pos.x - CARD_W / 2;
+                    const ny = pos.y - CARD_H / 2;
+                    const isHovered = hoveredNodeId === node.id;
+                    const isConnected = connectedNodeIds.has(node.id);
+                    const isFaded = hoveredNodeId && !isConnected;
+
+                    return (
+                      <g
+                        key={`node-${node.id}`}
+                        className="cursor-pointer"
+                        style={{ opacity: isFaded ? 0.2 : 1, transition: 'opacity 0.3s, transform 0.2s' }}
+                        onMouseEnter={() => setHoveredNodeId(node.id)}
+                        onMouseLeave={() => setHoveredNodeId(null)}
+                        onClick={() => {
+                          if (node.full) {
+                            setSelectedMadde(node.full);
+                            setShowKnowledgeGraph(false);
+                            setShowMaddeModal(true);
+                          } else {
+                            alert(`${node.label || node.id}\n\n${node.desc || ''}`);
+                          }
+                        }}
+                      >
+                        {/* Glow efekt (hover) */}
+                        {isHovered && (
+                          <rect
+                            x={nx - 4} y={ny - 4}
+                            width={CARD_W + 8} height={CARD_H + 8}
+                            rx="16"
+                            fill="none"
+                            stroke={isDarkMode ? '#e8734a' : '#c4501a'}
+                            strokeWidth="1"
+                            opacity="0.4"
+                          />
+                        )}
+                        {/* Kart arkaplanı */}
+                        <rect
+                          x={nx} y={ny}
+                          width={CARD_W} height={CARD_H}
+                          rx="12"
+                          fill={isHovered
+                            ? (isDarkMode ? '#3a2f20' : '#fef3ec')
+                            : isConnected && hoveredNodeId
+                              ? (isDarkMode ? '#2d2535' : '#fff8f3')
+                              : (isDarkMode ? '#1e1c28' : '#fdfaf7')
+                          }
+                          stroke={isHovered
+                            ? (isDarkMode ? '#e8734a' : '#c4501a')
+                            : isConnected && hoveredNodeId
+                              ? (isDarkMode ? '#6b4a3a' : '#d4a080')
+                              : (isDarkMode ? '#2d2a35' : '#e4d8d0')
+                          }
+                          strokeWidth={isHovered ? 2 : 1}
+                          className="transition-all duration-200"
+                        />
+                        {/* Sol accent çizgisi */}
+                        <rect
+                          x={nx} y={ny}
+                          width="4" height={CARD_H}
+                          rx="2"
+                          fill={isHovered ? (isDarkMode ? '#e8734a' : '#c4501a') : (isDarkMode ? '#3a3545' : '#d4c4b8')}
+                        />
+                        {/* Başlık (label) */}
+                        <text
+                          x={nx + 14} y={ny + 20}
+                          fontSize="11"
+                          fontWeight="700"
+                          fill={isHovered ? (isDarkMode ? '#f0a070' : '#b84a10') : (isDarkMode ? '#e5e7eb' : '#3a3020')}
+                          className="pointer-events-none"
+                        >
+                          {(node.label || node.id).length > 18 ? (node.label || node.id).substring(0, 18) + '…' : (node.label || node.id)}
+                        </text>
+                        {/* Açıklama (desc) */}
+                        <text
+                          x={nx + 14} y={ny + 37}
+                          fontSize="9"
+                          fill={isDarkMode ? '#6b7280' : '#9a8b7a'}
+                          className="pointer-events-none"
+                        >
+                          {node.desc ? (node.desc.length > 20 ? node.desc.substring(0, 20) + '…' : node.desc) : ''}
+                        </text>
+                      </g>
+                    );
+                  })}
+                </svg>
+              </div>
+            )}
           </div>
 
-          {/* Legend */}
-          <div className="p-4 border-t border-dark-border flex items-center justify-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-accent"></div>
-              <span className="text-xs text-warm-400">Seçili Madde</span>
+          {/* Footer */}
+          <div className="px-4 py-3 border-t border-dark-border flex items-center justify-between">
+            <div className="flex items-center gap-5 text-[10px] text-warm-500">
+              <div className="flex items-center gap-1.5">
+                <div className="w-5 h-3.5 rounded border bg-dark-surface" style={{ borderColor: isDarkMode ? '#2d2a35' : '#e4d8d0' }}></div>
+                <span>Madde</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <svg width="20" height="8"><path d="M 0 4 Q 10 0 20 4" fill="none" stroke={isDarkMode ? '#3d3148' : '#d4c4b8'} strokeWidth="1.2" strokeDasharray="4 2" /></svg>
+                <span>Atıf</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-5 h-3.5 rounded border-2" style={{ borderColor: isDarkMode ? '#e8734a' : '#c4501a', background: 'transparent' }}></div>
+                <span>Seçili / İlişkili</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-accent-dark"></div>
-              <span className="text-xs text-warm-400">İlişkili Madde</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full" style={{ background: isDarkMode ? '#321f25' : '#fff5ee', border: `1px solid ${isDarkMode ? '#4a2f36' : '#e0c8b8'}` }}></div>
-              <span className="text-xs text-warm-400">Diğer Maddeler</span>
-            </div>
+            <span className="text-[10px] text-warm-600">{graphNodes.length} madde · {graphEdges.length} bağlantı</span>
           </div>
         </div>
       </div>

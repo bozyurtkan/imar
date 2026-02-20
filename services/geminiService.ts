@@ -198,6 +198,72 @@ export class GeminiService {
       return "Analiz yapılamadı: " + error.message;
     }
   }
+
+  async extractGraphFromText(text: string): Promise<{ nodes: any[], edges: any[] }> {
+    const ai = this.getClient();
+    // Metin çok uzunsa kırp (Token limiti önlemi)
+    const truncatedText = text.length > 30000 ? text.substring(0, 30000) + "..." : text;
+
+    const prompt = `
+      Sen bir hukuk ve veri analistisin. Aşağıdaki mevzuat metninden maddeler arası ilişkileri çıkararak bir bilgi grafiği (Knowledge Graph) oluşturmalısın.
+
+      GÖREV:
+      1. Metindeki ana maddeleri (Node) tespit et. (Örn: Madde 1, Madde 5, Ek Madde 2)
+      2. Bu maddelerin birbirine yaptığı atıfları (Edge) tespit et. (Örn: "5. maddeye göre..." -> Madde 5 ile ilişki)
+      3. Her madde için kısa bir başlık/konu belirle.
+      
+      ÇIKTI FORMATI (SAF JSON):
+      {
+        "nodes": [
+          { "id": "Md. 1", "label": "Amaç", "desc": "Kanunun amacı..." },
+          { "id": "Md. 5", "label": "Tanımlar", "desc": "Nazım plan, yapı vb. tanımlar" }
+        ],
+        "edges": [
+          { "source": "Md. 1", "target": "Md. 5", "relation": "ilgili" },
+          { "source": "Md. 18", "target": "Md. 19", "relation": "atıf" }
+        ]
+      }
+
+      KURALLAR:
+      1. Sadece, JSON döndür. Markdown, açıklama vb. ekleme.
+      2. En fazla 15-20 önemli maddeyi seç, grafik çok karmaşık olmasın.
+      3. ID'leri kısa tut (Örn: "Md. 1").
+      4. Eğer metin çok kısaysa veya madde yapısı yoksa, anahtar kavramları node olarak al.
+
+      METİN:
+      ${truncatedText}
+    `;
+
+    try {
+      const model = ai.getGenerativeModel({ 
+        model: "gemini-2.0-flash",
+        generationConfig: { responseMimeType: "application/json" } // JSON modu zorla
+      });
+      
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const jsonText = response.text();
+      
+      try {
+        const data = JSON.parse(jsonText);
+        return {
+          nodes: Array.isArray(data.nodes) ? data.nodes : [],
+          edges: Array.isArray(data.edges) ? data.edges : []
+        };
+      } catch (e) {
+        console.error("JSON Parse Error:", e, jsonText);
+        // Fallback: Basit regex ile JSON yakalamaya çalış
+        const match = jsonText.match(/\{[\s\S]*\}/);
+        if (match) {
+           return JSON.parse(match[0]);
+        }
+        return { nodes: [], edges: [] };
+      }
+    } catch (error: any) {
+      console.error("Graph Extraction Error:", error);
+      throw new Error("Grafik oluşturulamadı: " + error.message);
+    }
+  }
 }
 
 export const geminiService = new GeminiService();
