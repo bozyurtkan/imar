@@ -6,7 +6,7 @@ import {
   ShieldCheck, Sun, Moon, CheckSquare,
   Square, Globe, ExternalLink, Zap, Sparkles, Key, AlertTriangle, Home, RotateCcw,
   ChevronRight, X, Download, Search, Menu, Link2, GitBranch, Gavel, ArrowRight, Hash,
-  Mic, MicOff, ScrollText
+  Mic, MicOff, ScrollText, Brain
 } from 'lucide-react';
 // ... rest of imports
 
@@ -80,7 +80,40 @@ const ImarApp: React.FC = () => {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const [isListening, setIsListening] = useState(false);
+  const [isDeepThinkMode, setIsDeepThinkMode] = useState(false);
+  const [showDeepThinkToast, setShowDeepThinkToast] = useState(false);
+  const [isLoadingMaddeAI, setIsLoadingMaddeAI] = useState(false);
+  const [typingMessageIndex, setTypingMessageIndex] = useState(0);
   const [showPDFModal, setShowPDFModal] = useState(false);
+
+  const normalTypingMessages = [
+    "Araştırıyorum...",
+    "Mevzuatı inceliyorum...",
+    "Hemen bakıyorum...",
+    "Sizin için hazırlıyorum...",
+    "Belgeleri tarıyorum..."
+  ];
+
+  const deepThinkTypingMessages = [
+    "Derin düşünüyorum...",
+    "Detaylı analiz yapıyorum...",
+    "Maddeleri çapraz kontrol ediyorum...",
+    "Hukuki muhakeme yürütüyorum...",
+    "Kapsamlı bir yanıt hazırlıyorum..."
+  ];
+
+  // Typing mesajlarını döndür
+  useEffect(() => {
+    if (!isTyping) {
+      setTypingMessageIndex(0);
+      return;
+    }
+    const interval = setInterval(() => {
+      setTypingMessageIndex(prev => prev + 1);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [isTyping]);
+
   const [pdfSettings, setPdfSettings] = useState<PDFExportSettings>({
     fontSize: 'medium',
     theme: 'modern',
@@ -718,6 +751,8 @@ const ImarApp: React.FC = () => {
         const res = await geminiService.askGeneral(query);
         responseText = res.text;
         references = res.sources.map((s: any) => s.web?.uri).filter(Boolean);
+      } else if (isDeepThinkMode) {
+        responseText = await geminiService.askDeepThink(query, documents, messages);
       } else {
         responseText = await geminiService.askQuestion(query, documents, messages);
       }
@@ -803,32 +838,61 @@ const ImarApp: React.FC = () => {
   };
 
   // Madde tıklama işleyicisi
-  const handleMaddeClick = useCallback((maddeId: string) => {
+  const handleMaddeClick = useCallback(async (maddeId: string) => {
     let madde = getMadde(maddeId);
 
-    if (!madde) {
-      // Dinamik madde oluşturma mantığı
-      const cleanedId = maddeId.replace(/MADDE:\s*/i, '').replace(/[\[\]]/g, '').trim();
-      const parts = cleanedId.split('/');
-      const maddeNo = parts.length > 1 && parts[0].length !== 4 ? parts[0] : parts.length > 1 ? parts[1] : parts[0];
-      const kanunNo = parts.length > 1 && parts[0].length === 4 ? parts[0] : "3194"; // Varsayılan kanun
+    // ID'yi temizle
+    const cleanedId = maddeId.replace(/MADDE:\s*/i, '').replace(/[\[\]]/g, '').trim();
+    const parts = cleanedId.split('/');
+    const maddeNo = parts.length > 1 && parts[0].length !== 4 ? parts[0] : parts.length > 1 ? parts[1] : parts[0];
+    const kanunNo = parts.length > 1 && parts[0].length === 4 ? parts[0] : "3194";
 
+    // Fıkra bilgisini ayıkla ("18, Fıkra 2" gibi)
+    const fikraMatch = maddeNo.match(/^(.+?),\s*Fıkra\s*(\d+)/i);
+    const cleanMaddeNo = fikraMatch ? fikraMatch[1].trim() : maddeNo;
+    const fikraNo = fikraMatch ? fikraMatch[2] : null;
+    const displayTitle = fikraNo ? `Madde ${cleanMaddeNo}, Fıkra ${fikraNo}` : `Madde ${cleanMaddeNo}`;
+
+    if (!madde) {
+      // Statik veritabanında yok → placeholder ile aç, sonra AI ile zenginleştir
       madde = {
         id: cleanedId,
         kanunNo: kanunNo,
         kanunAdi: "İmar Kanunu",
-        maddeNo: maddeNo,
-        baslik: `Madde ${maddeNo}`,
-        icerik: "Bu madde içeriği şu an statik veritabanında bulunmamaktadır. Ancak yüklenen belge üzerinden bağlamı görüntüleyebilirsiniz.",
+        maddeNo: cleanMaddeNo,
+        baslik: displayTitle,
+        icerik: "", // Boş bırak, AI dolduracak
         iliskiliMaddeler: [],
         anahtatKelimeler: [],
         sonGuncelleme: new Date().toLocaleDateString('tr-TR')
       };
-    }
 
-    setSelectedMadde(madde);
-    setShowMaddeModal(true);
-  }, []);
+      setSelectedMadde(madde);
+      setShowMaddeModal(true);
+      setIsLoadingMaddeAI(true);
+
+      // AI ile madde içeriğini getir
+      try {
+        const aiContent = await geminiService.analyzeMadde(kanunNo, cleanMaddeNo, fikraNo);
+        setSelectedMadde(prev => prev ? {
+          ...prev,
+          icerik: aiContent.icerik,
+          anahtatKelimeler: aiContent.anahtarKelimeler || [],
+          iliskiliMaddeler: aiContent.iliskiliMaddeler || []
+        } : prev);
+      } catch (e: any) {
+        setSelectedMadde(prev => prev ? {
+          ...prev,
+          icerik: "Bu maddenin analizi şu an yapılamadı. Lütfen tekrar deneyin."
+        } : prev);
+      } finally {
+        setIsLoadingMaddeAI(false);
+      }
+    } else {
+      setSelectedMadde(madde);
+      setShowMaddeModal(true);
+    }
+  }, [documents]);
 
   // İlişkili maddeye git
   const navigateToRelatedMadde = (maddeId: string) => {
@@ -840,7 +904,9 @@ const ImarApp: React.FC = () => {
 
   const renderText = (text: string) => {
     if (!text) return null;
-    const parts = text.split(/(\[MADDE: .*?\]|\*\*.*?\*\*)/g);
+    // AI bazen madde referanslarını kalın (**) içinde yazıyor — önce temizle
+    const cleanedText = text.replace(/\*\*(\[MADDE:.*?\])\*\*/g, '$1');
+    const parts = cleanedText.split(/(\[MADDE: .*?\]|\*\*.*?\*\*)/g);
     return parts.map((part, i) => {
       if (part.startsWith('[MADDE:')) {
         const maddeId = part.replace('[MADDE:', '').replace(']', '').trim();
@@ -878,7 +944,7 @@ const ImarApp: React.FC = () => {
                   <Hash size={12} />
                   {selectedMadde.kanunNo} Sayılı {selectedMadde.kanunAdi}
                 </div>
-                <h2 className="text-xl font-bold text-warm-50">Madde {selectedMadde.maddeNo}: {selectedMadde.baslik}</h2>
+                <h2 className="text-xl font-bold text-warm-50">{selectedMadde.baslik}</h2>
               </div>
               <button
                 onClick={() => setShowMaddeModal(false)}
@@ -893,11 +959,23 @@ const ImarApp: React.FC = () => {
           <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
             {/* Madde İçeriği */}
             <div className="mb-6">
-              <div className="text-warm-200 leading-relaxed whitespace-pre-wrap text-[14px]">
-                {selectedMadde.icerik.split(/\*\*(.*?)\*\*/g).map((part, i) =>
-                  i % 2 === 1 ? <strong key={i} className="text-accent">{part}</strong> : part
-                )}
-              </div>
+              {isLoadingMaddeAI ? (
+                <div className="flex flex-col items-center justify-center py-12 text-warm-400 gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                    <Brain size={24} className="text-purple-400 animate-pulse" />
+                  </div>
+                  <p className="text-sm font-medium">Madde analiz ediliyor...</p>
+                  <p className="text-xs text-warm-600">Derin düşünce ile içerik hazırlanıyor</p>
+                </div>
+              ) : selectedMadde.icerik ? (
+                <div className="text-warm-200 leading-relaxed whitespace-pre-wrap text-[14px]">
+                  {selectedMadde.icerik.split(/\*\*(.*?)\*\*/g).map((part, i) =>
+                    i % 2 === 1 ? <strong key={i} className="text-accent">{part}</strong> : part
+                  )}
+                </div>
+              ) : (
+                <div className="text-warm-500 text-sm italic">İçerik bulunamadı.</div>
+              )}
             </div>
 
             {/* Anahtar Kelimeler */}
@@ -1650,8 +1728,8 @@ const ImarApp: React.FC = () => {
                   : 'bg-dark-surface border border-dark-border text-warm-100'
                   }`}>
                   <div className={`flex items-center gap-2 mb-2 text-[8px] font-bold uppercase tracking-widest ${msg.role === 'user' ? 'text-white/50' : 'text-warm-500'}`}>
-                    {msg.role === 'user' ? <Zap size={10} /> : <ShieldCheck size={10} className="text-green-400" />}
-                    <span>{msg.role === 'user' ? 'SORU' : 'MEVZUAT YANITI'}</span>
+                    {msg.role === 'user' ? <Zap size={10} /> : (msg.text.startsWith('🧠') ? <Brain size={10} className="text-purple-400" /> : <ShieldCheck size={10} className="text-green-400" />)}
+                    <span>{msg.role === 'user' ? 'SORU' : (msg.text.startsWith('🧠') ? 'DERİN ANALİZ' : 'MEVZUAT YANITI')}</span>
                   </div>
                   <div className="text-[12px] lg:text-[13px] leading-relaxed whitespace-pre-wrap font-medium">
                     {msg.role === 'assistant' ? (
@@ -1675,10 +1753,24 @@ const ImarApp: React.FC = () => {
           )}
           {isTyping && (
             <div className="flex justify-start animate-in">
-              <div className="bg-dark-surface rounded-2xl px-5 py-4 border border-dark-border flex items-center gap-2">
-                <span className="typing-dot"></span>
-                <span className="typing-dot"></span>
-                <span className="typing-dot"></span>
+              <div className={`rounded-2xl px-5 py-4 border flex items-center gap-3 ${isDeepThinkMode
+                ? 'bg-purple-950/30 border-purple-800/30'
+                : 'bg-dark-surface border-dark-border'
+                }`}>
+                {isDeepThinkMode
+                  ? <Brain size={16} className="text-purple-400 animate-pulse" />
+                  : <Loader2 size={16} className="text-accent animate-spin" />
+                }
+                <span
+                  key={typingMessageIndex}
+                  className={`text-sm font-medium animate-in ${isDeepThinkMode ? 'text-purple-300' : 'text-warm-300'
+                    }`}
+                >
+                  {isDeepThinkMode
+                    ? deepThinkTypingMessages[typingMessageIndex % deepThinkTypingMessages.length]
+                    : normalTypingMessages[typingMessageIndex % normalTypingMessages.length]
+                  }
+                </span>
               </div>
             </div>
           )}
@@ -1688,7 +1780,13 @@ const ImarApp: React.FC = () => {
         {/* Chat Input - Glassmorphism */}
         <div className="chat-input-wrapper p-3 lg:p-5 z-10" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 12px)' }}>
           <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto relative">
-            <div className={`relative bg-dark-surface border rounded-2xl overflow-hidden transition-all focus-within:border-accent/40 focus-within:shadow-[0_0_0_3px_rgba(196,80,26,0.1)] ${isListening ? 'border-red-500/60 shadow-[0_0_0_3px_rgba(239,68,68,0.15)]' : 'border-dark-border'}`}>
+            {/* Deep Think Toast */}
+            {showDeepThinkToast && (
+              <div className={`absolute -top-12 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 z-20 animate-in shadow-lg whitespace-nowrap ${isDarkMode ? 'bg-purple-900/80 text-purple-200 border border-purple-700/50' : 'bg-purple-50 text-purple-700 border border-purple-200'}`}>
+                <Brain size={14} /> Derin Düşünce modu aktif — Gelişmiş muhakeme ve çok adımlı analiz
+              </div>
+            )}
+            <div className={`relative bg-dark-surface border rounded-2xl overflow-hidden transition-all focus-within:border-accent/40 focus-within:shadow-[0_0_0_3px_rgba(196,80,26,0.1)] ${isListening ? 'border-red-500/60 shadow-[0_0_0_3px_rgba(239,68,68,0.15)]' : isDeepThinkMode ? 'border-purple-500/40 shadow-[0_0_0_3px_rgba(147,51,234,0.1)]' : 'border-dark-border'}`}>
               <input
                 type="text"
                 value={inputValue}
@@ -1698,6 +1796,28 @@ const ImarApp: React.FC = () => {
                 className="w-full bg-transparent pl-5 pr-24 py-4 text-sm text-warm-50 placeholder-warm-600 focus:outline-none disabled:opacity-50"
               />
               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                {/* Deep Think Toggle */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newState = !isDeepThinkMode;
+                    setIsDeepThinkMode(newState);
+                    if (newState) {
+                      setShowDeepThinkToast(true);
+                      setTimeout(() => setShowDeepThinkToast(false), 3000);
+                    } else {
+                      setShowDeepThinkToast(false);
+                    }
+                  }}
+                  disabled={isTyping}
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-20 ${isDeepThinkMode
+                    ? 'bg-gradient-to-br from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-500/30'
+                    : 'text-warm-400 hover:text-warm-50 hover:bg-dark-elevated'
+                    }`}
+                  title={isDeepThinkMode ? 'Derin Düşünce Kapalı' : 'Derin Düşünce Aç'}
+                >
+                  <Brain size={16} />
+                </button>
                 {/* Microphone Button */}
                 <button
                   type="button"

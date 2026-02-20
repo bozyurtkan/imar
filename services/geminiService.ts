@@ -199,6 +199,102 @@ export class GeminiService {
     }
   }
 
+  async analyzeMadde(kanunNo: string, maddeNo: string, fikraNo?: string | null): Promise<{ icerik: string, anahtarKelimeler: string[], iliskiliMaddeler: string[] }> {
+    const ai = this.getClient();
+
+    const fikraInstruction = fikraNo
+      ? `Özellikle ${fikraNo}. fıkrasını detaylı ver, ancak maddenin tüm fıkralarını da kısaca ekle.`
+      : `Tüm fıkra ve bentleriyle birlikte yaz.`;
+
+    const prompt = `
+      GÖREV: ${kanunNo} Sayılı Kanun'un ${maddeNo}. maddesinin RESMİ METNİNİ yaz.
+      ${fikraInstruction}
+
+      ÇIKTI FORMATI (SAF JSON):
+      {
+        "icerik": "Maddenin resmi metni — fıkra ve bentleriyle birlikte aynen kanunda yazdığı şekilde.",
+        "anahtarKelimeler": ["anahtar1", "anahtar2"],
+        "iliskiliMaddeler": ["${kanunNo}/1", "${kanunNo}/5"]
+      }
+
+      KURALLAR:
+      1. Sadece JSON döndür.
+      2. "icerik" alanına SADECE maddenin resmi metnini yaz. Yorum yapma, analiz ekleme, açıklama yapma.
+      3. Fıkraları numaralı olarak yaz (1), (2), (3)... Bentleri harfli yaz a), b), c)...
+      4. Önemli terimleri **kalın** yaz.
+      5. İlişkili maddeler formatı: "KanunNo/MaddeNo" (Örn: "3194/18")
+      6. En fazla 5 ilişkili madde.
+      7. İçerik ASLA boş olmasın. Madde metnini bilgin dahilinde mutlaka yaz.
+    `;
+
+    try {
+      const model = ai.getGenerativeModel({
+        model: "gemini-2.0-flash",
+        generationConfig: { responseMimeType: "application/json" }
+      });
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const data = JSON.parse(response.text());
+
+      return {
+        icerik: data.icerik || "Madde metni bulunamadı.",
+        anahtarKelimeler: Array.isArray(data.anahtarKelimeler) ? data.anahtarKelimeler : [],
+        iliskiliMaddeler: Array.isArray(data.iliskiliMaddeler) ? data.iliskiliMaddeler : []
+      };
+    } catch (error: any) {
+      console.error("Madde Analysis Error:", error);
+      throw new Error("Madde metni getirilemedi: " + error.message);
+    }
+  }
+
+  async askDeepThink(
+    question: string,
+    documents: DocumentFile[],
+    chatHistory: Message[]
+  ): Promise<string> {
+    const ai = this.getClient();
+
+    const activeDocs = documents.filter(doc => doc.isActive);
+    if (activeDocs.length === 0) {
+      throw new Error("Lütfen analiz için kütüphaneden en az bir belge seçin.");
+    }
+
+    const contextText = activeDocs
+      .map(doc => `[KAYNAK: ${doc.name} | ETİKET: ${doc.description}]\n${doc.content}`)
+      .join('\n\n---\n\n');
+
+    const systemInstruction = `
+      Sen Türkiye'nin en deneyimli İmar Hukuku profesörü ve danışmanısın.
+      Derin analiz ve çok adımlı muhakeme yeteneğine sahipsin.
+
+      DERİN ANALİZ KURALLARI:
+      1. Her soruyu adım adım analiz et. Önce konuyu tanımla, sonra ilgili maddeleri belirle, ardından yorumla.
+      2. Farklı yorum olasılıklarını değerlendir (lehte / aleyhte argümanlar).
+      3. Her yasal dayanağı MUTLAKA şu formatta etiketle: [MADDE: KanunNo/MaddeNo]
+      4. Yargıtay / Danıştay içtihatlarından bildiğin örneklere atıf yap.
+      5. Sonuç bölümünde net bir profesyonel görüş sun.
+      6. Yanıtının başına 🧠 emojisi koy.
+      7. Önemli yasal terimleri kalın (**terim**) yaz.
+      8. Tonun akademik düzeyde profesyonel ve objektif olsun.
+      9. **ÖNEMLİ:** Kullanıcı bir kanun maddesini sorduğunda, kendi genel hukuki bilgini kullanarak detaylı ve kapsamlı bir şekilde açıkla.
+    `;
+
+    try {
+      const model = ai.getGenerativeModel({
+        model: "gemini-2.5-pro",
+        systemInstruction: systemInstruction.trim()
+      });
+
+      const result = await model.generateContent(`KÜTÜPHANE İÇERİĞİ:\n\n${contextText}\n\nKULLANICI SORUSU: ${question}`);
+      const response = await result.response;
+      return response.text() || "Derin analiz tamamlanamadı.";
+    } catch (error: any) {
+      console.error("Deep Think API Error:", error);
+      throw new Error(error?.message || "Derin düşünce servisi şu an yanıt veremiyor.");
+    }
+  }
+
   async extractGraphFromText(text: string): Promise<{ nodes: any[], edges: any[] }> {
     const ai = this.getClient();
     // Metin çok uzunsa kırp (Token limiti önlemi)
@@ -235,15 +331,15 @@ export class GeminiService {
     `;
 
     try {
-      const model = ai.getGenerativeModel({ 
+      const model = ai.getGenerativeModel({
         model: "gemini-2.0-flash",
         generationConfig: { responseMimeType: "application/json" } // JSON modu zorla
       });
-      
+
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const jsonText = response.text();
-      
+
       try {
         const data = JSON.parse(jsonText);
         return {
@@ -255,7 +351,7 @@ export class GeminiService {
         // Fallback: Basit regex ile JSON yakalamaya çalış
         const match = jsonText.match(/\{[\s\S]*\}/);
         if (match) {
-           return JSON.parse(match[0]);
+          return JSON.parse(match[0]);
         }
         return { nodes: [], edges: [] };
       }
