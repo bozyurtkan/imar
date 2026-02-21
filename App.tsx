@@ -1,6 +1,9 @@
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { OfficialGazetteModal } from './components/OfficialGazetteModal';
+import { LandingPage } from './components/LandingPage';
+import { LoginPage } from './components/LoginPage';
+import { LegalPage } from './components/LegalPage';
 import {
   FileText, Send, Trash2, Plus, BookOpen, Loader2, Scale,
   ShieldCheck, Sun, Moon, CheckSquare,
@@ -2003,9 +2006,65 @@ const ImarApp: React.FC = () => {
   );
 };
 
+const AppRouter: React.FC = () => {
+  const { user, loading } = useAuth();
+  const [currentPage, setCurrentPage] = useState<'landing' | 'login' | 'app' | 'legal'>('landing');
+  const [legalTab, setLegalTab] = useState('teslimat');
+
+  // Kullanıcı login sayfasındayken giriş yaparsa → app'e yönlendir
+  // Kullanıcı çıkış yaparsa → landing'e dön
+  useEffect(() => {
+    if (user && currentPage === 'login') {
+      setCurrentPage('app');
+    } else if (!user && !loading && currentPage === 'app') {
+      setCurrentPage('landing');
+    }
+  }, [user, loading, currentPage]);
+
+  // "Hemen Başlayın" tıklandığında: giriş yapmışsa app'e, yapmamışsa login'e
+  const handleGetStarted = () => {
+    if (user) {
+      setCurrentPage('app');
+    } else {
+      setCurrentPage('login');
+    }
+  };
+
+  const handleOpenLegal = (tab: string) => {
+    setLegalTab(tab);
+    setCurrentPage('legal');
+  };
+
+  if (loading) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-screen-inner">
+          <div className="loading-logo">
+            <Scale size={32} className="text-white" />
+          </div>
+          <div className="loading-spinner" />
+          <p className="loading-text">Yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  switch (currentPage) {
+    case 'landing':
+      return <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} />;
+    case 'login':
+      return <LoginPage onBack={() => setCurrentPage('landing')} />;
+    case 'legal':
+      return <LegalPage onBack={() => setCurrentPage('landing')} initialTab={legalTab} />;
+    case 'app':
+      return <ImarApp />;
+  }
+};
+
+
 const App: React.FC = () => (
   <AuthProvider>
-    <ImarApp />
+    <AppRouter />
   </AuthProvider>
 );
 
