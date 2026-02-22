@@ -16,6 +16,7 @@ export interface Message {
   text: string;
   timestamp: Date;
   references?: string[];
+  webSources?: { uri: string; title: string }[];
 }
 
 export enum FileType {

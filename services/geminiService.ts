@@ -1,5 +1,6 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { DocumentFile, Message } from "../types";
 
 export class GeminiService {
@@ -10,6 +11,15 @@ export class GeminiService {
       throw new Error("API Anahtarı bulunamadı. Lütfen Cloudflare ortam değişkenlerinde veya .env dosyasında VITE_GEMINI_API_KEY tanımlı olduğundan emin olun.");
     }
     return new GoogleGenerativeAI(apiKey);
+  }
+
+  private getNewClient() {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+    if (!apiKey) {
+      throw new Error("API Anahtarı bulunamadı. Lütfen Cloudflare ortam değişkenlerinde veya .env dosyasında VITE_GEMINI_API_KEY tanımlı olduğundan emin olun.");
+    }
+    return new GoogleGenAI({ apiKey });
   }
 
   async askQuestion(
@@ -74,19 +84,43 @@ export class GeminiService {
     }
   }
 
-  async askGeneral(question: string): Promise<{ text: string, sources: any[] }> {
-    const ai = this.getClient();
+  async askGeneral(question: string, _documents: DocumentFile[] = []): Promise<{ text: string, sources: any[] }> {
+    const ai = this.getNewClient(); // Use the new SDK for Gemini 2.0 tools
+
+    const today = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    const systemInstruction = `
+      Sen profesyonel bir Türkiye İmar Mevzuatı danışmanısın.
+      BUGÜNÜN TARİHİ: ${today}
+      
+      GÖREV: Kullanıcının sorusunu yanıtlarken sadece Google arama ile bulduğun EN GÜNCEL web kaynaklarını, son Resmi Gazete duyurularını ve güncel içtihatları kullan.
+      
+      ARAMA STRATEJİSİ (ÇOK ÖNEMLİ):
+      Soruyu cevaplamak için web'de arama yaparken, her zaman konunun en güncel halini bulmak için arama sorgularını "2025", "2026", "Resmi Gazete", "güncel değişiklik", "yeni yönetmelik" gibi terimlerle daraltmalısın. Eski forum veya haber sitelerindeki eski bilgilere ASLA güvenme. Konu her ne ise (örneğin ruhsat, emsal, otopark, vb.), mutlaka ilgili yönetmeliğin veya kanunun EN SON (özellikle 2025/2026) değişmiş halini bul.
+      
+      CEVAPLAMA KURALLARI:
+      1. Her yasal dayanağı MUTLAKA şu formatta etiketle: [MADDE: KanunNo/MaddeNo] veya [MADDE: Yönetmelik/MaddeNo]
+      2. Yanıtlarını madde madde yapılandır.
+      3. Önemli yasal terimleri kalın (**terim**) yaz.
+      4. Bulduğun yasal dayanağın tarihini (Örn: 14 Ocak 2026 tarihli Resmi Gazete) mutlaka belirt ki kullanıcı taze bilgi olduğunu anlasın.
+      5. Tonun profesyonel ve objektif olsun.
+      6. Yanıtın doyurucu ve teknik derinliği olan profesyonel bir çıktı olmalıdır.
+    `;
+
     try {
-      const model = ai.getGenerativeModel({
-        model: "gemini-2.0-flash",
-        systemInstruction: "Türkiye imar mevzuatı ve güncel belediye/bakanlık kararları hakkında web araştırması yaparak bilgi ver."
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash-lite",
+        contents: `KULLANICI SORUSU: ${question}\n\nLütfen bu soruyu yanıtlarken hukuki/mevzuat açısından en güncel durumu (varsa 2025 ve 2026 Resmi Gazete değişikliklerini) web aramasında muhakkak teyit ederek profesyonelce yanıtla.`,
+        config: {
+          systemInstruction: "Türkiye imar mevzuatı ve güncel belediye/bakanlık kararları hakkında web araştırması yaparak bilgi ver.".trim(),
+          tools: [{ googleSearch: {} }] // The new SDK natively supports this
+        }
       });
 
-      const result = await model.generateContent(question);
-      const response = await result.response;
+      const groundingMeta = response.candidates?.[0]?.groundingMetadata;
+      const sources = groundingMeta?.groundingChunks || [];
 
-      const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
-      return { text: response.text() || "Güncel bilgi bulunamadı.", sources };
+      return { text: response.text || "Güncel bilgi bulunamadı.", sources };
     } catch (error: any) {
       throw new Error("Web araştırması şu an meşgul: " + error.message);
     }

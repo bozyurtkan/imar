@@ -757,11 +757,15 @@ const ImarApp: React.FC = () => {
     try {
       let responseText = "";
       let references: string[] | undefined;
+      let webSources: { uri: string; title: string }[] | undefined;
 
       if (isGeneralMode) {
-        const res = await geminiService.askGeneral(query);
+        const res = await geminiService.askGeneral(query, documents);
         responseText = res.text;
         references = res.sources.map((s: any) => s.web?.uri).filter(Boolean);
+        webSources = res.sources
+          .filter((s: any) => s.web?.uri)
+          .map((s: any) => ({ uri: s.web.uri, title: s.web.title || new URL(s.web.uri).hostname }));
       } else if (isDeepThinkMode) {
         responseText = await geminiService.askDeepThink(query, documents, messages);
       } else {
@@ -773,7 +777,8 @@ const ImarApp: React.FC = () => {
         role: 'assistant',
         text: responseText,
         timestamp: new Date(),
-        references
+        references,
+        webSources
       };
 
       setMessages(prev => [...prev, aiMsg]);
@@ -1752,13 +1757,41 @@ const ImarApp: React.FC = () => {
                     {msg.role === 'assistant' ? (
                       <div className="space-y-4">
                         <div>{renderText(msg.text)}</div>
-                        {msg.references && msg.references.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-dark-border">
-                            {msg.references.map((r, i) => (
-                              <a key={i} href={r} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-2.5 py-1.5 bg-dark-elevated border border-dark-border rounded-lg text-[9px] font-bold text-accent hover:text-accent-hover transition-colors">
-                                <ExternalLink size={10} /> Kaynak {i + 1}
-                              </a>
-                            ))}
+                        {msg.webSources && msg.webSources.length > 0 ? (
+                          <div className="mt-4 pt-4 border-t border-accent/20">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Globe size={12} className="text-accent" />
+                              <span className="text-[9px] font-black uppercase tracking-widest text-accent">Web Kaynakları</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {msg.webSources.map((src, i) => (
+                                <a
+                                  key={i}
+                                  href={src.uri}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="group flex items-center gap-2 px-3 py-2 bg-accent/10 border border-accent/25 rounded-xl text-[11px] font-bold text-accent hover:bg-accent/20 hover:border-accent/40 hover:shadow-lg hover:shadow-accent/10 transition-all duration-200"
+                                >
+                                  <ExternalLink size={12} className="shrink-0 group-hover:scale-110 transition-transform" />
+                                  <span className="truncate max-w-[200px]">{src.title}</span>
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        ) : msg.references && msg.references.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-accent/20">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Globe size={12} className="text-accent" />
+                              <span className="text-[9px] font-black uppercase tracking-widest text-accent">Web Kaynakları</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {msg.references.map((r, i) => (
+                                <a key={i} href={r} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-2 px-3 py-2 bg-accent/10 border border-accent/25 rounded-xl text-[11px] font-bold text-accent hover:bg-accent/20 hover:border-accent/40 hover:shadow-lg hover:shadow-accent/10 transition-all duration-200">
+                                  <ExternalLink size={12} className="shrink-0 group-hover:scale-110 transition-transform" />
+                                  <span className="truncate max-w-[200px]">{(() => { try { return new URL(r).hostname; } catch { return `Kaynak ${i + 1}`; } })()}</span>
+                                </a>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>
