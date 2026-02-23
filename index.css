@@ -1191,37 +1191,52 @@ body:has(.login-page) {
   padding: 60px 0;
 }
 
-.landing-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+.landing-stats-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.landing-stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
 }
 
 .landing-stat-card {
-  text-align: center;
-  padding: 24px 16px;
+  flex: 1 1 200px;
+  max-width: 260px;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: 16px;
+  padding: 24px 16px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .landing-stat-card:hover {
   border-color: var(--accent-primary);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px var(--accent-glow);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px var(--accent-glow);
 }
 
 .landing-stat-value {
-  font-size: 28px;
+  font-size: 20px;
   font-weight: 800;
   color: var(--text-primary);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .landing-stat-label {
   font-size: 13px;
-  font-weight: 600;
+  line-height: 1.5;
+  font-weight: 500;
   color: var(--text-muted);
 }
 
@@ -1296,7 +1311,7 @@ body:has(.login-page) {
 
 .landing-feature-title {
   flex: 1;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -1312,7 +1327,7 @@ body:has(.login-page) {
 }
 
 .landing-feature-body p {
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.7;
   color: var(--text-secondary);
 }

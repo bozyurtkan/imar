@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Scale, ArrowRight, ChevronDown, ChevronUp, BookOpen, Brain, Shield,
   FileText, Search, Globe, Sparkles, MessageSquare, Lock, Zap, Users,
@@ -12,57 +12,101 @@ interface LandingPageProps {
 
 const features = [
   {
+    icon: <BookOpen size={20} />,
+    title: "Milyonlarca Karar",
+    desc: "Mevzuat.gov.tr ve Resmi Gazetede yayımlanan kararlarından oluşan milyonlarca içtihat havuzunda doğal dille arama yapabilirsiniz. Binlerce sayfalık kararları okumak yerine yapay zekanın çıkardığı detaylı karar özetleri ile aradığınız hukuki emsallere saniyeler içinde ulaşın."
+  },
+  {
     icon: <Brain size={20} />,
-    title: "Yapay Zeka Destekli Mevzuat Analizi",
-    desc: "Gelişmiş yapay zeka modelleri ile imar mevzuatını anlık analiz edin. Karmaşık maddeleri basit ve anlaşılır şekilde yorumlayın."
-  },
-  {
-    icon: <Search size={20} />,
-    title: "Anlamsal Arama Gücü",
-    desc: "Anahtar kelime değil, anlam bazlı arama yapın. Sorularınızı doğal dilde sorun, en uygun mevzuat maddelerini bulun."
-  },
-  {
-    icon: <FileText size={20} />,
-    title: "Belge Yükleme ve Analiz",
-    desc: "PDF, DOCX ve görsel formatlarında mevzuat belgeleri yükleyin. Yapay zeka belgeleri otomatik olarak işlesin."
-  },
-  {
-    icon: <MessageSquare size={20} />,
-    title: "Yapay Zeka ile Sohbet Deneyimi",
-    desc: "Kıdemli bir hukuk danışmanıyla konuşuyormuş gibi mevzuat sorularınızı sorun. Bağlam duyarlı, atıflı yanıtlar alın."
-  },
-  {
-    icon: <Globe size={20} />,
-    title: "Web Destekli Güncel Bilgiye Erişim",
-    desc: "Online arama modu ile güncel mevzuat değişikliklerini ve Resmi Gazete duyurularını anında takip edin."
+    title: "Yapay Zeka",
+    desc: "İleri seviye dil modelleriyle desteklenmiş AI tabanlı sohbet asistanımız sayesinde, karmaşık İmar Mevzuat sorularınızı sanki kıdemli bir hukukçuyla konuşuyormuşçasına tartışın. İmar Kanunu ve ilgili yönetmeliklere dayalı, maddelerle desteklenmiş kesin atıflı cevaplar alın."
   },
   {
     icon: <Sparkles size={20} />,
-    title: "Derin Düşünce Modu",
-    desc: "Çok adımlı analiz gerektiren karmaşık sorular için gelişmiş muhakeme motoru. Çapraz referans kontrolü ve detaylı hukuki değerlendirme."
+    title: "Derin Düşünce",
+    desc: "Çözülmesi zor, çok boyutlu ve birden fazla mevzuat maddesinin aynı anda değerlendirilmesini gerektiren vakalar için tasarlanmış özel muhakeme modudur. Yapay zeka adım adım çalışarak size en detaylı, çapraz kontrollü stratejik analizleri sunar."
   },
   {
-    icon: <Lock size={20} />,
-    title: "Gizlilik ve Güvenlik",
-    desc: "Belgeleriniz ve sohbet geçmişiniz şifreli olarak saklanır. Verileriniz yalnızca size aittir."
+    icon: <Zap size={20} />,
+    title: "Mevzuat Grafiği",
+    desc: "Birbirine atıf yapan yüzlerce kanun, yönetmelik ve tebliğ arasındaki bağlantıları interaktif bir bilgi grafiği üzerinde görsel olarak inceleyin. Hangi maddenin hangi yönetmeliğe dayandığını ve iptalleri bir bakışta görerek hukuki metin trafiğine hakim olun."
   },
   {
     icon: <Gavel size={20} />,
-    title: "Mevzuat Karşılaştırma",
-    desc: "Farklı mevzuat metinlerini yan yana karşılaştırın. Değişiklikleri ve farkları otomatik tespit edin."
+    title: "Mevzuat Karşılaştır",
+    desc: "Yürürlükten kaldırılan metinler ile güncel mevzuat arasındaki farkları kelime kelime manuel aramak zorunda kalmayın. Sistemimiz, farklı tarihli metinleri yan yana koyarak eklenen, çıkarılan veya değiştirilen kısımları renk kodlu biçimde doğrudan gösterir."
+  },
+  {
+    icon: <FileText size={20} />,
+    title: "Resmi Gazete Takibi",
+    desc: "Her gün güncellenen Resmi Gazete veritabanı ile hiçbir yasal değişikliği gözden kaçırmayın. İmar mevzuatı çevresinde gerçekleşen tüm önemli duyurular, iptal kararları veya yeni yönetmelikler anlık olarak sisteminize entegre edilir."
+  },
+  {
+    icon: <Globe size={20} />,
+    title: "Güncel Web Araştırma",
+    desc: "Mevzuatın ve yargı kararlarının ötesinde, hukuki literatürdeki son gelişmelere, idarelerin paylaşımlarına ve en güncel internet verilerine arama motoru entegrasyonumuzla erişin; araştırmalarınızda her zaman bir adım önde olun."
   }
 ];
 
 const stats = [
-  { value: "50+", label: "Mevzuat ve Yönetmelik" },
-  { value: "Gemini 2.0", label: "Yapay Zeka Modeli" },
-  { value: "7/24", label: "Anlık Erişim" },
-  { value: "100%", label: "Güvenli Bulut" }
+  { value: "Milyonlarca Karar", label: "İçerisinde arama ve karar özetleri" },
+  { value: "Yapay Zeka", label: "AI Tabanlı Karar Arama ve Sohbet Sistemi" },
+  { value: "Derin Düşünce", label: "Karmaşık süreçler için derinlemesine analiz" },
+  { value: "Mevzuat Grafiği", label: "Maddeler arası ilişkileri görselleştirin" },
+  { value: "Mevzuat Karşılaştır", label: "Eski ve yeni metinleri yan yana analiz edin" },
+  { value: "Resmi Gazete Takibi", label: "Günlük değişiklikleri anında öğrenin" },
+  { value: "Güncel Web Araştırma", label: "Arama motoru entegrasyonu ile son dakika bilgileri" }
 ];
 
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLegal }) => {
   const [expandedFeature, setExpandedFeature] = useState<number | null>(null);
+  const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
+
+  const modulesInfo = [
+    {
+      text: "Mevzuat.gov.tr ve Resmi Gazetede yayımlanan kararlarından oluşan milyonlarca içtihat havuzunda doğal dille yapay zeka destekli arama yapabilirsiniz.",
+      author: "Milyonlarca Karar",
+      icon: <BookOpen size={16} />
+    },
+    {
+      text: "İleri seviye dil modelleriyle desteklenmiş AI tabanlı sohbet asistanımız sayesinde, karmaşık İmar Mevzuat sorularınızı tartışın.",
+      author: "Yapay Zeka",
+      icon: <Brain size={16} />
+    },
+    {
+      text: "Çözülmesi zor ve birden fazla mevzuat maddesinin aynı anda değerlendirilmesini gerektiren vakalar için tasarlanmış çapraz kontrollü muhakeme modu.",
+      author: "Derin Düşünce",
+      icon: <Sparkles size={16} />
+    },
+    {
+      text: "Birbirine atıf yapan yüzlerce kanun, yönetmelik ve tebliğ arasındaki bağlantıları interaktif bir bilgi grafiği üzerinde görsel olarak inceleyin.",
+      author: "Mevzuat Grafiği",
+      icon: <Zap size={16} />
+    },
+    {
+      text: "Farklı tarihli metinleri yan yana koyarak eklenen, çıkarılan veya değiştirilen kısımları renk kodlu biçimde doğrudan inceleyip karşılaştırın.",
+      author: "Mevzuat Karşılaştır",
+      icon: <Gavel size={16} />
+    },
+    {
+      text: "Her gün güncellenen Resmi Gazete veritabanı ile hiçbir yasal değişikliği, iptal kararını veya yeni yönetmeliği gözden kaçırmayın.",
+      author: "Resmi Gazete Takibi",
+      icon: <FileText size={16} />
+    },
+    {
+      text: "Hukuki literatürdeki son gelişmelere, idarelerin paylaşımlarına ve en güncel internet verilerine arama motoru entegrasyonumuzla erişin.",
+      author: "Güncel Web Araştırma",
+      icon: <Globe size={16} />
+    }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentModuleIndex((prev) => (prev + 1) % modulesInfo.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div className="landing-page">
@@ -93,11 +137,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
           <div className="landing-hero-content">
             <div className="landing-hero-badge">
               <Zap size={14} />
-              <span>Türkiye'nin 1 Numaralı İmar Mevzuatı Yapay Zekası</span>
+              <span>Türkiye'nin 1 Numaralı ve Tek İmar Mevzuatı Yapay Zekası</span>
             </div>
             <h1 className="landing-hero-title">
               Yeni Nesil<br />
-              <span className="landing-hero-title-accent">AI İmar Mevzuatı</span><br />
+              <span className="landing-hero-title-accent">Ai İmar Mevzuatı</span><br />
               Asistanı
             </h1>
             <p className="landing-hero-desc">
@@ -105,17 +149,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
               ve Semantik Arama ile Profesyonel İmar Mevzuatı Desteği.
             </p>
 
-            <div className="landing-hero-quote">
+            <div className="landing-hero-quote" style={{ minHeight: '130px', position: 'relative' }}>
               <div className="landing-hero-quote-mark">"</div>
-              <p>
-                İmar mevzuatı konusunda en güncel ve doğru bilgiye hızla ulaşmak
-                isteyen profesyoneller için vazgeçilmez bir araç.
-              </p>
-              <div className="landing-hero-quote-author">
-                <div className="landing-hero-quote-avatar">
-                  <Building size={16} />
-                </div>
-                <span>İmar Profesyonelleri İçin Tasarlandı</span>
+
+              <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                {modulesInfo.map((mod, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      position: idx === currentModuleIndex ? 'relative' : 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      opacity: idx === currentModuleIndex ? 1 : 0,
+                      visibility: idx === currentModuleIndex ? 'visible' : 'hidden',
+                      transition: 'opacity 0.6s ease-in-out',
+                      pointerEvents: idx === currentModuleIndex ? 'auto' : 'none'
+                    }}
+                  >
+                    <p>{mod.text}</p>
+                    <div className="landing-hero-quote-author">
+                      <div className="landing-hero-quote-avatar">
+                        {mod.icon}
+                      </div>
+                      <span>{mod.author}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -168,13 +228,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
       {/* Stats Section */}
       <section className="landing-stats">
         <div className="landing-container">
-          <div className="landing-stats-grid">
-            {stats.map((stat, i) => (
-              <div key={i} className="landing-stat-card">
-                <div className="landing-stat-value">{stat.value}</div>
-                <div className="landing-stat-label">{stat.label}</div>
-              </div>
-            ))}
+          <div className="landing-stats-container">
+            <div className="landing-stats-row">
+              {stats.slice(0, 3).map((stat, i) => (
+                <div key={`top-${i}`} className="landing-stat-card">
+                  <div className="landing-stat-value">{stat.value}</div>
+                  <div className="landing-stat-label">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+            <div className="landing-stats-row">
+              {stats.slice(3).map((stat, i) => (
+                <div key={`bottom-${i}`} className="landing-stat-card">
+                  <div className="landing-stat-value">{stat.value}</div>
+                  <div className="landing-stat-label">{stat.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -211,29 +281,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
         </div>
       </section>
 
-      {/* Technology Section */}
-      <section className="landing-tech">
-        <div className="landing-container">
-          <h2 className="landing-section-title">Teknoloji Altyapısı</h2>
-          <p className="landing-section-subtitle">
-            En güncel ve güvenilir teknolojilerle desteklenmektedir.
-          </p>
-          <div className="landing-tech-grid">
-            {[
-              { name: "Google AI", icon: <Sparkles size={22} /> },
-              { name: "Gemini 2.0", icon: <Brain size={22} /> },
-              { name: "Firebase", icon: <Shield size={22} /> },
-              { name: "Mevzuat.gov.tr", icon: <Building size={22} /> },
-              { name: "Resmi Gazete", icon: <FileText size={22} /> }
-            ].map((tech, i) => (
-              <div key={i} className="landing-tech-card">
-                <div className="landing-tech-icon">{tech.icon}</div>
-                <span className="landing-tech-name">{tech.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* CTA Section */}
       <section className="landing-cta">
@@ -260,7 +308,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
               <Scale size={18} className="text-white" />
             </div>
             <span className="landing-footer-title">İmarMevzuat.ai</span>
-            <p className="landing-footer-tagline">Yeni Nesil AI İmar Mevzuatı Asistanı</p>
+            <p className="landing-footer-tagline">Yeni Nesil Ai İmar Mevzuatı Asistanı</p>
           </div>
           <div className="landing-footer-links">
             <div className="landing-footer-col">
