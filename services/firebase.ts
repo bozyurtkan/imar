@@ -129,6 +129,21 @@ export const getChatSession = async (userId: string, sessionId: string) => {
     }
 };
 
+// Belirli bir sohbet oturumunu sil
+export const deleteChatSession = async (userId: string, sessionId: string) => {
+    if (!userId || !sessionId) return false;
+
+    try {
+        const docRef = doc(db, "users", userId, "history", sessionId);
+        await deleteDoc(docRef);
+        console.log(`[ChatHistory] Oturum silindi: ${sessionId}`);
+        return true;
+    } catch (error) {
+        console.error("Oturum silinemedi:", error);
+        return false;
+    }
+};
+
 // ========== KÜTÜPHANE BELGE İŞLEMLERİ ==========
 // Her belge ayrı Firestore dokümanı olarak saklanır: users/{uid}/documents/{docId}
 // Bu sayede tek doküman 1MB sınırına takılmaz.

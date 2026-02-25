@@ -1,8 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
-import { X, Calendar, MessageSquare, Clock, ArrowRight } from 'lucide-react';
+import { X, Calendar, MessageSquare, Clock, ArrowRight, Trash2, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { getChatHistory, ChatSession } from '../services/firebase';
+import { getChatHistory, deleteChatSession, ChatSession } from '../services/firebase';
 
 interface HistoryModalProps {
     show: boolean;
@@ -14,6 +14,8 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ show, onClose, onSel
     const { user } = useAuth();
     const [history, setHistory] = useState<ChatSession[]>([]);
     const [loading, setLoading] = useState(true);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [sessionToDelete, setSessionToDelete] = useState<ChatSession | null>(null);
 
     useEffect(() => {
         if (!show) return; // Modal kapalıysa veri çekme
@@ -77,6 +79,33 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ show, onClose, onSel
 
     const groupedHistory = groupHistoryByDate(history);
 
+    const handleDeleteClick = (e: React.MouseEvent, session: ChatSession) => {
+        e.stopPropagation();
+        setSessionToDelete(session);
+    };
+
+    const confirmDelete = async () => {
+        if (!user || !sessionToDelete) return;
+
+        setDeletingId(sessionToDelete.id);
+
+        const success = await deleteChatSession(user.uid, sessionToDelete.id);
+
+        if (success) {
+            setHistory(prev => prev.filter(s => s.id !== sessionToDelete.id));
+        } else {
+            // Optional: Show error message
+            console.error("Silme işlemi başarısız.");
+        }
+
+        setDeletingId(null);
+        setSessionToDelete(null);
+    };
+
+    const cancelDelete = () => {
+        setSessionToDelete(null);
+    };
+
     return (
         <div className="fixed inset-0 z-[120] flex items-center justify-center modal-overlay p-4 fade-in" onClick={onClose}>
             <div
@@ -139,7 +168,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ show, onClose, onSel
                                                 </span>
                                             </div>
 
-                                            <div className="flex-1 min-w-0">
+                                            <div className="flex-1 min-w-0 pr-4">
                                                 <p className="text-sm text-warm-200 line-clamp-2 leading-relaxed mb-1.5 font-medium group-hover:text-warm-50 transition-colors">
                                                     {session.preview}
                                                 </p>
@@ -151,8 +180,17 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ show, onClose, onSel
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center text-warm-600 group-hover:text-accent transition-colors self-center">
-                                                <ArrowRight size={14} />
+                                            <div className="flex items-center gap-2 self-center">
+                                                <button
+                                                    onClick={(e) => handleDeleteClick(e, session)}
+                                                    className="p-2 text-warm-600 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all z-10"
+                                                    title="Sohbeti Sil"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                                <div className="text-warm-600 group-hover:text-accent transition-colors">
+                                                    <ArrowRight size={14} />
+                                                </div>
                                             </div>
                                         </button>
                                     ))}
@@ -162,6 +200,63 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ show, onClose, onSel
                     )}
                 </div>
             </div>
+
+            {/* Silme Onay Modalı */}
+            {sessionToDelete && (
+                <div className="fixed inset-0 z-[130] flex items-center justify-center bg-dark-bg/80 backdrop-blur-sm p-4 animate-in fade-in" onClick={cancelDelete}>
+                    <div
+                        className="bg-dark-tertiary border border-red-500/20 w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden flex flex-col scale-in"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="p-5 border-b border-dark-border bg-gradient-to-r from-red-500/10 to-transparent">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center justify-center text-red-500">
+                                    <AlertTriangle size={20} />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-bold text-warm-50">Sohbeti Sil</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-5">
+                            <p className="text-sm text-warm-300 mb-4">
+                                Bu sohbet geçmişini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.
+                            </p>
+                            <div className="bg-dark-surface border border-dark-border rounded-xl p-3 mb-5">
+                                <p className="text-xs text-warm-400 line-clamp-2 italic">"{sessionToDelete.preview}"</p>
+                            </div>
+
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    onClick={cancelDelete}
+                                    disabled={deletingId === sessionToDelete.id}
+                                    className="px-4 py-2 text-sm font-medium text-warm-300 hover:text-warm-50 hover:bg-dark-surface rounded-xl transition-all disabled:opacity-50"
+                                >
+                                    İptal
+                                </button>
+                                <button
+                                    onClick={confirmDelete}
+                                    disabled={deletingId === sessionToDelete.id}
+                                    className="px-4 py-2 text-sm font-bold text-white bg-red-500 hover:bg-red-600 rounded-xl shadow-lg shadow-red-500/20 transition-all flex items-center gap-2 disabled:opacity-50"
+                                >
+                                    {deletingId === sessionToDelete.id ? (
+                                        <>
+                                            <div className="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full"></div>
+                                            Siliniyor...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Trash2 size={16} />
+                                            Sil
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
