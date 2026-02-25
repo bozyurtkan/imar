@@ -62,22 +62,22 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBack }) => {
                         </div>
                         <h1 className="login-left-title">İmarMevzuat.ai</h1>
                         <p className="login-left-desc">
-                            Türkiye'nin en gelişmiş imar mevzuatı yapay zeka asistanı ile
-                            tanışın. Kanun, yönetmelik ve genelge analizi artık parmaklarınızın ucunda.
+                            50'den fazla kanun, yönetmelik ve genelge tek bir portalda.
+                            Madde atıflı kesin yanıtlar veren Türkiye'nin ilk ve tek imar mevzuatı yapay zekası.
                         </p>
                     </div>
                     <div className="login-left-features">
                         <div className="login-left-feature">
                             <span className="login-left-feature-icon">🧠</span>
-                            <span>Gelişmiş Yapay Zeka Muhakemesi</span>
+                            <span>Halüsinasyon Riski Minimumda, Madde Atıflı Yanıtlar</span>
                         </div>
                         <div className="login-left-feature">
                             <span className="login-left-feature-icon">📚</span>
-                            <span>50+ Mevzuat ve Yönetmelik</span>
+                            <span>50+ Kanun, Yönetmelik ve Genelge Tek Portalda</span>
                         </div>
                         <div className="login-left-feature">
                             <span className="login-left-feature-icon">🔒</span>
-                            <span>Güvenli ve Şifreli Veri Saklama</span>
+                            <span>7/24 Kesintisiz Erişim, Güvenli Veri Saklama</span>
                         </div>
                     </div>
                 </div>

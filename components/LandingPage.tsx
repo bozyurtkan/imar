@@ -13,49 +13,46 @@ interface LandingPageProps {
 const features = [
   {
     icon: <BookOpen size={20} />,
-    title: "Milyonlarca Karar",
-    desc: "Mevzuat.gov.tr ve Resmi Gazetede yayımlanan kararlarından oluşan milyonlarca içtihat havuzunda doğal dille arama yapabilirsiniz. Binlerce sayfalık kararları okumak yerine yapay zekanın çıkardığı detaylı karar özetleri ile aradığınız hukuki emsallere saniyeler içinde ulaşın."
+    title: "Araştırma Sürenizi %90 Kısaltın",
+    desc: "Binlerce sayfa okumak yerine, milyonlarca içtihat ve Resmi Gazete kararına doğal dille soru sorun. Yapay zeka saniyeler içinde özetlesin. Mevzuat.gov.tr ve Resmi Gazete kararlarından oluşan devasa havuzda aradığınız hukuki emsallere anında ulaşın."
   },
   {
     icon: <Brain size={20} />,
-    title: "Yapay Zeka",
-    desc: "İleri seviye dil modelleriyle desteklenmiş AI tabanlı sohbet asistanımız sayesinde, karmaşık İmar Mevzuat sorularınızı sanki kıdemli bir hukukçuyla konuşuyormuşçasına tartışın. İmar Kanunu ve ilgili yönetmeliklere dayalı, maddelerle desteklenmiş kesin atıflı cevaplar alın."
+    title: "Kıdemli Bir Hukukçuyla Konuşur Gibi Danışın",
+    desc: "Karmaşık imar sorularınıza madde numarası ve kanun atıflı kesin yanıtlar alın. Genel yapay zekalardan farklı olarak halüsinasyon riski minimuma indirilmiştir. İmar Kanunu ve ilgili yönetmeliklere dayalı, maddelerle desteklenmiş güvenilir cevaplar sunar."
   },
   {
     icon: <Sparkles size={20} />,
-    title: "Derin Düşünce",
-    desc: "Çözülmesi zor, çok boyutlu ve birden fazla mevzuat maddesinin aynı anda değerlendirilmesini gerektiren vakalar için tasarlanmış özel muhakeme modudur. Yapay zeka adım adım çalışarak size en detaylı, çapraz kontrollü stratejik analizleri sunar."
+    title: "Çok Boyutlu Vakaları Tek Seferde Çözün",
+    desc: "Birden fazla mevzuatın çapraz kontrolünü gerektiren karmaşık dosyalarda, adım adım muhakeme modu ile stratejik analiz raporu oluşturun. Yapay zeka her mevzuat maddesini ayrı ayrı değerlendirerek size en detaylı, çapraz kontrollü analizleri sunar."
   },
   {
     icon: <Zap size={20} />,
-    title: "Mevzuat Grafiği",
-    desc: "Birbirine atıf yapan yüzlerce kanun, yönetmelik ve tebliğ arasındaki bağlantıları interaktif bir bilgi grafiği üzerinde görsel olarak inceleyin. Hangi maddenin hangi yönetmeliğe dayandığını ve iptalleri bir bakışta görerek hukuki metin trafiğine hakim olun."
+    title: "Mevzuat Haritasını Bir Bakışta Görün",
+    desc: "Hangi madde hangi yönetmeliğe atıf yapıyor? İptal edilen hükümler neler? Birbirine atıf yapan yüzlerce kanun, yönetmelik ve tebliğ arasındaki bağlantıları interaktif bilgi grafiği üzerinde görsel olarak inceleyin ve mevzuat ağını saniyede kavrayın."
   },
   {
     icon: <Gavel size={20} />,
-    title: "Mevzuat Karşılaştır",
-    desc: "Yürürlükten kaldırılan metinler ile güncel mevzuat arasındaki farkları kelime kelime manuel aramak zorunda kalmayın. Sistemimiz, farklı tarihli metinleri yan yana koyarak eklenen, çıkarılan veya değiştirilen kısımları renk kodlu biçimde doğrudan gösterir."
+    title: "Eski ve Yeni Metinleri Anında Karşılaştırın",
+    desc: "Yürürlükten kaldırılan metinler ile güncel mevzuat arasındaki farkları kelime kelime manuel aramak zorunda kalmayın. Farklı tarihli metinleri yan yana koyarak eklenen, çıkarılan veya değiştirilen kısımları renk kodlu biçimde doğrudan görün."
   },
   {
     icon: <FileText size={20} />,
-    title: "Resmi Gazete Takibi",
-    desc: "Her gün güncellenen Resmi Gazete veritabanı ile hiçbir yasal değişikliği gözden kaçırmayın. İmar mevzuatı çevresinde gerçekleşen tüm önemli duyurular, iptal kararları veya yeni yönetmelikler anlık olarak sisteminize entegre edilir."
+    title: "Hiçbir Değişikliği Kaçırmayın",
+    desc: "Günlük güncellenen Resmi Gazete takibi ile yeni yönetmelikler, iptal kararları ve değişiklikler anında önünüze düşsün. İmar mevzuatı çevresindeki tüm önemli duyurular anlık olarak sisteminize entegre edilir."
   },
   {
     icon: <Globe size={20} />,
-    title: "Güncel Web Araştırma",
-    desc: "Mevzuatın ve yargı kararlarının ötesinde, hukuki literatürdeki son gelişmelere, idarelerin paylaşımlarına ve en güncel internet verilerine arama motoru entegrasyonumuzla erişin; araştırmalarınızda her zaman bir adım önde olun."
+    title: "Araştırmalarınızda Bir Adım Önde Olun",
+    desc: "Mevzuatın ve yargı kararlarının ötesinde, hukuki literatürdeki son gelişmelere, idarelerin paylaşımlarına ve en güncel internet verilerine arama motoru entegrasyonumuzla erişin. Güncel web araştırması ile her zaman en doğru bilgiye sahip olun."
   }
 ];
 
 const stats = [
-  { value: "Milyonlarca Karar", label: "İçerisinde arama ve karar özetleri" },
-  { value: "Yapay Zeka", label: "AI Tabanlı Karar Arama ve Sohbet Sistemi" },
-  { value: "Derin Düşünce", label: "Karmaşık süreçler için derinlemesine analiz" },
-  { value: "Mevzuat Grafiği", label: "Maddeler arası ilişkileri görselleştirin" },
-  { value: "Mevzuat Karşılaştır", label: "Eski ve yeni metinleri yan yana analiz edin" },
-  { value: "Resmi Gazete Takibi", label: "Günlük değişiklikleri anında öğrenin" },
-  { value: "Güncel Web Araştırma", label: "Arama motoru entegrasyonu ile son dakika bilgileri" }
+  { value: "50+", label: "Kanun, Yönetmelik ve Genelge Tek Portalda" },
+  { value: "Türkiye'de Tek", label: "İmar Mevzuatına Özel Yapay Zeka Platformu" },
+  { value: "7/24", label: "Kesintisiz Erişim, Anlık Güncelleme" },
+  { value: "Madde Atıflı", label: "Her Yanıt Kanun Maddesiyle Desteklenir" }
 ];
 
 
@@ -65,38 +62,38 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
 
   const modulesInfo = [
     {
-      text: "Mevzuat.gov.tr ve Resmi Gazetede yayımlanan kararlarından oluşan milyonlarca içtihat havuzunda doğal dille yapay zeka destekli arama yapabilirsiniz.",
-      author: "Milyonlarca Karar",
+      text: "Binlerce sayfa okumak yerine, milyonlarca içtihat ve Resmi Gazete kararına doğal dille soru sorun. Yapay zeka saniyeler içinde özetlesin.",
+      author: "Araştırma Sürenizi %90 Kısaltın",
       icon: <BookOpen size={16} />
     },
     {
-      text: "İleri seviye dil modelleriyle desteklenmiş AI tabanlı sohbet asistanımız sayesinde, karmaşık İmar Mevzuat sorularınızı tartışın.",
-      author: "Yapay Zeka",
+      text: "Karmaşık imar sorularınıza madde numarası ve kanun atıflı kesin yanıtlar alın. Halüsinasyon riski minimuma indirilmiştir.",
+      author: "Kıdemli Bir Hukukçuyla Konuşur Gibi",
       icon: <Brain size={16} />
     },
     {
-      text: "Çözülmesi zor ve birden fazla mevzuat maddesinin aynı anda değerlendirilmesini gerektiren vakalar için tasarlanmış çapraz kontrollü muhakeme modu.",
-      author: "Derin Düşünce",
+      text: "Birden fazla mevzuatın çapraz kontrolünü gerektiren karmaşık dosyalarda, adım adım muhakeme modu ile stratejik analiz raporu oluşturun.",
+      author: "Çok Boyutlu Vakaları Tek Seferde Çözün",
       icon: <Sparkles size={16} />
     },
     {
-      text: "Birbirine atıf yapan yüzlerce kanun, yönetmelik ve tebliğ arasındaki bağlantıları interaktif bir bilgi grafiği üzerinde görsel olarak inceleyin.",
-      author: "Mevzuat Grafiği",
+      text: "Hangi madde hangi yönetmeliğe atıf yapıyor? İptal edilen hükümler neler? İnteraktif bilgi grafiği üzerinde mevzuat ağını saniyede kavrayın.",
+      author: "Mevzuat Haritasını Bir Bakışta Görün",
       icon: <Zap size={16} />
     },
     {
-      text: "Farklı tarihli metinleri yan yana koyarak eklenen, çıkarılan veya değiştirilen kısımları renk kodlu biçimde doğrudan inceleyip karşılaştırın.",
-      author: "Mevzuat Karşılaştır",
+      text: "Farklı tarihli metinleri yan yana koyarak eklenen, çıkarılan veya değiştirilen kısımları renk kodlu biçimde doğrudan görün.",
+      author: "Eski ve Yeni Metinleri Anında Karşılaştırın",
       icon: <Gavel size={16} />
     },
     {
-      text: "Her gün güncellenen Resmi Gazete veritabanı ile hiçbir yasal değişikliği, iptal kararını veya yeni yönetmeliği gözden kaçırmayın.",
-      author: "Resmi Gazete Takibi",
+      text: "Günlük güncellenen Resmi Gazete takibi ile yeni yönetmelikler, iptal kararları ve değişiklikler anında önünüze düşsün.",
+      author: "Hiçbir Değişikliği Kaçırmayın",
       icon: <FileText size={16} />
     },
     {
       text: "Hukuki literatürdeki son gelişmelere, idarelerin paylaşımlarına ve en güncel internet verilerine arama motoru entegrasyonumuzla erişin.",
-      author: "Güncel Web Araştırma",
+      author: "Araştırmalarınızda Bir Adım Önde Olun",
       icon: <Globe size={16} />
     }
   ];
@@ -137,16 +134,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
           <div className="landing-hero-content">
             <div className="landing-hero-badge">
               <Zap size={14} />
-              <span>Türkiye'nin 1 Numaralı ve Tek İmar Mevzuatı Yapay Zekası</span>
+              <span>Türkiye'nin İlk ve Tek İmar Mevzuatı Yapay Zekası</span>
             </div>
             <h1 className="landing-hero-title">
-              Yeni Nesil<br />
-              <span className="landing-hero-title-accent">Ai İmar Mevzuatı</span><br />
-              Asistanı
+              İmar Mevzuatını<br />
+              <span className="landing-hero-title-accent">Yapay Zekayla Çözün.</span><br />
+              Saniyeler İçinde.
             </h1>
             <p className="landing-hero-desc">
-              Gelişmiş Muhakeme Yeteneği, Akıllı Mevzuat Analizi, Belge Yükleme
-              ve Semantik Arama ile Profesyonel İmar Mevzuatı Desteği.
+              50'den fazla kanun, yönetmelik ve genelge tek bir portalda. Halüsinasyon riskini minimuma indiren,
+              madde atıflı kesin yanıtlar veren Türkiye'nin ilk ve tek imar mevzuatı yapay zekası.
             </p>
 
             <div className="landing-hero-quote" style={{ minHeight: '130px', position: 'relative' }}>
@@ -182,7 +179,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
             <div className="landing-hero-actions">
               <button onClick={onGetStarted} className="landing-btn-primary landing-btn-lg">
                 <MessageSquare size={18} />
-                Hemen Başlayın
+                Ücretsiz Deneyin — 30 Saniyede Başlayın
                 <ArrowRight size={18} />
               </button>
               <a href="mailto:info@imarmevzuat.ai" className="landing-btn-outline landing-btn-lg">
@@ -230,16 +227,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
         <div className="landing-container">
           <div className="landing-stats-container">
             <div className="landing-stats-row">
-              {stats.slice(0, 3).map((stat, i) => (
-                <div key={`top-${i}`} className="landing-stat-card">
-                  <div className="landing-stat-value">{stat.value}</div>
-                  <div className="landing-stat-label">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-            <div className="landing-stats-row">
-              {stats.slice(3).map((stat, i) => (
-                <div key={`bottom-${i}`} className="landing-stat-card">
+              {stats.map((stat, i) => (
+                <div key={`stat-${i}`} className="landing-stat-card">
                   <div className="landing-stat-value">{stat.value}</div>
                   <div className="landing-stat-label">{stat.label}</div>
                 </div>
@@ -252,9 +241,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
       {/* Features Section */}
       <section className="landing-features">
         <div className="landing-container">
-          <h2 className="landing-section-title">Özelliklerimiz</h2>
+          <h2 className="landing-section-title">Neden İmarMevzuat.ai?</h2>
           <p className="landing-section-subtitle">
-            İmar mevzuatı alanında ihtiyacınız olan her şey, tek bir platformda.
+            Genel yapay zekalar imar sorunuza doğru cevap veremez. Biz veririz — her yanıtımız kanun maddesiyle desteklenir.
           </p>
           <div className="landing-features-list">
             {features.map((feature, i) => (
@@ -287,14 +276,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
       <section className="landing-cta">
         <div className="landing-container landing-cta-inner">
           <h2 className="landing-cta-title">
-            İmar Mevzuatında Yapay Zeka Devrimi
+            İmar Mevzuatını Yapay Zekayla Keşfedin
           </h2>
           <p className="landing-cta-desc">
-            Ücretsiz hesap oluşturun ve İmarMevzuat.ai'nin gücünü keşfedin.
+            Kredi kartı gerekmez. Ücretsiz hesap oluşturun — 30 saniyede başlayın.
           </p>
           <button onClick={onGetStarted} className="landing-btn-primary landing-btn-lg landing-btn-white">
             <MessageSquare size={18} />
-            Ücretsiz Başlayın
+            Ücretsiz Deneyin
             <ArrowRight size={18} />
           </button>
         </div>
@@ -308,7 +297,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
               <Scale size={18} className="text-white" />
             </div>
             <span className="landing-footer-title">İmarMevzuat.ai</span>
-            <p className="landing-footer-tagline">Yeni Nesil Ai İmar Mevzuatı Asistanı</p>
+            <p className="landing-footer-tagline">İmar Mevzuatını Yapay Zekayla Çözün. Saniyeler İçinde.</p>
           </div>
           <div className="landing-footer-links">
             <div className="landing-footer-col">
