@@ -57,9 +57,9 @@ const stats = [
 
 const comparisonData = [
     {
-        feature: "Hukuki Bilgi Derinliği",
+        feature: "İmar Bilgisi Derinliği",
         app: "Sadece İmar Kanunu ve ilgili yönetmeliklerle özel donatılmıştır. İmar terminolojisine tam hakimdir.",
-        ai: "Hukuki içerikleri geneldir. Yerel ve spesifik imar mevzuatı (DOP, ruhsat süreçleri vb.) bilgisi yüzeysel kalır."
+        ai: "İçerikleri geneldir. Yerel ve spesifik imar mevzuatı (DOP, ruhsat süreçleri vb.) bilgisi yüzeysel kalır."
     },
     {
         feature: "Doğruluk ve Kaynak",
@@ -68,12 +68,12 @@ const comparisonData = [
     },
     {
         feature: "Sistem Güncelliği",
-        app: "Günlük Resmi Gazete takibi ile çalışır. Değişen, iptal edilen ve en yeni yürürlüğe giren mevzuata anında erişir.",
-        ai: "Eğitim verileri belirli bir geçmiş tarihte kesilmiştir. Son hukuki değişikliklerden ve güncel kararlardan habersiz olabilir."
+        app: "Günlük Resmi Gazete takibi ile çalışır. Değişen, iptal edilen ve en yeni yürürlüğe giren imar mevzuatına anında erişir.",
+        ai: "Eğitim verileri belirli bir geçmiş tarihte kesilmiştir. İmar mevzuatındaki son değişikliklerden ve güncel kararlardan habersiz olabilir."
     },
     {
         feature: "Karmaşık Vakaları Çözme",
-        app: "\"Derin Düşünme Modu\" sayesinde birden fazla mevzuatı aynı anda analiz eder ve maddeler arası hukuki çapraz kontrol sağlar.",
+        app: "\"Derin Düşünme Modu\" sayesinde birden fazla mevzuatı aynı anda analiz eder ve maddeler arası çapraz kontrol sağlar.",
         ai: "Çoklu mevzuat bağlantılarını birleştirmede zorlanır, genellikle tek boyutlu okumalar yaparak bağlamı kaçırır."
     },
     {
@@ -84,22 +84,17 @@ const comparisonData = [
     {
         feature: "Eski ve Yeni Metin Kıyası",
         app: "Mevzuatın eski ve yeni metinleri arasındaki farkları kelime kelime, renk kodlu olarak anında karşınıza getirir.",
-        ai: "Metinleri karşılaştırabilse de hukuki etki analizi yapamaz ve farkların hukuki sonucunu doğrudan yorumlayamaz."
+        ai: "Metinleri karşılaştırabilse de etki analizi yapamaz ve imar mevzuatı açısından farkların sonucunu doğrudan yorumlayamaz."
     },
     {
         feature: "Canlı Web Entegrasyonu",
-        app: "Sadece veritabanı ile sınırlı kalmaz, güncel hukuki gelişmeleri ve kurum duyurularını eşzamanlı olarak tarayıp sonuçlarınıza dahil eder.",
-        ai: "Genellikle internet araması yapsa dahi hukuki kaynakları filtrelemekte ve doğru resmi kurum sitelerinden teyit almakta zorlanır."
+        app: "Sadece veritabanı ile sınırlı kalmaz, güncel imar haberlerini, mahkeme kararlarını ve kurum duyurularını eşzamanlı olarak tarar.",
+        ai: "Genellikle internet araması yapsa dahi imar mevzuatı kaynaklarını filtrelemekte ve doğru resmi kurumlardan teyit almakta zorlanır."
     },
     {
         feature: "Görsel Bilgi Haritaları (Mevzuat Ağı)",
         app: "İlgili kanun, yönetmelik ve tebliğlerin birbirine nasıl atıf yaptığını interaktif grafiklerle şematize ederek bağlantıları görselleştirir.",
         ai: "Bağlantıları sadece metinsel olarak sıralar. Görsel bir haritalama veya dinamik ilişki ağı (Knowledge Graph) sunamaz."
-    },
-    {
-        feature: "Kişisel Belge Deposu ve OCR",
-        app: "Kendi dava dosyalarınızı, taranmış pdf'lerinizi ve dilekçelerinizi sisteme yükleyebilir, OCR (Görüntüden Metin) ile asistanınızı kendi dosyalarınızla konuşturabilirsiniz.",
-        ai: "Belge yüklenebilir ancak taranmış hukuki belgelerin veya Türkçe OCR analizlerinin kalitesi düşüktür; belgeleri sizin için güvenli bir 'Hukuki Depo' olarak saklamaz."
     }
 ];
 
