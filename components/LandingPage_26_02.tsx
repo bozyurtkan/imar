@@ -55,6 +55,39 @@ const stats = [
     { value: "Madde Atıflı", label: "Her Yanıt Kanun Maddesiyle Desteklenir" }
 ];
 
+const comparisonData = [
+    {
+        feature: "Hukuki Bilgi Derinliği",
+        app: "Sadece İmar Kanunu ve ilgili yönetmeliklerle özel donatılmıştır. İmar terminolojisine tam hakimdir.",
+        ai: "Hukuki içerikleri geneldir. Yerel ve spesifik imar mevzuatı (DOP, ruhsat süreçleri vb.) bilgisi yüzeysel kalır."
+    },
+    {
+        feature: "Doğruluk ve Kaynak",
+        app: "Halüsinasyon riski sıfıra yakındır. Her yanıtını mutlaka bir kanun veya yönetmelik maddesine (Madde X/Y) atıf yaparak verir.",
+        ai: "Halüsinasyon riski yüksektir. Bazen mülga (kaldırılmış) kanun maddelerini veya var olmayan içtihatları gerçekmiş gibi sunabilir."
+    },
+    {
+        feature: "Sistem Güncelliği",
+        app: "Günlük Resmi Gazete takibi ile çalışır. Değişen, iptal edilen ve en yeni yürürlüğe giren mevzuata anında erişir.",
+        ai: "Eğitim verileri belirli bir geçmiş tarihte kesilmiştir. Son hukuki değişikliklerden ve güncel kararlardan habersiz olabilir."
+    },
+    {
+        feature: "Karmaşık Vakaları Çözme",
+        app: "\"Derin Düşünme Modu\" sayesinde birden fazla mevzuatı aynı anda analiz eder ve maddeler arası hukuki çapraz kontrol sağlar.",
+        ai: "Çoklu mevzuat bağlantılarını birleştirmede zorlanır, genellikle tek boyutlu okumalar yaparak bağlamı kaçırır."
+    },
+    {
+        feature: "Veri Gizliliği",
+        app: "Yüklediğiniz belgeler ve yaptığınız sorgulamalar, yapay zeka modellerini eğitmek için kesinlikle kullanılmaz. Sunucu tabanlı güvenli bir mimarimiz vardır.",
+        ai: "Kullanıcı verileri ve yüklenen dosyalar, genellikle modelin genel eğitim ve geliştirme süreçlerine dahil edilir."
+    },
+    {
+        feature: "Eski ve Yeni Metin Kıyası",
+        app: "Mevzuatın eski ve yeni metinleri arasındaki farkları kelime kelime, renk kodlu olarak anında karşınıza getirir.",
+        ai: "Metinleri karşılaştırabilse de hukuki etki analizi yapamaz ve farkların hukuki sonucunu doğrudan yorumlayamaz."
+    }
+];
+
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLegal }) => {
     const [expandedFeature, setExpandedFeature] = useState<number | null>(null);
@@ -270,7 +303,57 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                 </div>
             </section>
 
+            {/* Comparison Section */}
+            <section className="landing-comparison pb-24">
+                <div className="landing-container">
+                    <h2 className="landing-section-title">İmarMevzuat.ai vs Genel Yapay Zeka Modelleri</h2>
+                    <p className="landing-section-subtitle mb-12">
+                        Hayati hukuki kararlarınızı jenerik modellere bırakmayın. Sadece imar hukukuna odaklanmış özel sistemimizin farkını görün.
+                    </p>
 
+                    <div className="comparison-wrapper overflow-x-auto custom-scrollbar pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
+                        <div className="comparison-table min-w-[700px] bg-dark-surface border border-dark-border rounded-2xl overflow-hidden glass shadow-2xl">
+
+                            {/* Header */}
+                            <div className="grid grid-cols-12 bg-dark-elevated border-b border-dark-border">
+                                <div className="col-span-4 p-5 sm:p-6 flex items-center justify-center border-r border-dark-border">
+                                    <span className="text-warm-50 font-bold text-sm sm:text-base uppercase tracking-wider">Karşılaştırılan Özellik</span>
+                                </div>
+                                <div className="col-span-4 p-5 sm:p-6 flex flex-col items-center justify-center border-r border-dark-border bg-accent/5">
+                                    <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent mb-2 sm:mb-3 shadow-[0_0_15px_rgba(232,115,74,0.3)]">
+                                        <Scale size={20} />
+                                    </div>
+                                    <span className="text-accent font-bold text-base sm:text-lg">İmarMevzuat.ai</span>
+                                </div>
+                                <div className="col-span-4 p-5 sm:p-6 flex flex-col items-center justify-center">
+                                    <div className="w-10 h-10 rounded-full bg-dark-border flex items-center justify-center text-warm-400 mb-2 sm:mb-3">
+                                        <Brain size={20} />
+                                    </div>
+                                    <span className="text-warm-300 font-bold text-base sm:text-lg text-center">Genel Yapay Zeka</span>
+                                </div>
+                            </div>
+
+                            {/* Body */}
+                            <div className="flex flex-col">
+                                {comparisonData.map((row, idx) => (
+                                    <div key={idx} className={`grid grid-cols-12 border-b border-dark-border/50 hover:bg-dark-surface/50 transition-colors ${idx === comparisonData.length - 1 ? 'border-b-0' : ''}`}>
+                                        <div className="col-span-4 p-4 sm:p-6 border-r border-dark-border flex items-center justify-center">
+                                            <span className="text-warm-100 font-semibold text-center text-sm sm:text-base">{row.feature}</span>
+                                        </div>
+                                        <div className="col-span-4 p-4 sm:p-6 border-r border-dark-border bg-accent/5 flex items-center text-center">
+                                            <p className="text-warm-200 text-sm leading-relaxed mx-auto max-w-[90%]">{row.app}</p>
+                                        </div>
+                                        <div className="col-span-4 p-4 sm:p-6 flex items-center text-center opacity-70">
+                                            <p className="text-warm-400 text-sm leading-relaxed mx-auto max-w-[90%]">{row.ai}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             {/* CTA Section */}
             <section className="landing-cta">
