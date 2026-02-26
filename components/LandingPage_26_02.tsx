@@ -422,14 +422,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                         {targetAudienceData.map((item, index) => (
-                            <div key={index} className="target-card group flex flex-col items-center text-center p-8 bg-dark-surface border border-dark-border rounded-2xl glass-subtle transition-all duration-300 hover:border-accent/40 hover:-translate-y-2 hover:shadow-[0_12px_30px_-10px_rgba(196,80,26,0.2)]">
-                                <div className="target-card-icon w-16 h-16 rounded-2xl bg-dark-elevated text-warm-300 flex items-center justify-center mb-6 transition-colors duration-300 group-hover:bg-accent/10 group-hover:text-accent group-hover:shadow-[0_0_20px_rgba(196,80,26,0.15)]">
-                                    {item.icon}
+                            <div
+                                key={index}
+                                className={`target-card group relative flex flex-col items-center text-center p-8 sm:p-10 rounded-[2rem] transition-all duration-500 hover:-translate-y-3 z-10 ${index === 6 ? 'md:col-span-2 lg:col-span-3 lg:w-2/3 mx-auto' : ''}`}
+                            >
+                                {/* Arka Plan ve Cam Efekti */}
+                                <div className="absolute inset-0 bg-dark-surface/60 border border-dark-border/60 rounded-[2rem] backdrop-blur-xl transition-all duration-500 group-hover:border-accent/40 group-hover:bg-dark-surface/90 group-hover:shadow-[0_0_40px_-15px_rgba(196,80,26,0.3)] z-0 overflow-hidden">
+                                    {/* İç Işıltı Gecişi */}
+                                    <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                                 </div>
-                                <h3 className="text-xl font-bold text-warm-50 mb-4">{item.title}</h3>
-                                <p className="text-warm-300 text-sm leading-relaxed">
-                                    {item.desc}
-                                </p>
+
+                                {/* Alt Parlama Çizgisi */}
+                                <div className="absolute inset-x-12 bottom-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 transform translate-y-2 group-hover:translate-y-0 rounded-t-lg z-0"></div>
+
+                                {/* İçerik */}
+                                <div className="relative z-10 flex flex-col items-center">
+                                    <div className="target-card-icon relative w-20 h-20 rounded-2xl bg-dark-elevated/80 text-warm-300 flex items-center justify-center mb-8 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3 shadow-lg group-hover:bg-accent/10 group-hover:text-accent group-hover:shadow-[0_0_30px_rgba(196,80,26,0.3)] ring-1 ring-dark-border/50 group-hover:ring-accent/30 [&>svg]:w-8 [&>svg]:h-8 [&>svg]:transition-transform [&>svg]:duration-500">
+                                        <div className="absolute inset-0 rounded-2xl bg-accent/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
+                                        {item.icon}
+                                    </div>
+                                    <h3 className="text-xl sm:text-2xl font-extrabold text-warm-50 mb-4 tracking-tight group-hover:text-accent transition-colors duration-300">{item.title}</h3>
+                                    <p className="text-warm-300 text-sm sm:text-base leading-relaxed group-hover:text-warm-100 transition-colors duration-300">
+                                        {item.desc}
+                                    </p>
+                                </div>
                             </div>
                         ))}
                     </div>
