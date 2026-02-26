@@ -98,6 +98,44 @@ const comparisonData = [
     }
 ];
 
+const targetAudienceData = [
+    {
+        title: "Mimarlar ve Şehir Plancıları",
+        desc: "Tasarım, projelendirme ve imar planı hazırlık süreçlerinde karşılaşılan mevzuat engellerini, \"Bu alanda kaç kata izin var? Çekme mesafesi nedir?\" gibi spesifik detayları araştırırken saatler kaybetmek istemeyen tasarımcılar için.",
+        icon: <Building size={24} />
+    },
+    {
+        title: "Mühendisler",
+        desc: "Ruhsat süreçlerinde, proje onay aşamalarında ve zemin-şantiye uygulamalarında, İmar kanunu, Otopark yönetmeliği, Sığınak yönetmeliği gibi birbirine bağlı yüzlerce sayfayı saniyeler içinde tarayıp kesin bilgiye ulaşmak isteyen mühendisler için.",
+        icon: <Zap size={24} />
+    },
+    {
+        title: "Yapı Denetim ve Müteahhitler",
+        desc: "Sahada veya ofiste, yapı ruhsatı ve iskan süreçlerinde mevzuata uygunluğu son bir kez hızlıca teyit etmek, ceza ve yaptırım risklerini minimize etmek isteyen şantiye şefleri, yapı denetçileri ve yüklenici firmalar için.",
+        icon: <Shield size={24} />
+    },
+    {
+        title: "Hukukçular ve Avukatlar",
+        desc: "İmar davaları, iptal davaları, idare hukuku ve gayrimenkul anlaşmazlıkları üzerinde çalışan; ilgili kanun maddelerinin güncel hallerini ve emsal Danıştay/Yargıtay kararlarını yapay zeka ile hızla analiz etmek isteyen hukuk profesyonelleri için.",
+        icon: <Scale size={24} />
+    },
+    {
+        title: "Kamu Kurumları",
+        desc: "Belediyelerin imar, ruhsat ve şehircilik müdürlüklerinde çalışan memurlar, karar mercileri ve ilgili bakanlık uzmanları için. Başvuruları değerlendirirken güncel mevzuatı saniyeler içinde çapraz sorgulayarak \"hatasız\" karar almak için.",
+        icon: <Users size={24} />
+    },
+    {
+        title: "Akademisyenler ve Öğrenciler",
+        desc: "Üniversitelerin Mimarlık, Mühendislik ve Hukuk fakültelerinde öğrenim gören öğrenciler ile bu alanda makale/tez araştırması yapan akademisyenler için devasa bir \"dijital mevzuat laboratuvarı\"dır.",
+        icon: <BookOpen size={24} />
+    },
+    {
+        title: "Değerleme Uzmanları",
+        desc: "Mevcut yapıların imar durumunu, yasal risklerini ve değerini belirlerken güncel mevzuata ve yönetmelik değişimlerine anında erişmek isteyen ekspertiz profesyonelleri için.",
+        icon: <Search size={24} />
+    }
+];
+
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLegal }) => {
     const [expandedFeature, setExpandedFeature] = useState<number | null>(null);
@@ -361,6 +399,32 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                             </div>
 
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Target Audience Section */}
+            <section className="landing-target-audience pt-12 pb-24">
+                <div className="landing-container">
+                    <div className="text-center mb-16">
+                        <h2 className="landing-section-title">İmarMevzuat.ai Kimler İçin Tasarlandı?</h2>
+                        <p className="landing-section-subtitle mx-auto">
+                            İmar ve şehircilik ekosistemindeki tüm profesyonellerin mevzuat araştırma yükünü hafifletmek için özel olarak geliştirildi.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                        {targetAudienceData.map((item, index) => (
+                            <div key={index} className="target-card group flex flex-col items-center text-center p-8 bg-dark-surface border border-dark-border rounded-2xl glass-subtle transition-all duration-300 hover:border-accent/40 hover:-translate-y-2 hover:shadow-[0_12px_30px_-10px_rgba(196,80,26,0.2)]">
+                                <div className="target-card-icon w-16 h-16 rounded-2xl bg-dark-elevated text-warm-300 flex items-center justify-center mb-6 transition-colors duration-300 group-hover:bg-accent/10 group-hover:text-accent group-hover:shadow-[0_0_20px_rgba(196,80,26,0.15)]">
+                                    {item.icon}
+                                </div>
+                                <h3 className="text-xl font-bold text-warm-50 mb-4">{item.title}</h3>
+                                <p className="text-warm-300 text-sm leading-relaxed">
+                                    {item.desc}
+                                </p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
