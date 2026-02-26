@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { OfficialGazetteModal } from './components/OfficialGazetteModal';
-import { LandingPage } from './components/LandingPage';
+import { LandingPage } from './components/LandingPage_26_02';
 import { LoginPage } from './components/LoginPage';
 import { LegalPage } from './components/LegalPage';
 import {
