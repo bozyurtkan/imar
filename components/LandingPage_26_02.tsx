@@ -359,44 +359,51 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                         Hayati hukuki kararlarınızı jenerik modellere bırakmayın. Sadece imar hukukuna odaklanmış özel sistemimizin farkını görün.
                     </p>
 
-                    <div className="comparison-wrapper overflow-x-auto custom-scrollbar pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
-                        <div className="comparison-table min-w-[700px] bg-dark-surface border border-dark-border rounded-2xl overflow-hidden glass shadow-2xl">
+                    <div className="comparison-wrapper overflow-x-auto custom-scrollbar pb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
+                        <div className="min-w-[800px] flex flex-col gap-4">
 
                             {/* Header */}
-                            <div className="grid grid-cols-12 bg-dark-elevated border-b border-dark-border">
-                                <div className="col-span-4 p-5 sm:p-6 flex items-center justify-center border-r border-dark-border">
-                                    <span className="text-warm-50 font-bold text-sm sm:text-base uppercase tracking-wider">Karşılaştırılan Özellik</span>
+                            <div className="grid grid-cols-12 px-6 py-2 mb-2">
+                                <div className="col-span-4 flex items-center justify-center">
+                                    <span className="text-warm-300 font-bold text-sm sm:text-base uppercase tracking-wider opacity-80">Karşılaştırılan Özellik</span>
                                 </div>
-                                <div className="col-span-4 p-5 sm:p-6 flex flex-col items-center justify-center border-r border-dark-border bg-accent/5">
-                                    <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent mb-2 sm:mb-3 shadow-[0_0_15px_rgba(232,115,74,0.3)]">
-                                        <Scale size={20} />
+                                <div className="col-span-4 flex flex-col items-center justify-center">
+                                    <div className="w-12 h-12 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent mb-3 shadow-[0_0_20px_rgba(196,80,26,0.15)] bg-opacity-50 backdrop-blur-sm">
+                                        <Scale size={24} />
                                     </div>
-                                    <span className="text-accent font-bold text-base sm:text-lg">İmarMevzuat.ai</span>
+                                    <span className="text-accent font-extrabold text-lg sm:text-xl">İmarMevzuat.ai</span>
                                 </div>
-                                <div className="col-span-4 p-5 sm:p-6 flex flex-col items-center justify-center">
-                                    <div className="w-10 h-10 rounded-full bg-dark-border flex items-center justify-center text-warm-400 mb-2 sm:mb-3">
-                                        <Brain size={20} />
+                                <div className="col-span-4 flex flex-col items-center justify-center opacity-60">
+                                    <div className="w-12 h-12 rounded-2xl bg-dark-surface border border-dark-border flex items-center justify-center text-warm-300 mb-3 backdrop-blur-sm">
+                                        <Brain size={24} />
                                     </div>
-                                    <span className="text-warm-300 font-bold text-base sm:text-lg text-center">Genel Yapay Zeka</span>
+                                    <span className="text-warm-300 font-bold text-lg sm:text-xl text-center">Genel Yapay Zeka</span>
                                 </div>
                             </div>
 
-                            {/* Body */}
-                            <div className="flex flex-col">
-                                {comparisonData.map((row, idx) => (
-                                    <div key={idx} className={`grid grid-cols-12 border-b border-dark-border/50 hover:bg-dark-surface/50 transition-colors ${idx === comparisonData.length - 1 ? 'border-b-0' : ''}`}>
-                                        <div className="col-span-4 p-4 sm:p-6 border-r border-dark-border flex items-center justify-center">
-                                            <span className="text-warm-100 font-semibold text-center text-sm sm:text-base">{row.feature}</span>
-                                        </div>
-                                        <div className="col-span-4 p-4 sm:p-6 border-r border-dark-border bg-accent/5 flex items-center text-center">
-                                            <p className="text-warm-200 text-sm leading-relaxed mx-auto max-w-[90%]">{row.app}</p>
-                                        </div>
-                                        <div className="col-span-4 p-4 sm:p-6 flex items-center text-center opacity-70">
-                                            <p className="text-warm-400 text-sm leading-relaxed mx-auto max-w-[90%]">{row.ai}</p>
-                                        </div>
+                            {/* Body Rows as Cards */}
+                            {comparisonData.map((row, idx) => (
+                                <div key={idx} className="group grid grid-cols-12 bg-dark-surface/40 hover:bg-dark-surface border border-dark-border hover:border-accent/40 rounded-2xl transition-all duration-300 hover:shadow-[0_12px_30px_-10px_rgba(196,80,26,0.2)] hover:-translate-y-1 relative overflow-hidden backdrop-blur-md">
+
+                                    {/* Subtle Gradient Overlay on Hover */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-accent/0 via-accent/5 to-transparent flex-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+
+                                    {/* Feature Column */}
+                                    <div className="col-span-4 p-5 sm:p-7 border-r border-dark-border/40 flex items-center justify-center relative z-10 transition-colors duration-300 group-hover:bg-dark-elevated/40">
+                                        <span className="text-warm-50 font-bold text-center text-sm sm:text-base group-hover:text-accent transition-colors duration-300">{row.feature}</span>
                                     </div>
-                                ))}
-                            </div>
+
+                                    {/* İmarMevzuat.ai Column */}
+                                    <div className="col-span-4 p-5 sm:p-7 border-r border-dark-border/40 bg-accent/5 flex items-center text-center relative z-10 transition-colors duration-300 group-hover:bg-accent/10">
+                                        <p className="text-warm-100 font-medium text-sm sm:text-sm leading-relaxed mx-auto max-w-[95%]">{row.app}</p>
+                                    </div>
+
+                                    {/* Genel YZ Column */}
+                                    <div className="col-span-4 p-5 sm:p-7 flex items-center text-center opacity-60 group-hover:opacity-80 transition-opacity duration-300 relative z-10 bg-black/10">
+                                        <p className="text-warm-400 text-sm sm:text-sm leading-relaxed mx-auto max-w-[95%]">{row.ai}</p>
+                                    </div>
+                                </div>
+                            ))}
 
                         </div>
                     </div>
