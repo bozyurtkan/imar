@@ -140,6 +140,82 @@ const targetAudienceData = [
 export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLegal }) => {
     const [expandedFeature, setExpandedFeature] = useState<number | null>(null);
     const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
+    const [currentMockupIndex, setCurrentMockupIndex] = useState(0);
+
+    const mockupConversations = [
+        // 1. Derin Düşünme / Karmaşık Vaka
+        (
+            <div key="mock-1" className="flex flex-col gap-4 animate-in fade-in">
+                <div className="landing-mockup-msg landing-mockup-msg-user">
+                    <p>Bir arsada tevhit işlemi yapılmadan önce belediyenin DOP kesintisi %40 yapılmışsa, tevhit sonrası kalan miktar için tekrar DOP kesilebilir mi?</p>
+                </div>
+                <div className="landing-mockup-msg landing-mockup-msg-ai delay-1">
+                    <div className="landing-mockup-ai-badge">
+                        <Brain size={12} className="text-accent" /> DERİN DÜŞÜNME MODU ANALİZİ
+                    </div>
+                    <p className="mb-3">İlgili mevzuatları taradım ve şu sonuca ulaştım:</p>
+                    <div className="p-3 bg-dark-surface border border-dark-border rounded-lg mb-3">
+                        <p className="font-bold text-warm-100 flex items-center gap-2 mb-1">
+                            <Scale size={14} className="text-accent" /> 3194 Sayılı Kanun Madde 18 / Ek Fıkra
+                        </p>
+                        <p className="text-xs text-warm-300">
+                            Herhangi bir parselden bir defadan fazla düzenleme ortaklık payı alınamaz. Ancak, emsal artışı (nüfus artışı) halinde ilave DOP kesilebilir.
+                        </p>
+                    </div>
+                    <p><strong>Sonuç:</strong> Tevhit sonrası emsal artışı olmuyorsa <strong>ikinci kez DOP kesilemez.</strong></p>
+                </div>
+            </div>
+        ),
+        // 2. Belge Yükleme / Mülga Analizi
+        (
+            <div key="mock-2" className="flex flex-col gap-4 animate-in fade-in">
+                <div className="landing-mockup-msg landing-mockup-msg-user">
+                    <p>Ekteki pdf üzerinden: Arazi_düzenleme_raporu.pdf, bu rapordaki çekme mesafeleri güncel planlı alanlar imar yönetmeliğine uygun mu?</p>
+                </div>
+                <div className="landing-mockup-msg landing-mockup-msg-ai delay-1">
+                    <div className="landing-mockup-ai-badge">
+                        <FileText size={12} className="text-accent" /> BELGE VE MÜLGA ANALİZİ
+                    </div>
+                    <p>
+                        Raporunuzu inceledim. Yan cephe çekme mesafesi raporda <strong>3 metre</strong> olarak belirtilmiş.
+                        Ancak Planlı Alanlar İmar Yönetmeliği Madde 23'e göre (Son Güncelleme: 2024), yan bahçe mesafesi 4 kata kadar olan binalarda en az <strong>3 metre</strong>, 4 kattan sonraki her kat için <strong>0.5 metre</strong> ilave edilir.
+                    </p>
+                </div>
+                <div className="landing-mockup-msg landing-mockup-msg-user delay-2">
+                    <p>Bina 6 katlı olarak projelendirilmiş.</p>
+                </div>
+                <div className="landing-mockup-msg landing-mockup-msg-ai delay-3">
+                    <p>
+                        Bu durumda yan bahçe mesafesi <code>3m + (2 kat × 0.5m) = 4 metre</code> olmalıdır. <strong className="text-red-400">Raporunuzdaki 3 metre ölçüsü güncel mevzuata aykırıdır.</strong>
+                    </p>
+                </div>
+            </div>
+        ),
+        // 3. Resmi Gazete ve Web Araması
+        (
+            <div key="mock-3" className="flex flex-col gap-4 animate-in fade-in">
+                <div className="landing-mockup-msg landing-mockup-msg-user">
+                    <p>Bugünkü Resmi Gazete'de Otopark Yönetmeliği ile ilgili yeni yayınlanan karar nedir?</p>
+                </div>
+                <div className="landing-mockup-msg landing-mockup-msg-ai delay-1">
+                    <div className="landing-mockup-ai-badge">
+                        <Globe size={12} className="text-accent" /> CANLI VERİ TABANI ARAMASI
+                    </div>
+                    <p>
+                        Bugün (27 Şubat 2026) yayımlanan Resmi Gazete verilerine ulaştım.
+                    </p>
+                    <div className="p-3 bg-dark-surface border border-accent/30 rounded-lg mt-3">
+                        <p className="font-bold text-accent flex items-center gap-2 mb-1">
+                            Otopark Yönetmeliğinde Değişiklik
+                        </p>
+                        <p className="text-xs text-warm-200">
+                            Madde 1: Her daire için zorunlu otopark alanı 1'den 2'ye çıkarılan bölgelerde inşaat geçiş süresi 6 ay uzatılmıştır.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        )
+    ];
 
     const modulesInfo = [
         {
@@ -180,10 +256,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
     ];
 
     useEffect(() => {
-        const timer = setInterval(() => {
+        const timer1 = setInterval(() => {
             setCurrentModuleIndex((prev) => (prev + 1) % modulesInfo.length);
         }, 4500);
-        return () => clearInterval(timer);
+        const timer2 = setInterval(() => {
+            setCurrentMockupIndex((prev) => (prev + 1) % mockupConversations.length);
+        }, 8500);
+        return () => {
+            clearInterval(timer1);
+            clearInterval(timer2);
+        };
     }, []);
 
     return (
@@ -214,17 +296,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                 <div className="landing-container landing-hero-inner">
                     <div className="landing-hero-content">
                         <div className="landing-hero-badge">
-                            <Zap size={14} />
-                            <span>26.02 Güncellemesi — Yeni Nesil Mevzuat Asistanı</span>
+                            <Sparkles size={16} className="text-accent-primary animate-pulse" />
+                            <span>Türkiye'nin İlk Üretken Yapay Zekalı İmar Asistanı</span>
                         </div>
                         <h1 className="landing-hero-title">
-                            İmar Mevzuatını<br />
-                            <span className="landing-hero-title-accent">Yapay Zekayla Çözün.</span><br />
-                            Saniyeler İçinde.
+                            İmar Hukuku ve Mevzuatını<br />
+                            <span className="landing-hero-title-accent">Üretken Yapay Zeka ile Çözün.</span><br />
+                            İçtihatlara Saniyeler İçinde Ulaşın.
                         </h1>
                         <p className="landing-hero-desc">
-                            50'den fazla kanun, yönetmelik ve genelge tek bir portalda. Halüsinasyon riskini minimuma indiren,
-                            madde atıflı kesin yanıtlar veren Türkiye'nin ilk ve tek imar mevzuatı yapay zekası.
+                            3194 Sayılı İmar Kanunu, güncel yönetmelikler ve Danıştay kararları tek portaldan karşınızda. Halüsinasyon riskini yok eden,
+                            kesin madde atıflı hukuki yanıtlar sunan Türkiye'nin ilk uzman imar mevzuatı asistanı.
                         </p>
 
                         <div className="landing-hero-quote" style={{ minHeight: '130px', position: 'relative' }}>
@@ -277,25 +359,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                                 </div>
                                 <span className="landing-mockup-title">İmarMevzuat.ai</span>
                             </div>
-                            <div className="landing-mockup-body">
-                                <div className="landing-mockup-msg landing-mockup-msg-user">
-                                    <p>3194 Sayılı Kanun 18. madde nedir?</p>
-                                </div>
-                                <div className="landing-mockup-msg landing-mockup-msg-ai">
-                                    <div className="landing-mockup-ai-badge">
-                                        <Shield size={10} /> MEVZUAT YANITI
-                                    </div>
-                                    <p>
-                                        3194 Sayılı İmar Kanunu'nun 18. maddesi, arazi ve arsa
-                                        düzenlemesi hakkındadır. Bu madde, imar planlarının
-                                        uygulanması sırasında düzenleme ortaklık payı (DOP)
-                                        kesintisini düzenler...
-                                    </p>
-                                    <div className="landing-mockup-refs">
-                                        <span>📎 Madde 18/1</span>
-                                        <span>📎 Madde 18/2</span>
-                                    </div>
-                                </div>
+                            <div className="landing-mockup-body" style={{ minHeight: '380px' }}>
+                                {mockupConversations[currentMockupIndex]}
                             </div>
                         </div>
                     </div>
