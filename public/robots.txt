@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap for ImarMevzuat.ai
+Sitemap: https://imarai.vercel.app/sitemap.xml

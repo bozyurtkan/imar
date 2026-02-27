@@ -7,6 +7,12 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: '0.0.0.0',
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+        'Content-Security-Policy': "default-src 'self' data: https: wss: 'unsafe-inline' 'unsafe-eval'; frame-ancestors 'none';"
+      }
     },
     plugins: [react()],
     resolve: {
