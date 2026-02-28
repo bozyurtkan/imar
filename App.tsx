@@ -1836,16 +1836,32 @@ const ImarApp: React.FC = () => {
                 <Brain size={14} /> Derin Düşünce modu aktif — Gelişmiş muhakeme ve çok adımlı analiz
               </div>
             )}
-            <div className={`relative bg-dark-surface border rounded-2xl overflow-hidden transition-all focus-within:border-accent/40 focus-within:shadow-[0_0_0_3px_rgba(196,80,26,0.1)] ${isListening ? 'border-red-500/60 shadow-[0_0_0_3px_rgba(239,68,68,0.15)]' : isDeepThinkMode ? 'border-purple-500/40 shadow-[0_0_0_3px_rgba(147,51,234,0.1)]' : 'border-dark-border'}`}>
-              <input
-                type="text"
+            <div className={`relative bg-dark-surface border rounded-2xl overflow-hidden transition-all focus-within:border-accent/40 focus-within:shadow-[0_0_0_3px_rgba(196,80,26,0.1)] flex items-end ${isListening ? 'border-red-500/60 shadow-[0_0_0_3px_rgba(239,68,68,0.15)]' : isDeepThinkMode ? 'border-purple-500/40 shadow-[0_0_0_3px_rgba(147,51,234,0.1)]' : 'border-dark-border'}`}>
+              <textarea
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={(e) => {
+                  setInputValue(e.target.value);
+                  // Auto-resize textarea
+                  e.target.style.height = 'auto';
+                  e.target.style.height = Math.min(e.target.scrollHeight, 150) + 'px';
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (inputValue.trim() && !isTyping) {
+                      e.currentTarget.form?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                      // Reset height after submit
+                      e.currentTarget.style.height = 'auto';
+                    }
+                  }
+                }}
+                rows={1}
                 placeholder={isListening ? 'Dinleniyor... Konuşun' : 'İmar mevzuatı hakkında soru sorun...'}
                 disabled={isTyping}
-                className="w-full bg-transparent pl-5 pr-24 py-4 text-sm text-warm-50 placeholder-warm-600 focus:outline-none disabled:opacity-50"
+                className="w-full bg-transparent pl-5 pr-24 py-4 text-sm text-warm-50 placeholder-warm-600 focus:outline-none disabled:opacity-50 resize-none overflow-y-auto min-h-[52px]"
+                style={{ maxHeight: '150px' }}
               />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+              <div className="absolute right-2 bottom-2 flex items-center gap-1">
                 {/* Deep Think Toggle */}
                 <button
                   type="button"
@@ -1940,8 +1956,14 @@ const ImarApp: React.FC = () => {
               </div>
             </div>
           </form>
-          <div className="mt-2 text-center text-[10px] text-warm-600 font-medium">
-            Yüklediğiniz mevzuat belgeleri üzerinden arama yapar
+          <div className="mt-2 text-center text-[10px] text-warm-600 font-medium min-h-[15px] transition-all duration-300">
+            {isGeneralMode && isDeepThinkMode
+              ? "Hem web kaynaklarını hem belgelerinizi birleştirerek derin hukuki analiz yapar"
+              : isGeneralMode
+                ? "Tüm web'i tarayarak güncel mevzuat ve içtihatlarda arama yapar"
+                : isDeepThinkMode
+                  ? "Belgeleriniz üzerinde çok adımlı hukuki muhakeme ve detaylı analiz yapar"
+                  : "Yüklediğiniz mevzuat belgeleri üzerinden arama yapar"}
           </div>
         </div>
       </main>
