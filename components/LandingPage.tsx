@@ -306,7 +306,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                             İçtihatlara Saniyeler İçinde Ulaşın.
                         </h1>
                         <p className="landing-hero-desc">
-                            3194 Sayılı İmar Kanunu, güncel yönetmelikler ve Danıştay kararları tek portaldan karşınızda. Halüsinasyon riskini yok eden,
+                            3194 Sayılı İmar Kanunu, güncel yönetmelikler ve mevzuat kararları tek portaldan karşınızda. Halüsinasyon riskini yok eden,
                             kesin madde atıflı hukuki yanıtlar sunan Türkiye'nin ilk uzman imar mevzuatı asistanı.
                         </p>
 
