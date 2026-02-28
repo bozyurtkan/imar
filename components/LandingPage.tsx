@@ -4,6 +4,7 @@ import {
     FileText, Search, Globe, Sparkles, MessageSquare, Lock, Zap, Users,
     Building, Gavel, Mail, Phone, MapPin, Github, Linkedin, Twitter
 } from 'lucide-react';
+import { FAQSection } from './FAQSection';
 
 interface LandingPageProps {
     onGetStarted: () => void;
@@ -516,6 +517,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                     </div>
                 </div>
             </section>
+
+            {/* FAQ Section */}
+            <FAQSection />
 
             {/* CTA Section */}
             <section className="landing-cta">
