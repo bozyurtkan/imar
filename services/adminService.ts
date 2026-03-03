@@ -8,6 +8,12 @@ export interface UserInfo {
     lastActivity: Date | null;
     totalSessions: number;
     totalMessages: number;
+    // Kredi alanları
+    subscriptionPlan?: string;
+    totalCredit?: number;
+    remainingCredit?: number;
+    subscriptionEndDate?: string;
+    autoRenew?: boolean;
 }
 
 export interface UserSession {
@@ -62,10 +68,15 @@ export const getAllUsersWithHistory = async (): Promise<UserInfo[]> => {
 
             users.push({
                 id: userId,
-                email: userEmail,
+                email: userData.email || userEmail,
                 lastActivity,
                 totalSessions: historySnapshot.size,
-                totalMessages
+                totalMessages,
+                subscriptionPlan: userData.subscription_plan || 'free',
+                totalCredit: userData.total_credit ?? 100,
+                remainingCredit: userData.remaining_credit ?? 100,
+                subscriptionEndDate: userData.subscription_end_date || '',
+                autoRenew: userData.auto_renew || false
             });
         }
 

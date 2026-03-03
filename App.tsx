@@ -26,9 +26,9 @@ import { HistoryModal } from './components/HistoryModal';
 import { AdminPanel } from './components/AdminPanel';
 import { db, saveChatHistory, getChatSession, saveDocToLibrary, deleteDocFromLibrary, loadLibraryDocs } from './services/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { User, LogOut, LogIn, Clock, History, Shield } from 'lucide-react';
-
-const DAILY_LIMIT = 50;
+import { User, LogOut, LogIn, Clock, History, Shield, AlertCircle } from 'lucide-react';
+import { getUserCredit, checkCredit, deductCredit, initializeDefaultData } from './services/creditService';
+import { UserCredit } from './types';
 
 interface PDFExportSettings {
   fontSize: 'small' | 'medium' | 'large';
@@ -63,7 +63,16 @@ const ImarApp: React.FC = () => {
     return saved === 'dark';
   });
   const [isGeneralMode, setIsGeneralMode] = useState(false);
-  const [usageCount, setUsageCount] = useState(0);
+  // Kredi sistemi state'leri
+  const [userCredit, setUserCredit] = useState<UserCredit>({
+    subscriptionPlan: 'free',
+    totalCredit: 100,
+    remainingCredit: 100,
+    subscriptionStartDate: '',
+    subscriptionEndDate: '',
+    autoRenew: false
+  });
+  const [showCreditWarning, setShowCreditWarning] = useState(false);
   const [uploadPendingFiles, setUploadPendingFiles] = useState<File[]>([]);
   const [currentDescription, setCurrentDescription] = useState('');
   const [hasKey, setHasKey] = useState<boolean>(true);
@@ -200,32 +209,18 @@ const ImarApp: React.FC = () => {
         }
       }
 
-      // Kredi bilgisini Firestore'dan yükle (giriş yapan kullanıcı)
+      // Kredi bilgisini Firestore'dan yükle
       if (user) {
         try {
-          const today = new Date().toDateString();
-          const usageRef = doc(db, "users", user.uid, "data", "usage");
-          const usageSnap = await getDoc(usageRef);
-          if (usageSnap.exists() && usageSnap.data().date === today) {
-            setUsageCount(usageSnap.data().count || 0);
-          } else {
-            // Migration: localStorage'daki eski kredi bilgisini Firestore'a taşı
-            const savedUsage = localStorage.getItem('imar_usage_data');
-            if (savedUsage) {
-              const { date, count } = JSON.parse(savedUsage);
-              if (date === today && count > 0) {
-                setUsageCount(count);
-                await setDoc(usageRef, { date: today, count });
-              } else {
-                setUsageCount(0);
-              }
-            } else {
-              setUsageCount(0);
-            }
+          await initializeDefaultData();
+          const credit = await getUserCredit(user.uid);
+          setUserCredit(credit);
+          // %10 altı uyarı kontrolü
+          if (credit.totalCredit > 0 && credit.remainingCredit <= credit.totalCredit * 0.1) {
+            setShowCreditWarning(true);
           }
         } catch (e) {
-          console.error("Usage load error:", e);
-          setUsageCount(0);
+          console.error("Kredi yükleme hatası:", e);
         }
       }
     };
@@ -324,26 +319,11 @@ const ImarApp: React.FC = () => {
             }
           }
 
-          // 2. Kredi bilgisini Firestore'dan yükle
-          const today = new Date().toDateString();
-          const usageRef = doc(db, "users", user.uid, "data", "usage");
-          const usageSnap = await getDoc(usageRef);
-          if (usageSnap.exists() && usageSnap.data().date === today) {
-            setUsageCount(usageSnap.data().count || 0);
-          } else {
-            // Migration: localStorage'daki eski kredi bilgisini Firestore'a taşı
-            const savedUsage = localStorage.getItem('imar_usage_data');
-            if (savedUsage) {
-              const { date, count } = JSON.parse(savedUsage);
-              if (date === today && count > 0) {
-                setUsageCount(count);
-                await setDoc(usageRef, { date: today, count });
-              } else {
-                setUsageCount(0);
-              }
-            } else {
-              setUsageCount(0);
-            }
+          // 2. Kredi bilgisini yükle
+          const credit = await getUserCredit(user.uid);
+          setUserCredit(credit);
+          if (credit.totalCredit > 0 && credit.remainingCredit <= credit.totalCredit * 0.1) {
+            setShowCreditWarning(true);
           }
 
           // 3. Temiz sohbet
@@ -357,17 +337,7 @@ const ImarApp: React.FC = () => {
         if (savedDocs) setDocuments(JSON.parse(savedDocs));
         else setDocuments([]);
         setMessages([]);
-
-        // Giriş yapmamış kullanıcı: localStorage'dan kredi bilgisini oku
-        const today = new Date().toDateString();
-        const savedUsage = localStorage.getItem('imar_usage_data');
-        if (savedUsage) {
-          const { date, count } = JSON.parse(savedUsage);
-          if (date === today) setUsageCount(count);
-          else setUsageCount(0);
-        } else {
-          setUsageCount(0);
-        }
+        setUserCredit({ subscriptionPlan: 'free', totalCredit: 100, remainingCredit: 100, subscriptionStartDate: '', subscriptionEndDate: '', autoRenew: false });
       }
     };
     syncData();
@@ -716,21 +686,35 @@ const ImarApp: React.FC = () => {
     setCurrentDescription('');
   };
 
-  const handleSummarize = async (doc: DocumentFile) => {
+  const handleSummarize = async (docFile: DocumentFile) => {
     if (isTyping) return;
+
+    // Kredi kontrolü
+    if (user) {
+      const creditCheck = await checkCredit(user.uid, 'document_summary');
+      if (!creditCheck.sufficient) {
+        alert(`Kredi yetersiz! Bu işlem ${creditCheck.cost} kredi gerektiriyor, kalan: ${creditCheck.remaining}`);
+        return;
+      }
+    }
+
     setIsTyping(true);
     setIsMobileMenuOpen(false);
-    const userMsg = { id: Date.now().toString(), role: 'user' as const, text: `${doc.name} belgesini özetle.`, timestamp: new Date() };
+    const userMsg = { id: Date.now().toString(), role: 'user' as const, text: `${docFile.name} belgesini özetle.`, timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
     try {
-      const summary = await geminiService.summarizeDocument(doc);
+      const summary = await geminiService.summarizeDocument(docFile);
       const aiMsg = { id: (Date.now() + 1).toString(), role: 'assistant' as const, text: summary, timestamp: new Date() };
       setMessages(prev => [...prev, aiMsg]);
 
-      // Firestore'a kaydet (state callback dışında, güvenilir)
       if (user) {
         const allMessages = [...messages, userMsg, aiMsg];
         await saveChatHistory(user.uid, allMessages, user.email || undefined, sessionId);
+        // Kredi düş
+        const result = await deductCredit(user.uid, 'document_summary');
+        if (result.success) {
+          setUserCredit(prev => ({ ...prev, remainingCredit: result.remainingCredit }));
+        }
       }
     } catch (e: any) {
       setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant' as const, text: "Hata: " + e.message, timestamp: new Date() }]);
@@ -744,9 +728,16 @@ const ImarApp: React.FC = () => {
     const query = inputValue.trim();
     if (!query || isTyping) return;
 
-    if (usageCount >= DAILY_LIMIT) {
-      alert("Günlük kullanım sınırına ulaştınız.");
-      return;
+    // Modül ID'sini belirle
+    const moduleId = isGeneralMode ? 'web_search' : isDeepThinkMode ? 'deep_think' : 'chatbot';
+
+    // Backend-first kredi kontrolü
+    if (user) {
+      const creditCheck = await checkCredit(user.uid, moduleId);
+      if (!creditCheck.sufficient) {
+        alert(`Kredi yetersiz! Bu işlem ${creditCheck.cost} kredi gerektiriyor, kalan krediniz: ${creditCheck.remaining}`);
+        return;
+      }
     }
 
     const userMsg: Message = { id: Date.now().toString(), role: 'user', text: query, timestamp: new Date() };
@@ -783,24 +774,23 @@ const ImarApp: React.FC = () => {
 
       setMessages(prev => [...prev, aiMsg]);
 
-      // Firestore'a AI yanıtı dahil tüm mesajları kaydet (state callback dışında)
+      // Firestore'a AI yanıtı dahil tüm mesajları kaydet
       if (user) {
         const allMessages = [...messages, userMsg, aiMsg];
         await saveChatHistory(user.uid, allMessages, user.email || undefined, sessionId);
         console.log('[ChatHistory] Sohbet kaydedildi:', allMessages.length, 'mesaj');
       }
 
-      const newCount = usageCount + 1;
-      setUsageCount(newCount);
+      // Atomic kredi düşümü (backend-first)
       if (user) {
-        try {
-          const usageRef = doc(db, "users", user.uid, "data", "usage");
-          await setDoc(usageRef, { date: new Date().toDateString(), count: newCount });
-        } catch (e) {
-          console.error("Usage save error:", e);
+        const result = await deductCredit(user.uid, moduleId);
+        if (result.success) {
+          setUserCredit(prev => ({ ...prev, remainingCredit: result.remainingCredit }));
+          // %10 altı uyarı
+          if (userCredit.totalCredit > 0 && result.remainingCredit <= userCredit.totalCredit * 0.1) {
+            setShowCreditWarning(true);
+          }
         }
-      } else {
-        localStorage.setItem('imar_usage_data', JSON.stringify({ date: new Date().toDateString(), count: newCount }));
       }
     } catch (error: any) {
       const msg = error.message || "";
@@ -821,20 +811,33 @@ const ImarApp: React.FC = () => {
   const handleLinkComparison = async () => {
     if (!linkUrl.trim()) return;
 
+    // Kredi kontrolü
+    if (user) {
+      const creditCheck = await checkCredit(user.uid, 'link_analysis');
+      if (!creditCheck.sufficient) {
+        alert(`Kredi yetersiz! Bu işlem ${creditCheck.cost} kredi gerektiriyor, kalan: ${creditCheck.remaining}`);
+        return;
+      }
+    }
+
     setShowLinkModal(false);
     setIsTyping(true);
     const userMsg = { id: Date.now().toString(), role: 'user' as const, text: `Şu linkteki mevzuat değişikliğini analiz et: ${linkUrl}`, timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
 
     try {
-      const result = await geminiService.compareLegislation(linkUrl, documents);
-      const aiMsg = { id: (Date.now() + 1).toString(), role: 'assistant' as const, text: result, timestamp: new Date() };
+      const compareResult = await geminiService.compareLegislation(linkUrl, documents);
+      const aiMsg = { id: (Date.now() + 1).toString(), role: 'assistant' as const, text: compareResult, timestamp: new Date() };
       setMessages(prev => [...prev, aiMsg]);
 
-      // Firestore'a kaydet (state callback dışında)
       if (user) {
         const allMessages = [...messages, userMsg, aiMsg];
         await saveChatHistory(user.uid, allMessages, user.email || undefined, sessionId);
+        // Kredi düş
+        const creditResult = await deductCredit(user.uid, 'link_analysis');
+        if (creditResult.success) {
+          setUserCredit(prev => ({ ...prev, remainingCredit: creditResult.remainingCredit }));
+        }
       }
     } catch (error: any) {
       setMessages(prev => [...prev, {
@@ -1675,13 +1678,22 @@ const ImarApp: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {/* Günlük Kullanım - Header'da */}
-            <div className="flex items-center gap-2 px-3 py-2 bg-dark-surface border border-dark-border rounded-xl">
+            {/* Kredi Göstergesi - Header'da */}
+            <div className={`flex items-center gap-2 px-3 py-2 bg-dark-surface border rounded-xl transition-all ${userCredit.remainingCredit <= 0 ? 'border-red-500/50' :
+              userCredit.totalCredit > 0 && userCredit.remainingCredit <= userCredit.totalCredit * 0.1 ? 'border-amber-500/50' :
+                'border-dark-border'
+              }`}>
               <span className="text-[10px] font-semibold text-warm-400">Kredi</span>
               <div className="w-16 h-1.5 bg-dark-elevated rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-accent to-accent-dark rounded-full transition-all duration-700" style={{ width: `${(usageCount / DAILY_LIMIT) * 100}%` }}></div>
+                <div className={`h-full rounded-full transition-all duration-700 ${userCredit.remainingCredit <= 0 ? 'bg-red-500' :
+                  userCredit.totalCredit > 0 && userCredit.remainingCredit <= userCredit.totalCredit * 0.1 ? 'bg-gradient-to-r from-amber-500 to-red-500' :
+                    'bg-gradient-to-r from-accent to-accent-dark'
+                  }`} style={{ width: `${userCredit.totalCredit > 0 ? Math.min(100, (userCredit.remainingCredit / userCredit.totalCredit) * 100) : 0}%` }}></div>
               </div>
-              <span className="text-[10px] font-bold text-accent">{usageCount}/{DAILY_LIMIT}</span>
+              <span className={`text-[10px] font-bold ${userCredit.remainingCredit <= 0 ? 'text-red-400' :
+                userCredit.totalCredit > 0 && userCredit.remainingCredit <= userCredit.totalCredit * 0.1 ? 'text-amber-400' :
+                  'text-accent'
+                }`}>{userCredit.remainingCredit}/{userCredit.totalCredit}</span>
             </div>
             {messages.length > 0 && (
               <button
@@ -1708,6 +1720,29 @@ const ImarApp: React.FC = () => {
             </button>
           </div>
         </header>
+
+        {/* Düşük Kredi Uyarı Banner */}
+        {showCreditWarning && userCredit.remainingCredit > 0 && (
+          <div className="mx-4 lg:mx-6 mt-2 px-4 py-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-between z-10 animate-in">
+            <div className="flex items-center gap-2">
+              <AlertCircle size={14} className="text-amber-400 shrink-0" />
+              <span className="text-[11px] font-semibold text-amber-300">
+                Krediniz azalıyor! Kalan: <span className="font-black">{userCredit.remainingCredit}</span> / {userCredit.totalCredit}
+              </span>
+            </div>
+            <button onClick={() => setShowCreditWarning(false)} className="text-amber-500 hover:text-amber-300 transition-colors p-1">
+              <X size={14} />
+            </button>
+          </div>
+        )}
+        {userCredit.remainingCredit <= 0 && (
+          <div className="mx-4 lg:mx-6 mt-2 px-4 py-2.5 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-2 z-10 animate-in">
+            <AlertCircle size={14} className="text-red-400 shrink-0" />
+            <span className="text-[11px] font-semibold text-red-300">
+              Krediniz tükendi! Soru sormak veya modül kullanmak için kredi satın almanız gerekmektedir.
+            </span>
+          </div>
+        )}
 
         {/* Chat Content Area */}
         <div className="flex-1 overflow-y-auto px-4 lg:px-8 space-y-4 lg:space-y-5 custom-scrollbar overscroll-contain z-10">

@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFunctions } from "firebase/functions";
-import { getFirestore, doc, setDoc, collection, query, orderBy, getDocs, getDoc, serverTimestamp, deleteDoc, collectionGroup, where, limit } from "firebase/firestore";
+import { getFirestore, doc, setDoc, collection, query, orderBy, getDocs, getDoc, serverTimestamp, deleteDoc, collectionGroup, where, limit, runTransaction, addDoc, updateDoc, writeBatch, Timestamp } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
