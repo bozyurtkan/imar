@@ -248,24 +248,49 @@ export class GeminiService {
   async analyzeResmiGazete(title: string, content: string): Promise<string> {
     const ai = this.getClient();
     const prompt = `
-      GÖREV: Şu Resmi Gazete maddesini imar ve şehirleşme profesyoneli için analiz et: "${title}"
-      
+      Sen, Türk imar mevzuatı ve şehirleşme hukuku alanında uzmanlaşmış bir hukuki danışman ve profesyonel analistin. Sana iletilen Resmi Gazete maddelerini; belediyeler, mimarlar, inşaat mühendisleri ve yapı sektörü profesyonelleri için yorumlu, uygulanabilir ve hukuken sağlam biçimde analiz etmekle görevlisin.
+
+      GÖREV:
+      Aşağıdaki Resmi Gazete maddesini imar ve şehirleşme profesyonelleri için analiz et.
+
+      BAŞLIK: ${title}
+
       İÇERİK:
       ${content.substring(0, 15000)}
-      
-      ANALİZ FORMATI (Markdown):
-      **ÖZET**: (2-3 cümle ile içeriği özetle)
-      
-      **HUKUKİ YORUM**: (Mevzuat açısından ne anlama geliyor? Yönetmelik, tebliğ vs. hiyerarşisi nedir?)
-      
-      **ETKİ**: (Belediyeler, mimarlar veya inşaat sektörü için somut etkisi nedir?)
-      
-      **TAVSİYE**: (Profesyoneller ne yapmalı? Dikkat edilmesi gerekenler neler?)
-      
+
+      ---
+
+      ANALİZ FORMATI (Markdown — aşağıdaki başlıkları ve sırayı değiştirmeden kullan):
+
+      **ÖZET**
+      Maddenin konusunu, kapsamını ve temel amacını 2-3 cümle ile açıkla. Teknik terimler kullan; basitleştirme.
+
+      **HUKUKİ YORUM**
+      - Bu düzenlemenin türünü belirt: kanun, yönetmelik, tebliğ, genelge, Cumhurbaşkanlığı kararnamesi vb.
+      - Mevzuat hiyerarşisindeki yerini ve bağlı olduğu üst normu açıkla.
+      - Varsa yürürlükten kaldırılan veya değiştirilen hükümlerlere değin.
+      - Düzenlemenin hukuki geçerlilik tarihini ve geçiş hükümlerini belirt.
+
+      **ETKİ**
+      - Belediyeler ve kamu idareleri açısından idari ve operasyonel yükümlülükleri sırala.
+      - Mimarlar, inşaat mühendisleri ve proje müellifleri için uygulamaya yansımaları açıkla.
+      - İnşaat ve yapı sektörü için maliyet, süreç veya izin boyutlarındaki değişiklikleri belirt.
+      - Gerekirse paydaş gruplarına göre ayrıştırılmış madde madde analiz sun.
+
+      **TAVSİYE**
+      - Profesyonellerin kısa vadede yapması gereken işlemleri ve öncelikleri listele.
+      - Risk veya uyumsuzluk alanlarına karşı uyarı ver.
+      - Varsa dikkat edilmesi gereken belirsiz veya tartışmalı hükümler için profesyonel danışmanlık alınmasını öner.
+
+      ---
+
       KURALLAR:
-      1. Gereksiz giriş/çıkış cümleleri kullanma.
-      2. Profesyonel, net ve hukuki bir dil kullan.
-      3. Emoji kullanma.
+      1. Giriş veya kapanış için nezaket cümlesi kullanma; doğrudan analize başla.
+      2. Dil: profesyonel, hukuki, net. Belirsiz veya muğlak ifadelerden kaçın.
+      3. Emoji, ünlem işareti veya informal ifade kullanma.
+      4. Her başlık zorunludur; içerik yoksa "Bu madde için ilgili bir etki/hüküm tespit edilmemiştir." yaz.
+      5. Madde numarası, yönetmelik adı, Resmî Gazete sayısı gibi referans bilgileri doğru aktar; tahmin etme.
+      6. Yanıt Türkçe olacak.
     `;
 
     try {

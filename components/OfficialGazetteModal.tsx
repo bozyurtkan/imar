@@ -234,20 +234,31 @@ export const OfficialGazetteModal: React.FC<OfficialGazetteModalProps> = ({ isOp
 
                                             {article.analysis ? (() => {
                                                 const sections = [
-                                                    { key: 'ÖZET', color: 'text-accent', bg: 'bg-accent/10 border-accent/30', label: 'ÖZET' },
-                                                    { key: 'HUKUKİ YORUM', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/30', label: 'HUKUKİ YORUM' },
-                                                    { key: 'ETKİ', color: 'text-orange-400', bg: 'bg-orange-500/10 border-orange-500/30', label: 'ETKİ' },
-                                                    { key: 'TAVSİYE', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/30', label: 'TAVSİYE' },
+                                                    { key: 'ÖZET', color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20', label: 'ÖZET' },
+                                                    { key: 'HUKUKİ YORUM', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20', label: 'HUKUKİ YORUM' },
+                                                    { key: 'ETKİ', color: 'text-yellow-400', bg: 'bg-yellow-500/10 border-yellow-500/20', label: 'ETKİ' },
+                                                    { key: 'TAVSİYE', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20', label: 'TAVSİYE' },
                                                 ];
-                                                const cleanText = article.analysis.replace(/\*\*/g, '').replace(/\*/g, '');
-                                                const sectionRegex = new RegExp(`(${sections.map(s => s.key).join('|')}):`, 'gi');
+                                                // Metni temizle ve böl (hem "BAŞLIK:" hem de "**BAŞLIK**" formatını yakala)
+                                                const cleanText = article.analysis.replace(/\*\*/g, '');
+                                                const sectionNames = sections.map(s => s.key).join('|');
+                                                const sectionRegex = new RegExp(`(${sectionNames}):?`, 'gi');
+
                                                 const parts = cleanText.split(sectionRegex).filter(p => p.trim());
                                                 const parsed: { label: string; color: string; bg: string; content: string }[] = [];
-                                                for (let i = 0; i < parts.length; i++) {
-                                                    const matched = sections.find(s => s.key === parts[i].trim().toUpperCase());
-                                                    if (matched && i + 1 < parts.length) {
-                                                        parsed.push({ label: matched.label, color: matched.color, bg: matched.bg, content: parts[i + 1].trim() });
-                                                        i++;
+
+                                                for (let j = 0; j < parts.length; j++) {
+                                                    const partValue = parts[j].trim().toUpperCase();
+                                                    const matched = sections.find(s => s.key === partValue);
+
+                                                    if (matched && j + 1 < parts.length) {
+                                                        parsed.push({
+                                                            label: matched.label,
+                                                            color: matched.color,
+                                                            bg: matched.bg,
+                                                            content: parts[j + 1].trim()
+                                                        });
+                                                        j++;
                                                     }
                                                 }
                                                 if (parsed.length === 0) {
@@ -256,11 +267,14 @@ export const OfficialGazetteModal: React.FC<OfficialGazetteModalProps> = ({ isOp
                                                 return (
                                                     <div className="space-y-3">
                                                         {parsed.map((section, idx) => (
-                                                            <div key={idx} className={`rounded-xl border p-4 ${section.bg}`}>
-                                                                <span className={`inline-block text-[10px] font-black tracking-widest uppercase px-2 py-0.5 rounded-md border mb-2 ${section.bg} ${section.color}`}>
+                                                            <div key={idx} className="flex flex-col gap-1.5 animate-in" style={{ animationDelay: `${idx * 50}ms` }}>
+                                                                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border w-fit font-black text-[11px] tracking-wider ${section.bg} ${section.color}`}>
+                                                                    <div className={`w-1.5 h-1.5 rounded-full bg-current`} />
                                                                     {section.label}
-                                                                </span>
-                                                                <p className="text-sm text-warm-200 leading-relaxed">{section.content}</p>
+                                                                </div>
+                                                                <div className="pl-1 border-l-2 border-dark-border ml-1 my-1">
+                                                                    <p className="text-sm text-warm-200 leading-relaxed whitespace-pre-wrap">{section.content}</p>
+                                                                </div>
                                                             </div>
                                                         ))}
                                                     </div>
