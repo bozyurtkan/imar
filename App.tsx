@@ -9,7 +9,7 @@ import {
   ShieldCheck, Sun, Moon, CheckSquare,
   Square, Globe, ExternalLink, Zap, Sparkles, Key, AlertTriangle, Home, RotateCcw,
   ChevronRight, X, Download, Search, Menu, Link2, GitBranch, Gavel, ArrowRight, Hash,
-  Mic, MicOff, ScrollText, Brain
+  Mic, MicOff, ScrollText, Brain, Copy, Check
 } from 'lucide-react';
 // ... rest of imports
 
@@ -97,6 +97,13 @@ const ImarApp: React.FC = () => {
   const [isLoadingMaddeAI, setIsLoadingMaddeAI] = useState(false);
   const [typingMessageIndex, setTypingMessageIndex] = useState(0);
   const [showPDFModal, setShowPDFModal] = useState(false);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+
+  const handleCopyMessage = (id: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedMessageId(id);
+    setTimeout(() => setCopiedMessageId(null), 2000);
+  };
 
   const normalTypingMessages = [
     "Araştırıyorum...",
@@ -1780,13 +1787,22 @@ const ImarApp: React.FC = () => {
           ) : (
             messages.map((msg) => (
               <div key={msg.id} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in`}>
-                <div className={`max-w-[90%] lg:max-w-[75%] rounded-2xl px-4 lg:px-5 py-3 lg:py-4 ${msg.role === 'user'
+                <div className={`group max-w-[90%] lg:max-w-[75%] rounded-2xl px-4 lg:px-5 py-3 lg:py-4 relative ${msg.role === 'user'
                   ? 'bg-gradient-to-br from-accent to-accent-dark text-white shadow-lg shadow-accent/10'
                   : 'bg-dark-surface border border-dark-border text-warm-100'
                   }`}>
-                  <div className={`flex items-center gap-2 mb-2 text-[8px] font-bold uppercase tracking-widest ${msg.role === 'user' ? 'text-white/50' : 'text-warm-500'}`}>
-                    {msg.role === 'user' ? <Zap size={10} /> : (msg.text.startsWith('🧠') ? <Brain size={10} className="text-purple-400" /> : <ShieldCheck size={10} className="text-green-400" />)}
-                    <span>{msg.role === 'user' ? 'SORU' : (msg.text.startsWith('🧠') ? 'DERİN ANALİZ' : 'MEVZUAT YANITI')}</span>
+                  <div className={`flex items-center justify-between gap-2 mb-2 text-[8px] font-bold uppercase tracking-widest ${msg.role === 'user' ? 'text-white/50' : 'text-warm-500'}`}>
+                    <div className="flex items-center gap-2">
+                      {msg.role === 'user' ? <Zap size={10} /> : (msg.text.startsWith('🧠') ? <Brain size={10} className="text-purple-600 dark:text-purple-400" /> : <ShieldCheck size={10} className="text-green-600 dark:text-green-400" />)}
+                      <span>{msg.role === 'user' ? 'SORU' : (msg.text.startsWith('🧠') ? 'DERİN ANALİZ' : 'MEVZUAT YANITI')}</span>
+                    </div>
+                    <button
+                      onClick={() => handleCopyMessage(msg.id, msg.text)}
+                      className={`p-1.5 -mr-1.5 -mt-1 rounded-lg transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100 ${msg.role === 'user' ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-dark-elevated text-warm-400 hover:text-warm-100'}`}
+                      title="Kopyala"
+                    >
+                      {copiedMessageId === msg.id ? <Check size={14} className={msg.role === 'user' ? "text-white" : "text-green-500"} /> : <Copy size={14} />}
+                    </button>
                   </div>
                   <div className="text-[12px] lg:text-[13px] leading-relaxed whitespace-pre-wrap font-medium">
                     {msg.role === 'assistant' ? (
@@ -1839,16 +1855,16 @@ const ImarApp: React.FC = () => {
           {isTyping && (
             <div className="flex justify-start animate-in">
               <div className={`rounded-2xl px-5 py-4 border flex items-center gap-3 ${isDeepThinkMode
-                ? 'bg-purple-950/30 border-purple-800/30'
+                ? 'bg-purple-100 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800/30'
                 : 'bg-dark-surface border-dark-border'
                 }`}>
                 {isDeepThinkMode
-                  ? <Brain size={16} className="text-purple-400 animate-pulse" />
+                  ? <Brain size={16} className="text-purple-700 dark:text-purple-400 animate-pulse" />
                   : <Loader2 size={16} className="text-accent animate-spin" />
                 }
                 <span
                   key={typingMessageIndex}
-                  className={`text-sm font-medium animate-in ${isDeepThinkMode ? 'text-purple-300' : 'text-warm-300'
+                  className={`text-sm font-medium animate-in ${isDeepThinkMode ? 'text-purple-800 dark:text-purple-300' : 'text-warm-300'
                     }`}
                 >
                   {isDeepThinkMode
