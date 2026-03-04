@@ -898,6 +898,19 @@ const ImarApp: React.FC = () => {
 
       // AI ile madde içeriğini getir
       try {
+        // Kredi Kontrolü
+        if (user) {
+          const creditCheck = await checkCredit(user.uid, 'madde_analysis');
+          if (!creditCheck.sufficient) {
+            setSelectedMadde(prev => prev ? {
+              ...prev,
+              icerik: `Kredi yetersiz! Bu analiz ${creditCheck.cost} kredi gerektiriyor. Kalan: ${creditCheck.remaining}`
+            } : prev);
+            setIsLoadingMaddeAI(false);
+            return;
+          }
+        }
+
         const aiContent = await geminiService.analyzeMadde(kanunNo, cleanMaddeNo, fikraNo);
         setSelectedMadde(prev => prev ? {
           ...prev,
@@ -905,6 +918,14 @@ const ImarApp: React.FC = () => {
           anahtatKelimeler: aiContent.anahtarKelimeler || [],
           iliskiliMaddeler: aiContent.iliskiliMaddeler || []
         } : prev);
+
+        // Kredi Düş
+        if (user) {
+          const result = await deductCredit(user.uid, 'madde_analysis');
+          if (result.success) {
+            setUserCredit(prev => ({ ...prev, remainingCredit: result.remainingCredit }));
+          }
+        }
       } catch (e: any) {
         setSelectedMadde(prev => prev ? {
           ...prev,
@@ -1158,11 +1179,28 @@ const ImarApp: React.FC = () => {
       const doc = documents.find(d => d.id === selectedGraphDocId);
       if (!doc) return;
 
+      // Kredi Kontrolü
+      if (user) {
+        const creditCheck = await checkCredit(user.uid, 'knowledge_graph');
+        if (!creditCheck.sufficient) {
+          alert(`Kredi yetersiz! Bu işlem ${creditCheck.cost} kredi gerektiriyor. Kalan: ${creditCheck.remaining}`);
+          return;
+        }
+      }
+
       setIsAnalyzingGraph(true);
       try {
         const result = await geminiService.extractGraphFromText(doc.content);
         if (result.nodes.length > 0) {
           setLocalGraphData(result);
+
+          // Kredi Düş
+          if (user) {
+            const deductResult = await deductCredit(user.uid, 'knowledge_graph');
+            if (deductResult.success) {
+              setUserCredit(prev => ({ ...prev, remainingCredit: deductResult.remainingCredit }));
+            }
+          }
         } else {
           alert("Bu belgeden ilişki grafiği çıkarılamadı.");
         }
@@ -2071,7 +2109,11 @@ const ImarApp: React.FC = () => {
       <KnowledgeGraphModal />
 
       {/* Official Gazette Modal */}
-      <OfficialGazetteModal isOpen={showResmiGazeteModal} onClose={() => setShowResmiGazeteModal(false)} />
+      <OfficialGazetteModal
+        isOpen={showResmiGazeteModal}
+        onClose={() => setShowResmiGazeteModal(false)}
+        onCreditUpdate={(remaining) => setUserCredit(prev => ({ ...prev, remainingCredit: remaining }))}
+      />
 
       {/* Auth Modal */}
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />

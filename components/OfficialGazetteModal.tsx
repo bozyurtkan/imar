@@ -3,13 +3,15 @@ import { ScrollText, RefreshCw, ExternalLink, Settings, X, Loader2, Calendar, Fi
 import { resmiGazeteService, GazetteReport, USER_INTERESTS_DEFAULT } from '../services/resmiGazeteService';
 import { useAuth } from '../contexts/AuthContext';
 import { saveUserSettings, loadUserSettings } from '../services/firebase';
+import { checkCredit, deductCredit } from '../services/creditService';
 
 interface OfficialGazetteModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onCreditUpdate?: (remaining: number) => void;
 }
 
-export const OfficialGazetteModal: React.FC<OfficialGazetteModalProps> = ({ isOpen, onClose }) => {
+export const OfficialGazetteModal: React.FC<OfficialGazetteModalProps> = ({ isOpen, onClose, onCreditUpdate }) => {
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
     const [report, setReport] = useState<GazetteReport | null>(null);
@@ -45,12 +47,31 @@ export const OfficialGazetteModal: React.FC<OfficialGazetteModalProps> = ({ isOp
     }, [isOpen, user]);
 
     const handleScan = async () => {
+        if (!user) {
+            setError("Lütfen önce giriş yapın.");
+            return;
+        }
+
         setLoading(true);
         setError(null);
         try {
+            // Kredi Kontrolü
+            const creditCheck = await checkCredit(user.uid, 'gazette_analysis');
+            if (!creditCheck.sufficient) {
+                setError(`Kredi yetersiz! Bu işlem ${creditCheck.cost} kredi gerektiriyor. Kalan: ${creditCheck.remaining}`);
+                setLoading(false);
+                return;
+            }
+
             // true -> Cache'i del ve taze veri çek (forceRefresh)
             const newReport = await resmiGazeteService.checkResmiGazete(interests, true);
             setReport(newReport);
+
+            // Kredi Düş
+            const result = await deductCredit(user.uid, 'gazette_analysis');
+            if (result.success && onCreditUpdate) {
+                onCreditUpdate(result.remainingCredit);
+            }
         } catch (e: any) {
             setError(e.message || "Tarama sırasında bir hata oluştu.");
         } finally {
