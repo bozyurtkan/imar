@@ -126,34 +126,79 @@ export class GeminiService {
     }
   }
 
-  async compareLegislation(newRegulationUrl: string, libraryDocs: DocumentFile[]): Promise<string> {
-    const ai = this.getClient();
-
-    const libraryContext = libraryDocs
-      .filter(doc => doc.isActive)
-      .map(doc => `[MEVCUT BELGE: ${doc.name}]\n${doc.description}`)
-      .join('\n');
+  async compareLegislation(newRegulationUrl: string, _libraryDocs: DocumentFile[]): Promise<string> {
+    const ai = this.getNewClient(); // Yeni SDK ve Web Arama Desteği
 
     const today = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
 
-    const prompt = `
+    const systemInstruction = `
+      Sen Türkiye İmar Hukuku ve idare hukuku alanında uzman bir mevzuat analistisin. 
+      3194 sayılı İmar Kanunu, Planlı Alanlar İmar Yönetmeliği, Otopark Yönetmeliği, Binaların Yangından Korunması Hakkında Yönetmelik ve ilgili tüm alt düzenlemelere hâkimsin.
       BUGÜNÜN TARİHİ: ${today}
-      ÖNEMLİ: Sen bir AI modelisin ve eğitim verilerin eski olabilir. Ama bugün ${today}. Kullanıcının verdiği linklerdeki tarihler (2025, 2026 vb.) geçerlidir. Tarihi sorgulamadan analiz yap.
-      SEN: Türkiye'nin en deneyimli imar hukuku uzmanısın. Mevzuat değişikliklerini analiz etmekte 20 yıllık tecrüben var. İmar hukuku konularında derinlemesine analiz yap.
+
+      GÖREV:
+      Kullanıcının verdiği Resmî Gazete linkindeki veya metnindeki düzenlemeyi analiz edeceksin.
+      Analiz mutlaka ESKİ METİN – YENİ METİN karşılaştırmalı olacak. Web aramasını (googleSearch aracı) kullanarak ilgili mevzuatın eski/önceki metnini bulup çıkaracaksın.
+
+      ZORUNLU ÇIKTI FORMATI:
+      Aşağıdaki şablonu, başlıkları ve EMOJİLERİ HARFİYEN kullanarak yanıt vereceksin. Bu çerçevenin dışına çıkma.
+
+      📌 Genel Bilgi
+
+      Düzenleme: [Düzenlemenin Adı]
+      Resmî Gazete: [Tarih] tarihli ve [Sayı] sayılı Resmî Gazete
+      Yürürlük: [Ne zaman yürürlüğe girdiği]
+      [Hangi yönetmelik/kanun üzerinde değişiklik yapıldığını anlatan 1-2 cümlelik kısa özet]
+
+      🔎 Madde Bazlı Eski–Yeni Metin ve Analiz
+
+      (Eğer birden fazla madde değişmişse, her biri için aşağıdaki yapıyı TEKRARLA)
+
+      ✅ MADDE [No] — [Hangi Kanun/Yönetmeliğin Hangi Maddesi]
+
+      📌 ESKİ METİN:
+      [Arama yaparak bulduğun veya mevzuatta var olan önceki yürürlükteki metni yaz, hiç bulamazsan da bunu açıkça belirt]
+
+      📌 YENİ METİN:
+      [Söz konusu değişiklik metni]
+
+      📌 Değişiklik Türü:
+      [Sınırlandırma, ekleme, bent kaldırma, alan hesabı değişikliği vb. çok kısa yaz]
+
+      📌 Hukuki Analiz
+      [1-2 paragraf halinde imar hukuku açısından ne anlama geldiği, sürece, emsale, ruhsata veya hukuki riske etkisi]
+      Sonuç: [Tek cümlelik özet sonuç]
+
+      (Tüm maddeler bittikten sonra en alta şunları ekle:)
+
+      🧠 Toplu Hukuki Değerlendirme
+      [Tüm değişikliğin imar pratiğindeki yeri, amacının özeti, mükellefi mi idareyi mi ilgilendirdiği ve ana gayesi]
+
+      🧩 Sonuç ve Uygulama Etkisi
+      [Madde madde (bullet point) projelere, ruhsat süreçlerine veya sektöre somut etkileri]
+    `;
+
+    const prompt = `
+      Kullanıcının verdiği link/metin: ${newRegulationUrl}
+
+      Lütfen bu linki Web Arama aracı ile doğrulayıp yukarıdaki kesin ve katı formata/emojilere birebir uyarak analizi başlat. Başka hiçbir gereksiz giriş veya selam cümlesi kullanma. Doğrudan "📌 Genel Bilgi" ile başla.
     `;
 
     try {
-      const model = ai.getGenerativeModel({
-        model: "gemini-2.0-flash"
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-pro",
+        contents: prompt,
+        config: {
+          systemInstruction: systemInstruction.trim(),
+          tools: [{ googleSearch: {} }],
+          temperature: 0.2 // Daha kurumsal ve formatına sadık çıktı için düşük temperature
+        }
       });
 
-      const result = await model.generateContent(`${prompt}\n\nYENİ DÜZENLEME LİNKİ: ${newRegulationUrl}\n\nKÜTÜPHANE: ${libraryContext}`);
-      const response = await result.response;
-
-      return response.text() || "Karşılaştırma yapılamadı.";
+      return response.text || "Karşılaştırma yapılamadı.";
     } catch (error: any) {
       console.error("Comparison Error:", error);
-      throw new Error("Karşılaştırma sırasında hata: " + error.message);
+      throw new Error("Karşılaştırma sırasında hata veya Web Araması başarısız: " + error.message);
     }
   }
   async filterResmiGazete(articles: { id: number, title: string, link: string }[], interests: string): Promise<number[]> {
