@@ -9,13 +9,13 @@ import {
   ShieldCheck, Sun, Moon, CheckSquare,
   Square, Globe, ExternalLink, Zap, Sparkles, Key, AlertTriangle, Home, RotateCcw,
   ChevronRight, X, Download, Search, Menu, Link2, GitBranch, Gavel, ArrowRight, Hash,
-  Mic, MicOff, ScrollText, Brain, Copy, Check
+  Mic, MicOff, ScrollText, Brain, Copy, Check, Star
 } from 'lucide-react';
 // ... rest of imports
 
 
 
-import { DocumentFile, Message } from './types';
+import { DocumentFile, Message, FavoriteItem } from './types';
 import { parseFile, formatBytes } from './utils/fileParser';
 import { geminiService } from './services/geminiService';
 import { getMadde, getAllMaddeler, MevzuatMaddesi, getMevzuatGraph } from './data/mevzuatVeritabani';
@@ -23,8 +23,9 @@ import { getMadde, getAllMaddeler, MevzuatMaddesi, getMevzuatGraph } from './dat
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AuthModal } from './components/AuthModal';
 import { HistoryModal } from './components/HistoryModal';
+import { FavoritesModal } from './components/FavoritesModal';
 import { AdminPanel } from './components/AdminPanel';
-import { db, saveChatHistory, getChatSession, saveDocToLibrary, deleteDocFromLibrary, loadLibraryDocs } from './services/firebase';
+import { db, saveChatHistory, getChatSession, saveDocToLibrary, deleteDocFromLibrary, loadLibraryDocs, saveFavorite, deleteFavorite, getFavorites } from './services/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { User, LogOut, LogIn, Clock, History, Shield, AlertCircle } from 'lucide-react';
 import { getUserCredit, checkCredit, deductCredit, initializeDefaultData } from './services/creditService';
@@ -97,12 +98,39 @@ const ImarApp: React.FC = () => {
   const [isLoadingMaddeAI, setIsLoadingMaddeAI] = useState(false);
   const [typingMessageIndex, setTypingMessageIndex] = useState(0);
   const [showPDFModal, setShowPDFModal] = useState(false);
+  const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
 
   const handleCopyMessage = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedMessageId(id);
     setTimeout(() => setCopiedMessageId(null), 2000);
+  };
+
+  const handleToggleFavorite = async (msg: Message) => {
+    if (!user) {
+      alert("Favorilere eklemek için giriş yapmalısınız.");
+      return;
+    }
+    const isFav = favorites.find(f => f.id === msg.id);
+    if (isFav) {
+      await deleteFavorite(user.uid, msg.id);
+      setFavorites(prev => prev.filter(f => f.id !== msg.id));
+    } else {
+      const index = messages.findIndex(m => m.id === msg.id);
+      const questionText = index > 0 && messages[index - 1].role === 'user' ? messages[index - 1].text : "Soru bulunamadı";
+      const newFav: FavoriteItem = {
+        id: msg.id,
+        userId: user.uid,
+        questionText,
+        answerText: msg.text,
+        createdAt: new Date().toISOString(),
+        category: msg.text.startsWith('🧠') ? 'Derin Analiz' : 'Mevzuat Araması'
+      };
+      await saveFavorite(user.uid, newFav);
+      setFavorites(prev => [newFav, ...prev]);
+    }
   };
 
   const normalTypingMessages = [
@@ -236,6 +264,14 @@ const ImarApp: React.FC = () => {
     const savedTheme = localStorage.getItem('imar_theme');
     setIsDarkMode(savedTheme !== 'false');
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      getFavorites(user.uid).then(setFavorites).catch(console.error);
+    } else {
+      setFavorites([]);
+    }
+  }, [user]);
 
   const handleOpenKeySelector = async () => {
     alert("API Anahtarı sistem ortam değişkenlerinden (Cloudflare/Env) otomatik olarak alınmaktadır. Manuel giriş gerekli değildir.");
@@ -1481,10 +1517,16 @@ const ImarApp: React.FC = () => {
           </button>
 
           {user && (
-            <button onClick={() => { setShowHistoryModal(true); setIsMobileMenuOpen(false); }} className="sidebar-nav-item" data-tip="Sohbet Geçmişi">
-              <History size={20} className="nav-icon flex-shrink-0" />
-              <span className="sidebar-label">Sohbet Geçmişi</span>
-            </button>
+            <>
+              <button onClick={() => { setShowHistoryModal(true); setIsMobileMenuOpen(false); }} className="sidebar-nav-item" data-tip="Sohbet Geçmişi">
+                <History size={20} className="nav-icon flex-shrink-0" />
+                <span className="sidebar-label">Sohbet Geçmişi</span>
+              </button>
+              <button onClick={() => { setShowFavoritesModal(true); setIsMobileMenuOpen(false); }} className="sidebar-nav-item" data-tip="Favorilerim">
+                <Star size={20} className="nav-icon flex-shrink-0" />
+                <span className="sidebar-label">Favorilerim</span>
+              </button>
+            </>
           )}
 
           <button onClick={() => setShowKnowledgeGraph(true)} className="sidebar-nav-item" data-tip="Mevzuat Grafiği">
@@ -1796,13 +1838,24 @@ const ImarApp: React.FC = () => {
                       {msg.role === 'user' ? <Zap size={10} /> : (msg.text.startsWith('🧠') ? <Brain size={10} className="text-purple-600 dark:text-purple-400" /> : <ShieldCheck size={10} className="text-green-600 dark:text-green-400" />)}
                       <span>{msg.role === 'user' ? 'SORU' : (msg.text.startsWith('🧠') ? 'DERİN ANALİZ' : 'MEVZUAT YANITI')}</span>
                     </div>
-                    <button
-                      onClick={() => handleCopyMessage(msg.id, msg.text)}
-                      className={`p-1.5 -mr-1.5 -mt-1 rounded-lg transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100 ${msg.role === 'user' ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-dark-elevated text-warm-400 hover:text-warm-100'}`}
-                      title="Kopyala"
-                    >
-                      {copiedMessageId === msg.id ? <Check size={14} className={msg.role === 'user' ? "text-white" : "text-green-500"} /> : <Copy size={14} />}
-                    </button>
+                    <div className="flex items-center gap-1">
+                      {msg.role === 'assistant' && (
+                        <button
+                          onClick={() => handleToggleFavorite(msg)}
+                          className={`p-1.5 -mr-0.5 -mt-1 rounded-lg transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100 hover:bg-dark-elevated text-warm-400 hover:text-yellow-500`}
+                          title={favorites.some(f => f.id === msg.id) ? "Favorilerden Çıkar" : "Favorilere Ekle"}
+                        >
+                          <Star size={14} className={favorites.some(f => f.id === msg.id) ? "fill-yellow-500 text-yellow-500" : ""} />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleCopyMessage(msg.id, msg.text)}
+                        className={`p-1.5 -mr-1.5 -mt-1 rounded-lg transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100 ${msg.role === 'user' ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-dark-elevated text-warm-400 hover:text-warm-100'}`}
+                        title="Kopyala"
+                      >
+                        {copiedMessageId === msg.id ? <Check size={14} className={msg.role === 'user' ? "text-white" : "text-green-500"} /> : <Copy size={14} />}
+                      </button>
+                    </div>
                   </div>
                   <div className="text-[12px] lg:text-[13px] leading-relaxed whitespace-pre-wrap font-medium">
                     {msg.role === 'assistant' ? (
@@ -2100,6 +2153,21 @@ const ImarApp: React.FC = () => {
             setMessages(historyMessages);
             setShowHistoryModal(false);
           }}
+        />
+      )}
+
+      {showFavoritesModal && (
+        <FavoritesModal
+          show={showFavoritesModal}
+          onClose={() => setShowFavoritesModal(false)}
+          favorites={favorites}
+          onRemoveFavorite={async (id) => {
+            if (user) {
+              await deleteFavorite(user.uid, id);
+              setFavorites(prev => prev.filter(f => f.id !== id));
+            }
+          }}
+          renderText={renderText}
         />
       )}
 

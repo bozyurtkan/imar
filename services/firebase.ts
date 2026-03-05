@@ -204,3 +204,45 @@ export const loadUserSettings = async (userId: string | undefined) => {
         return {};
     }
 };
+
+// ========== FAVORİ İŞLEMLERİ ==========
+
+export const saveFavorite = async (userId: string, favoriteItem: any) => {
+    if (!userId) return;
+    try {
+        const favRef = doc(db, "users", userId, "favorites", favoriteItem.id);
+        await setDoc(favRef, {
+            ...favoriteItem,
+            createdAt: favoriteItem.createdAt || new Date().toISOString()
+        }, { merge: true });
+        console.log(`[Favorites] Kayıt eklendi: ${favoriteItem.id}`);
+    } catch (error) {
+        console.error("Favori kaydedilemedi:", error);
+        throw error;
+    }
+};
+
+export const deleteFavorite = async (userId: string, favoriteId: string) => {
+    if (!userId || !favoriteId) return;
+    try {
+        await deleteDoc(doc(db, "users", userId, "favorites", favoriteId));
+        console.log(`[Favorites] Kayıt silindi: ${favoriteId}`);
+    } catch (error) {
+        console.error("Favori silinemedi:", error);
+        throw error;
+    }
+};
+
+export const getFavorites = async (userId: string): Promise<any[]> => {
+    if (!userId) return [];
+    try {
+        const favsRef = collection(db, "users", userId, "favorites");
+        const q = query(favsRef, orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc => doc.data());
+    } catch (error) {
+        console.error("Favoriler yüklenemedi:", error);
+        return [];
+    }
+};
+

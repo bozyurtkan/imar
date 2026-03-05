@@ -26,6 +26,16 @@ export enum FileType {
   PNG = 'image/png'
 }
 
+export interface FavoriteItem {
+  id: string; // The message ID of the assistant's reply
+  userId: string;
+  questionText: string;
+  answerText: string;
+  createdAt: string;
+  category?: string; // e.g. "Derin Analiz", "Mevzuat Araması"
+}
+
+
 // ========== KREDİ SİSTEMİ TİPLERİ ==========
 
 export interface CreditPlan {
