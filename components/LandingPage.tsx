@@ -5,6 +5,7 @@ import {
     Building, Gavel, Mail, Phone, MapPin, Github, Linkedin, Twitter
 } from 'lucide-react';
 import { FAQSection } from './FAQSection';
+import { BlogSection } from './BlogSection';
 
 interface LandingPageProps {
     onGetStarted: () => void;
@@ -278,7 +279,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                         <div className="landing-nav-logo">
                             <Scale size={20} className="text-white" />
                         </div>
-                        <span className="landing-nav-title">İmarMevzuat.ai</span>
+                        <span className="landing-nav-title">İmar Mevzuat</span>
                     </div>
                     <div className="landing-nav-actions">
                         <button onClick={onGetStarted} className="landing-btn-ghost">
@@ -346,7 +347,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                                 Ücretsiz Deneyin — 30 Saniyede Başlayın
                                 <ArrowRight size={18} />
                             </button>
-                            <a href="mailto:info@imarmevzuat.ai" className="landing-btn-outline landing-btn-lg">
+                            <a href="mailto:info@imarmevzuat.com.tr" className="landing-btn-outline landing-btn-lg">
                                 <Mail size={18} />
                                 Bize Ulaşın
                             </a>
@@ -358,7 +359,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                                 <div className="landing-mockup-dots">
                                     <span /><span /><span />
                                 </div>
-                                <span className="landing-mockup-title">İmarMevzuat.ai</span>
+                                <span className="landing-mockup-title">İmar Mevzuat</span>
                             </div>
                             <div className="landing-mockup-body" style={{ minHeight: '380px' }}>
                                 {mockupConversations[currentMockupIndex]}
@@ -388,7 +389,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
             {/* Features Section */}
             <section className="landing-features">
                 <div className="landing-container">
-                    <h2 className="landing-section-title">Neden İmarMevzuat.ai?</h2>
+                    <h2 className="landing-section-title">Neden İmar Mevzuat?</h2>
                     <p className="landing-section-subtitle">
                         Genel yapay zekalar imar sorunuza doğru cevap veremez. Biz veririz — her yanıtımız kanun maddesiyle desteklenir.
                     </p>
@@ -420,7 +421,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
             {/* Comparison Section */}
             <section className="landing-comparison pb-24">
                 <div className="landing-container">
-                    <h2 className="landing-section-title">İmarMevzuat.ai vs Genel Yapay Zeka Modelleri</h2>
+                    <h2 className="landing-section-title">İmar Mevzuat vs Genel Yapay Zeka Modelleri</h2>
                     <p className="landing-section-subtitle mb-12">
                         Hayati hukuki kararlarınızı jenerik modellere bırakmayın. Sadece imar hukukuna odaklanmış özel sistemimizin farkını görün.
                     </p>
@@ -437,7 +438,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                                     <div className="w-12 h-12 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent mb-3 shadow-[0_0_20px_rgba(196,80,26,0.15)] bg-opacity-50 backdrop-blur-sm">
                                         <Scale size={24} />
                                     </div>
-                                    <span className="text-accent font-extrabold text-lg sm:text-xl">İmarMevzuat.ai</span>
+                                    <span className="text-accent font-extrabold text-lg sm:text-xl">İmar Mevzuat</span>
                                 </div>
                                 <div className="col-span-4 flex flex-col items-center justify-center opacity-60">
                                     <div className="w-12 h-12 rounded-2xl bg-dark-surface border border-dark-border flex items-center justify-center text-warm-300 mb-3 backdrop-blur-sm">
@@ -459,7 +460,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                                         <span className="text-warm-50 font-bold text-center text-sm sm:text-base group-hover:text-accent transition-colors duration-300">{row.feature}</span>
                                     </div>
 
-                                    {/* İmarMevzuat.ai Column */}
+                                    {/* İmar Mevzuat Column */}
                                     <div className="col-span-4 p-5 sm:p-7 border-r border-dark-border/40 bg-accent/5 flex items-center text-center relative z-10 transition-colors duration-300 group-hover:bg-accent/10">
                                         <p className="text-warm-100 font-medium text-sm sm:text-sm leading-relaxed mx-auto max-w-[95%]">{row.app}</p>
                                     </div>
@@ -480,7 +481,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
             <section className="landing-target-audience pt-12 pb-24">
                 <div className="landing-container">
                     <div className="text-center mb-16">
-                        <h2 className="landing-section-title">İmarMevzuat.ai Kimler İçin Tasarlandı?</h2>
+                        <h2 className="landing-section-title">İmar Mevzuat Kimler İçin Tasarlandı?</h2>
                         <p className="landing-section-subtitle mx-auto">
                             İmar ve şehircilik ekosistemindeki tüm profesyonellerin mevzuat araştırma yükünü hafifletmek için özel olarak geliştirildi.
                         </p>
@@ -518,6 +519,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                 </div>
             </section>
 
+            {/* Blog / E-E-A-T Section */}
+            <BlogSection />
+
             {/* FAQ Section */}
             <FAQSection />
 
@@ -545,7 +549,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                         <div className="landing-footer-logo">
                             <Scale size={18} className="text-white" />
                         </div>
-                        <span className="landing-footer-title">İmarMevzuat.ai</span>
+                        <span className="landing-footer-title">İmar Mevzuat</span>
                         <p className="landing-footer-tagline">İmar Mevzuatını Yapay Zekayla Çözün. Saniyeler İçinde.</p>
                     </div>
                     <div className="landing-footer-links">
@@ -580,7 +584,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                 </div>
                 <div className="landing-footer-bottom">
                     <div className="landing-container">
-                        <p>© 2026 İmarMevzuat.ai — Tüm hakları saklıdır.</p>
+                        <p>© 2026 İmar Mevzuat — Tüm hakları saklıdır.</p>
                     </div>
                 </div>
             </footer>

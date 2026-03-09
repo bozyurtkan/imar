@@ -3,12 +3,12 @@ import { ChevronDown, ChevronUp, MessageSquare } from 'lucide-react';
 
 const faqData = [
     {
-        question: "İmarMevzuat.ai nedir ve genel yapay zeka araçlarından (ChatGPT vb.) farkı nedir?",
-        answer: "İmarMevzuat.ai, Türkiye'nin sadece imar hukukuna ve şehircilik mevzuatına odaklanmış ilk uzman yapay zeka asistanıdır. Genel yapay zekaların aksine, sistemimiz 3194 Sayılı İmar Kanunu, spesifik yönetmelikler ve Resmi Gazete kararlarıyla özel olarak eğitilmiştir. En büyük farkımız, genel geçer cevaplar üretmek yerine halüsinasyon riskini sıfıra indiren \"kesin madde atıflı\" sonuçlar sunmamızdır. Mimarlar, mühendisler ve hukukçular için imar terminolojisine tam hakim, 7/24 ulaşılabilen devasa bir dijital laboratuvar işlevi görür."
+        question: "İmar Mevzuat nedir ve genel yapay zeka araçlarından (ChatGPT vb.) farkı nedir?",
+        answer: "İmar Mevzuat, Türkiye'nin sadece imar hukukuna ve şehircilik mevzuatına odaklanmış ilk uzman yapay zeka asistanıdır. Genel yapay zekaların aksine, sistemimiz 3194 Sayılı İmar Kanunu, spesifik yönetmelikler ve Resmi Gazete kararlarıyla özel olarak eğitilmiştir. En büyük farkımız, genel geçer cevaplar üretmek yerine halüsinasyon riskini sıfıra indiren \"kesin madde atıflı\" sonuçlar sunmamızdır. Mimarlar, mühendisler ve hukukçular için imar terminolojisine tam hakim, 7/24 ulaşılabilen devasa bir dijital laboratuvar işlevi görür."
     },
     {
         question: "Randevu almadan ve yüksek danışmanlık ücretleri ödemeden uzman görüşüne nasıl ulaşabilirim?",
-        answer: "İmarMevzuat.ai ile telefon ekranınızda veya bilgisayarınızda; ofiste, şantiyede ya da evde, 7 gün 24 saat yanınızda taşıdığınız kıdemli bir imar hukuku uzmanına sahip olursunuz. Görüşmek için randevu beklemenize, ulaşılamayan uzmanların peşinden koşmanıza veya fahiş danışmanlık ücretleri ödemenize gerek kalmaz. Bir belediye görevlisiyle veya avukatla yapacağınız teknik bir istişareyi, gece yarısı bile sistemimizle yapabilir, ertesi sabaha projelerinizi veya savunmalarınızı kusursuz hazırlamış olarak uyanabilirsiniz."
+        answer: "İmar Mevzuat ile telefon ekranınızda veya bilgisayarınızda; ofiste, şantiyede ya da evde, 7 gün 24 saat yanınızda taşıdığınız kıdemli bir imar hukuku uzmanına sahip olursunuz. Görüşmek için randevu beklemenize, ulaşılamayan uzmanların peşinden koşmanıza veya fahiş danışmanlık ücretleri ödemenize gerek kalmaz. Bir belediye görevlisiyle veya avukatla yapacağınız teknik bir istişareyi, gece yarısı bile sistemimizle yapabilir, ertesi sabaha projelerinizi veya savunmalarınızı kusursuz hazırlamış olarak uyanabilirsiniz."
     },
     {
         question: "Günlerce uğraştığım karmaşık imar dosyalarını gerçekten saniyeler içinde çözebilir miyim?",
@@ -16,11 +16,11 @@ const faqData = [
     },
     {
         question: "Sisteminizin verdiği hukuki yanıtlar güvenilir mi, kaynak gösteriyor mu?",
-        answer: "Hayati kararlarınızı tesadüflere bırakamazsınız. İmarMevzuat.ai'nin sunduğu hukuki yanıtlar en yüksek doğruluk prensibiyle resmi kaynaklarla desteklenir. Sistemimiz, ürettiği her paragrafın veya hukuki çıkarımın sonuna ilgili kanun, yönetmelik veya kararın kesin madde numarasını ekler (Örn: Planlı Alanlar İmar Yönetmeliği Madde 23). Bu yapısal doğrulama mekanizması sayesinde doğrudan resmi dayanağı şeffaf bir şekilde görüntüler, müşterilerinize veya kurumlara kendinizden emin bir şekilde sunum yaparsınız."
+        answer: "Hayati kararlarınızı tesadüflere bırakamazsınız. İmar Mevzuat'nin sunduğu hukuki yanıtlar en yüksek doğruluk prensibiyle resmi kaynaklarla desteklenir. Sistemimiz, ürettiği her paragrafın veya hukuki çıkarımın sonuna ilgili kanun, yönetmelik veya kararın kesin madde numarasını ekler (Örn: Planlı Alanlar İmar Yönetmeliği Madde 23). Bu yapısal doğrulama mekanizması sayesinde doğrudan resmi dayanağı şeffaf bir şekilde görüntüler, müşterilerinize veya kurumlara kendinizden emin bir şekilde sunum yaparsınız."
     },
     {
         question: "Rakiplerime karşı nasıl bir avantaj sağlarım?",
-        answer: "Rakipleriniz hala manuel olarak mevzuat tararken veya güncel olmayan eski yönetmelikler üzerinden yanlış projeler çizerken, siz her zaman bir adım önde olacaksınız. Canlı web entegrasyonumuz ve günlük Resmi Gazete takibimiz sayesinde; lehinize olan yeni bir yargısal karardan veya Otopark Yönetmeliğindeki küçük ama kritik bir değişiklikten ilk sizin haberiniz olur. Hata yapma lüksünüzün olmadığı milyonluk projelerde ve imar davalarında en güçlü asistanınız İmarMevzuat.ai'dir."
+        answer: "Rakipleriniz hala manuel olarak mevzuat tararken veya güncel olmayan eski yönetmelikler üzerinden yanlış projeler çizerken, siz her zaman bir adım önde olacaksınız. Canlı web entegrasyonumuz ve günlük Resmi Gazete takibimiz sayesinde; lehinize olan yeni bir yargısal karardan veya Otopark Yönetmeliğindeki küçük ama kritik bir değişiklikten ilk sizin haberiniz olur. Hata yapma lüksünüzün olmadığı milyonluk projelerde ve imar davalarında en güçlü asistanınız İmar Mevzuat'dir."
     },
     {
         question: "Yüklediğim projeler (PDF/Word) ve yaptığım sorgulamalar gizli tutuluyor mu?",
@@ -60,7 +60,7 @@ export const FAQSection: React.FC = () => {
                 <div className="text-center mb-16">
                     <h2 className="landing-section-title">Aklınızdaki Sorular, Şeffaf Cevaplar</h2>
                     <p className="landing-section-subtitle mx-auto">
-                        İmarMevzuat.ai'nin size nasıl zaman kazandıracağı, maliyetleri nasıl düşüreceği ve güvenilirlik esası hakkında merak ettiklerinizi derledik.
+                        İmar Mevzuat'nin size nasıl zaman kazandıracağı, maliyetleri nasıl düşüreceği ve güvenilirlik esası hakkında merak ettiklerinizi derledik.
                     </p>
                 </div>
 

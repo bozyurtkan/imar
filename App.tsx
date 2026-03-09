@@ -4,6 +4,7 @@ import { OfficialGazetteModal } from './components/OfficialGazetteModal';
 import { LandingPage } from './components/LandingPage';
 import { LoginPage } from './components/LoginPage';
 import { LegalPage } from './components/LegalPage';
+import { CookieBanner } from './components/CookieBanner';
 import {
   FileText, Send, Trash2, Plus, BookOpen, Loader2, Scale,
   ShieldCheck, Sun, Moon, CheckSquare,
@@ -164,7 +165,7 @@ const ImarApp: React.FC = () => {
   const [pdfSettings, setPdfSettings] = useState<PDFExportSettings>({
     fontSize: 'medium',
     theme: 'modern',
-    title: 'İmarMevzuat.ai - Sohbet Geçmişi',
+    title: 'İmar Mevzuat - Sohbet Geçmişi',
     showLogo: true,
     showDate: true,
     showIcons: true
@@ -670,7 +671,7 @@ const ImarApp: React.FC = () => {
       <body>
         <div class="container">
           <div class="header">
-            <div class="logo">⚖️ İmarMevzuat.ai</div>
+            <div class="logo">⚖️ İmar Mevzuat</div>
             <div class="title">${pdfSettings.title}</div>
             <div class="date">${currentDate}</div>
           </div>
@@ -678,7 +679,7 @@ const ImarApp: React.FC = () => {
             ${messagesHTML}
           </div>
           <div class="footer">
-            İmarMevzuat.ai - Profesyonel Mevzuat Danışmanı
+            İmar Mevzuat - Profesyonel Mevzuat Danışmanı
           </div>
         </div>
         <script>
@@ -1492,7 +1493,7 @@ const ImarApp: React.FC = () => {
                     <Scale size={18} className="text-white" />
                   </div>
                 </button>
-                <span className="sidebar-label font-extrabold tracking-tight text-[15px] text-warm-50">İmarMevzuat.ai</span>
+                <span className="sidebar-label font-extrabold tracking-tight text-[15px] text-warm-50">İmar Mevzuat</span>
               </div>
               {isMobile && (
                 <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-warm-400 hover:text-warm-50 hover:bg-dark-surface rounded-lg transition-all">
@@ -2223,16 +2224,31 @@ const AppRouter: React.FC = () => {
     );
   }
 
+  let pageContent;
   switch (currentPage) {
     case 'landing':
-      return <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} />;
+      pageContent = <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} />;
+      break;
     case 'login':
-      return <LoginPage onBack={() => setCurrentPage('landing')} />;
+      pageContent = <LoginPage onBack={() => setCurrentPage('landing')} />;
+      break;
     case 'legal':
-      return <LegalPage onBack={() => setCurrentPage('landing')} initialTab={legalTab} />;
+      pageContent = <LegalPage onBack={() => setCurrentPage('landing')} initialTab={legalTab} />;
+      break;
     case 'app':
-      return <ImarApp />;
+      pageContent = <ImarApp />;
+      break;
+    default:
+      pageContent = <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} />;
+      break;
   }
+
+  return (
+    <>
+      {pageContent}
+      <CookieBanner onOpenLegal={handleOpenLegal} />
+    </>
+  );
 };
 
 

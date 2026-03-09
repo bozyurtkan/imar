@@ -18,10 +18,10 @@ const legalTabs = [
 const TeslimatContent = () => (
     <div className="legal-content">
         <h1>Teslimat ve İade Şartları</h1>
-        <p>İşbu "Teslimat ve İade Şartları" metni, XXXXXXXXX ("Şirket") tarafından sunulan İmarMevzuat.ai Platformu'na ("Hizmet") ilişkin teslimat, iptal ve iade koşullarını düzenler. Bu metin, Platform'da yayınlanan "Hizmet Şartları ve Kullanıcı Sözleşmesi" ve "Mesafeli Satış Sözleşmesi"nin ayrılmaz bir parçasıdır.</p>
+        <p>İşbu "Teslimat ve İade Şartları" metni, XXXXXXXXX ("Şirket") tarafından sunulan İmar Mevzuat Platformu'na ("Hizmet") ilişkin teslimat, iptal ve iade koşullarını düzenler. Bu metin, Platform'da yayınlanan "Hizmet Şartları ve Kullanıcı Sözleşmesi" ve "Mesafeli Satış Sözleşmesi"nin ayrılmaz bir parçasıdır.</p>
 
         <h2>Madde 1: Hizmetin Teslimatı ve İfası</h2>
-        <p><strong>1.1. Anında İfa ve Elektronik Teslimat:</strong> İmarMevzuat.ai, elektronik ortamda anında ifa edilen dijital bir içerik hizmetidir. Satın alınan abonelik paketi ve bu pakete dahil olan kullanım hakları, ödemenin başarılı bir şekilde tamamlanmasını takiben derhal aktive edilir ve Kullanıcı'nın (ALICI) hesabına tanımlanır. Fiziksel bir teslimat söz konusu değildir.</p>
+        <p><strong>1.1. Anında İfa ve Elektronik Teslimat:</strong> İmar Mevzuat, elektronik ortamda anında ifa edilen dijital bir içerik hizmetidir. Satın alınan abonelik paketi ve bu pakete dahil olan kullanım hakları, ödemenin başarılı bir şekilde tamamlanmasını takiben derhal aktive edilir ve Kullanıcı'nın (ALICI) hesabına tanımlanır. Fiziksel bir teslimat söz konusu değildir.</p>
         <p><strong>1.2. Kullanım Hakkı Tanımlaması ve Kullanıma Hazır Olma:</strong> Aylık abonelik paketine ait kullanım hakları, ödeme başarılı olur olmaz Kullanıcı'nın Platform üzerindeki panelinde görünür hale gelir ve kullanıma hazır olur.</p>
 
         <h2>Madde 2: Aboneliğin İptali</h2>
@@ -87,10 +87,10 @@ const MesafeliContent = () => (
         </ul>
 
         <h2>2. SÖZLEŞMENİN KONUSU VE KAPSAMI</h2>
-        <p>İşbu Sözleşme'nin konusu, ALICI'nın SATICI'ya ait İmarMevzuat.ai internet sitesi ("Platform") üzerinden elektronik ortamda siparişini yaptığı, nitelikleri ve satış fiyatı belirtilen hizmetin satışı ve ifası ile ilgili olarak tarafların hak ve yükümlülüklerinin belirlenmesidir.</p>
+        <p>İşbu Sözleşme'nin konusu, ALICI'nın SATICI'ya ait İmar Mevzuat internet sitesi ("Platform") üzerinden elektronik ortamda siparişini yaptığı, nitelikleri ve satış fiyatı belirtilen hizmetin satışı ve ifası ile ilgili olarak tarafların hak ve yükümlülüklerinin belirlenmesidir.</p>
 
         <h2>3. HİZMETİN TANIMI VE KREDİ KULLANIMI</h2>
-        <p><strong>3.1.</strong> İmarMevzuat.ai, yapay zeka tabanlı bir sohbet robotu aracılığıyla imar mevzuatı araştırma yapma, mevzuat analizi, belge yükleme ve semantik arama gibi çeşitli işlemleri gerçekleştirmeye imkan sunan dijital bir hizmettir.</p>
+        <p><strong>3.1.</strong> İmar Mevzuat, yapay zeka tabanlı bir sohbet robotu aracılığıyla imar mevzuatı araştırma yapma, mevzuat analizi, belge yükleme ve semantik arama gibi çeşitli işlemleri gerçekleştirmeye imkan sunan dijital bir hizmettir.</p>
         <p><strong>3.2.</strong> Hizmet Paketi: Günlük kullanım haklı Abonelik Paketi. Kullanım hakkı, hizmetin ölçüm birimidir; nakde çevrilemez, satılamaz ve bir sonraki aya devretmez.</p>
 
         <h2>4. ÜCRET, FATURALAMA VE ÖDEME</h2>
@@ -105,7 +105,7 @@ const MesafeliContent = () => (
 
         <h2>6. HİZMETİN NİTELİĞİ VE SORUMLULUK SINIRLARI</h2>
         <p><strong>6.1.</strong> ALICI'nın Platform'u kullanımına ilişkin tüm kurallar "Hizmet Şartları ve Kullanıcı Sözleşmesi"nde düzenlenmiştir.</p>
-        <p><strong>6.2.</strong> İmarMevzuat.ai tarafından üretilen tüm çıktılar yalnızca bilgilendirme amaçlı birer taslak niteliğindedir. Bu çıktılar hiçbir şekilde hukuki tavsiye veya avukatlık hizmeti olarak yorumlanamaz.</p>
+        <p><strong>6.2.</strong> İmar Mevzuat tarafından üretilen tüm çıktılar yalnızca bilgilendirme amaçlı birer taslak niteliğindedir. Bu çıktılar hiçbir şekilde hukuki tavsiye veya avukatlık hizmeti olarak yorumlanamaz.</p>
         <p><strong>6.3.</strong> ALICI, Platform'dan elde ettiği her türlü bilgiyi herhangi bir hukuki işlemde kullanmadan önce bir hukuk profesyonelinin denetiminden geçirmekle yükümlü olduğunu kabul eder.</p>
 
         <h2>7. ABONELİK YÖNETİMİ, İPTAL VE FESİH</h2>
@@ -149,11 +149,11 @@ const MesafeliContent = () => (
 const HizmetContent = () => (
     <div className="legal-content">
         <h1>Hizmet Şartları ve Kullanıcı Sözleşmesi</h1>
-        <p>İşbu Kullanım Sözleşmesi XXXXXXXXX ("Şirket") tarafından sunulan İmarMevzuat.ai Platformu'nu kullanan siz değerli Kullanıcı ("Kullanıcı") arasında akdedilmiştir. Platformu kullanmanız, bu Sözleşme'deki şartları okuduğunuz, anladığınız ve kabul ettiğiniz anlamına gelir.</p>
+        <p>İşbu Kullanım Sözleşmesi XXXXXXXXX ("Şirket") tarafından sunulan İmar Mevzuat Platformu'nu kullanan siz değerli Kullanıcı ("Kullanıcı") arasında akdedilmiştir. Platformu kullanmanız, bu Sözleşme'deki şartları okuduğunuz, anladığınız ve kabul ettiğiniz anlamına gelir.</p>
 
         <h2>Madde 1: Tanımlar</h2>
         <ul>
-            <li><strong>Platform / İmarMevzuat.ai:</strong> Şirket tarafından işletilen, yapay zeka destekli imar mevzuatı araştırma, analiz ve taslak metin oluşturma hizmetleri sunan çevrimiçi uygulama ve bağlantılı tüm hizmetler.</li>
+            <li><strong>Platform / İmar Mevzuat:</strong> Şirket tarafından işletilen, yapay zeka destekli imar mevzuatı araştırma, analiz ve taslak metin oluşturma hizmetleri sunan çevrimiçi uygulama ve bağlantılı tüm hizmetler.</li>
             <li><strong>Kullanıcı:</strong> Platform'a erişen, üye olan ve/veya Platform tarafından sunulan hizmetlerden yararlanan her türlü gerçek veya tüzel kişi.</li>
             <li><strong>Hizmet/Hizmetler:</strong> Platform üzerinden Kullanıcı'ya sunulan tüm yapay zeka tabanlı araçlar, içerikler ve destekleyici servisler.</li>
             <li><strong>Girdi (Input):</strong> Kullanıcı tarafından Platform'a yüklenen, yazılan veya herhangi bir şekilde iletilen her türlü veri, dosya, soru, bilgi ve doküman.</li>
@@ -162,11 +162,11 @@ const HizmetContent = () => (
         </ul>
 
         <h2>Madde 2: Hizmetin Niteliği ve Sorumluluk Reddi</h2>
-        <p><strong>2.1.</strong> İmarMevzuat.ai, bir hukuki danışmanlık, avukatlık veya hukuki temsil hizmeti VERMEZ. Platform tarafından sunulan Hizmetler ve üretilen Çıktılar, yalnızca bilgilendirme, hukuki araştırma desteği, analiz yardımı ve taslak metin oluşturma amacı taşır.</p>
-        <p><strong>2.2.</strong> İmarMevzuat.ai, yapay zeka tarafından üretilen Çıktıların doğruluğu, hatasızlığı, eksiksizliği, güncelliği veya belirli bir amaca uygunluğuna dair herhangi bir garanti VERMEMEKTEDİR.</p>
+        <p><strong>2.1.</strong> İmar Mevzuat, bir hukuki danışmanlık, avukatlık veya hukuki temsil hizmeti VERMEZ. Platform tarafından sunulan Hizmetler ve üretilen Çıktılar, yalnızca bilgilendirme, hukuki araştırma desteği, analiz yardımı ve taslak metin oluşturma amacı taşır.</p>
+        <p><strong>2.2.</strong> İmar Mevzuat, yapay zeka tarafından üretilen Çıktıların doğruluğu, hatasızlığı, eksiksizliği, güncelliği veya belirli bir amaca uygunluğuna dair herhangi bir garanti VERMEMEKTEDİR.</p>
         <p><strong>2.3.</strong> Kullanıcı, Platform'dan elde ettiği herhangi bir Çıktıyı, mutlaka kendi dikkatli değerlendirmesinden geçirmeyi ve/veya nitelikli bir hukuk profesyoneline danışarak teyit ettirmeden nihai bir hukuki karar için esas ALMAMAYI kabul ve taahhüt eder.</p>
         <p><strong>2.4.</strong> Kullanıcı, Platform'a müvekkillerine, üçüncü kişilere ait veya herhangi bir gizlilik yükümlülüğüne tabi olan hassas, gizli bilgileri veya özel nitelikli kişisel verileri yüklememesi gerektiğini kabul eder.</p>
-        <p><strong>2.5.</strong> İmarMevzuat.ai, Hizmetler'in kesintisiz veya hatasız olacağını taahhüt etmez.</p>
+        <p><strong>2.5.</strong> İmar Mevzuat, Hizmetler'in kesintisiz veya hatasız olacağını taahhüt etmez.</p>
 
         <h2>Madde 3: Kayıt, Hesap Güvenliği ve Kullanım Şartları</h2>
         <p><strong>3.1.</strong> Platform Hizmetleri'nden yararlanmak için Kullanıcı'nın bir hesap oluşturması gerekebilir. Kullanıcı, doğru, güncel ve eksiksiz bilgi vermeyi taahhüt eder.</p>
@@ -235,7 +235,7 @@ const HizmetContent = () => (
 const CerezContent = () => (
     <div className="legal-content">
         <h1>Çerez Politikası</h1>
-        <p>İşbu Çerez Politikası, XXXXXXXXX ("Şirket" veya "Veri Sorumlusu") olarak, veri sorumlusu sıfatıyla, İmarMevzuat.ai alan adlı web sitemizin ("Platform") kullanımı sırasında elde edilen kişisel verilerinizin çerezler aracılığıyla işlenmesine ilişkin olarak sizleri 6698 sayılı Kişisel Verilerin Korunması Kanunu ("Kanun") kapsamında bilgilendirmek amacıyla hazırlanmıştır.</p>
+        <p>İşbu Çerez Politikası, XXXXXXXXX ("Şirket" veya "Veri Sorumlusu") olarak, veri sorumlusu sıfatıyla, İmar Mevzuat alan adlı web sitemizin ("Platform") kullanımı sırasında elde edilen kişisel verilerinizin çerezler aracılığıyla işlenmesine ilişkin olarak sizleri 6698 sayılı Kişisel Verilerin Korunması Kanunu ("Kanun") kapsamında bilgilendirmek amacıyla hazırlanmıştır.</p>
 
         <h2>1. Çerez Nedir ve Neden Kullanılır?</h2>
         <p>Çerezler, bir web sitesini ziyaret ettiğinizde tarayıcınız aracılığıyla bilgisayarınıza veya mobil cihazınıza kaydedilen küçük metin dosyalarıdır. Çerezler, web sitesinin daha verimli çalışmasını sağlamak, kullanıcı tercihlerini hatırlayarak kişiselleştirilmiş bir deneyim sunmak ve site sahiplerine anonim istatistiksel veriler sağlayarak hizmetlerini iyileştirme imkanı tanımak gibi amaçlarla kullanılır.</p>
@@ -272,10 +272,10 @@ const CerezContent = () => (
 const AydinlatmaContent = () => (
     <div className="legal-content">
         <h1>Aydınlatma Metni ve Gizlilik Politikası</h1>
-        <p>İşbu Gizlilik ve Kişisel Verilerin Korunması Politikası ("Politika"), XXXXXXXXX ("Şirket" veya "Veri Sorumlusu") olarak, İmarMevzuat.ai Platformu'nu ("Platform" veya "Hizmet") kullanan siz değerli kullanıcılarımızın ("Kullanıcı" veya "Veri Sahibi") kişisel verilerinin 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca nasıl toplandığını, işlendiğini, saklandığını ve paylaşıldığını şeffaf bir biçimde açıklamaktadır.</p>
+        <p>İşbu Gizlilik ve Kişisel Verilerin Korunması Politikası ("Politika"), XXXXXXXXX ("Şirket" veya "Veri Sorumlusu") olarak, İmar Mevzuat Platformu'nu ("Platform" veya "Hizmet") kullanan siz değerli kullanıcılarımızın ("Kullanıcı" veya "Veri Sahibi") kişisel verilerinin 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca nasıl toplandığını, işlendiğini, saklandığını ve paylaşıldığını şeffaf bir biçimde açıklamaktadır.</p>
 
         <h3>Yapay Zeka Sisteminin İşleyişine İlişkin Bilgilendirme</h3>
-        <p>İmarMevzuat.ai platformunun temel işlevi olan yapay zeka destekli mevzuat yanıtlarının sunulabilmesi için girdiğiniz sorular, metinler ve yüklediğiniz dosyalar, Türkiye'deki sunucularımızda çalışan yerel modeller ve yurt dışı merkezli API destekli büyük dil modelleri (LLM'ler) tarafından işlenebilir. Bu veriler, yalnızca hizmetin ifası amacıyla kullanılmaktadır.</p>
+        <p>İmar Mevzuat platformunun temel işlevi olan yapay zeka destekli mevzuat yanıtlarının sunulabilmesi için girdiğiniz sorular, metinler ve yüklediğiniz dosyalar, Türkiye'deki sunucularımızda çalışan yerel modeller ve yurt dışı merkezli API destekli büyük dil modelleri (LLM'ler) tarafından işlenebilir. Bu veriler, yalnızca hizmetin ifası amacıyla kullanılmaktadır.</p>
 
         <h2>Madde 1: Veri Sorumlusunun Kimliği</h2>
         <ul>
@@ -351,10 +351,10 @@ const AcikRizaContent = () => (
     <div className="legal-content">
         <h1>Açık Rıza Metni</h1>
         <p><em>Son Güncelleme Tarihi: XXXXXXXXX</em></p>
-        <p>6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, XXXXXXXXX ("Şirket") tarafından sunulan İmarMevzuat.ai Platformu'na ("Platform") ilişkin olarak tarafıma sunulan "Aydınlatma Metni ve Gizlilik Politikası"nı okuduğumu, anladığımı ve kişisel verilerimin aşağıda belirtilen her bir amaç ve koşul için işlenmesine, aktarılmasına ve saklanmasına özgür irademle rıza gösterdiğimi beyan ederim.</p>
+        <p>6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, XXXXXXXXX ("Şirket") tarafından sunulan İmar Mevzuat Platformu'na ("Platform") ilişkin olarak tarafıma sunulan "Aydınlatma Metni ve Gizlilik Politikası"nı okuduğumu, anladığımı ve kişisel verilerimin aşağıda belirtilen her bir amaç ve koşul için işlenmesine, aktarılmasına ve saklanmasına özgür irademle rıza gösterdiğimi beyan ederim.</p>
 
         <h2>Yapay Zeka Sisteminin İşleyişine İlişkin Bilgilendirme</h2>
-        <p>İmarMevzuat.ai platformunun temel işlevi olan yapay zeka destekli mevzuat yanıtlarının sunulabilmesi için girdiğiniz sorular, metinler ve yüklediğiniz dosyalar (içerikler), Türkiye'deki sunucularımızda çalışan yerel modeller ve yurt dışı merkezli API destekli büyük dil modelleri (LLM'ler) tarafından işlenebilir. Bu veriler, yalnızca hizmetin ifası amacıyla kullanılmaktadır.</p>
+        <p>İmar Mevzuat platformunun temel işlevi olan yapay zeka destekli mevzuat yanıtlarının sunulabilmesi için girdiğiniz sorular, metinler ve yüklediğiniz dosyalar (içerikler), Türkiye'deki sunucularımızda çalışan yerel modeller ve yurt dışı merkezli API destekli büyük dil modelleri (LLM'ler) tarafından işlenebilir. Bu veriler, yalnızca hizmetin ifası amacıyla kullanılmaktadır.</p>
 
         <h2>1. Altyapı Hizmetleri İçin Veri Aktarımına İlişkin Açık Rızam</h2>
         <p>Platform'a kaydolabilmem ve hesabımın güvenli bir şekilde yönetilebilmesi için, kimlik doğrulama amacıyla tüm kullanıcılardan e-posta adresi alındığını anladım. Yukarıda belirtilen tüm kimlik verilerimin, yurt dışında yerleşik kimlik doğrulama ve veritabanı altyapı hizmet sağlayıcılarına aktarılmasını kabul ediyorum. Bu onayın, hizmetin sunulabilmesi için zorunlu olduğunu anladım.</p>
@@ -416,7 +416,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ onBack, initialTab = 'tesl
                         <div className="landing-nav-logo">
                             <Scale size={20} className="text-white" />
                         </div>
-                        <span className="landing-nav-title">İmarMevzuat.ai</span>
+                        <span className="landing-nav-title">İmar Mevzuat</span>
                     </div>
                     <div className="landing-nav-actions">
                         <button onClick={onBack} className="landing-btn-ghost">

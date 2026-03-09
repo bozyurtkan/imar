@@ -1,0 +1,16 @@
+{
+    "name": "İmar Mevzuat - AI İmar Hukuku Asistanı",
+    "short_name": "İmar Mevzuat",
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#c4501a",
+    "background_color": "#fdf6f0",
+    "icons": [
+        {
+            "src": "/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ],
+    "description": "Türkiye'nin ilk AI tabanlı imar mevzuatı asistanı. 3194 Sayılı İmar Kanunu ve mevzuata madde atıflı kesin yanıtlar."
+}

@@ -60,7 +60,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBack }) => {
                         <div className="login-left-logo">
                             <Scale size={32} className="text-white" />
                         </div>
-                        <h1 className="login-left-title">İmarMevzuat.ai</h1>
+                        <h1 className="login-left-title">İmar Mevzuat</h1>
                         <p className="login-left-desc">
                             50'den fazla kanun, yönetmelik ve genelge tek bir portalda.
                             Madde atıflı kesin yanıtlar veren Türkiye'nin ilk ve tek imar mevzuatı yapay zekası.
