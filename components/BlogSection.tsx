@@ -40,7 +40,7 @@ export const BlogSection: React.FC = () => {
                     İmar Hukuku Rehberleri & Makaleler
                 </h2>
                 <p className="landing-section-subtitle" style={{ maxWidth: '800px', margin: '0 auto 4rem auto' }}>
-                    Yapay zeka asistanımızın güçlü analiz yeteneklerini keşfetmeden önce, hukukçularımız ve şehir plancılarımız tarafından hazırlanan derinlemesine mevzuat incelemelerine göz atın.
+                    Yapay zeka asistanımızın güçlü analiz yeteneklerini keşfediden önce, hukukçularımız ve şehir plancılarımız tarafından hazırlanan derinlemesine mevzuat incelemelerine göz atın. <br /><span className="text-accent text-sm font-semibold">(Seçili makaleler çok yakında yayında!)</span>
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
@@ -50,6 +50,13 @@ export const BlogSection: React.FC = () => {
                             onClick={handleComingSoon}
                             className="group relative bg-dark-elevated rounded-2xl p-6 sm:p-8 border border-dark-border/50 hover:border-accent/30 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] flex flex-col h-full cursor-pointer overflow-hidden"
                         >
+                            {/* Coming Soon Badge */}
+                            <div className="absolute top-0 right-0 z-20">
+                                <div className="bg-accent text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl shadow-lg transform translate-x-1 -translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-300">
+                                    ÇOK YAKINDA
+                                </div>
+                            </div>
+
                             {/* Hover Glow Effect */}
                             <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
