@@ -112,64 +112,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
 
-  <!-- Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
-          colors: {
-            dark: {
-              primary: 'var(--bg-primary)',
-              secondary: 'var(--bg-secondary)',
-              tertiary: 'var(--bg-tertiary)',
-              surface: 'var(--bg-surface)',
-              'surface-hover': 'var(--bg-surface-hover)',
-              elevated: 'var(--bg-elevated)',
-              border: 'var(--border-color)',
-              'border-subtle': 'var(--border-subtle)',
-            },
-            warm: {
-              50: 'var(--text-primary)',
-              100: 'var(--text-primary)',
-              200: 'var(--text-secondary)',
-              300: 'var(--text-secondary)',
-              400: 'var(--text-muted)',
-              500: 'var(--text-muted)',
-              600: 'var(--text-faint)',
-              700: 'var(--border-color)',
-              800: 'var(--border-subtle)',
-              900: 'var(--bg-surface-hover)',
-              950: 'var(--bg-primary)',
-            },
-            accent: {
-              DEFAULT: 'var(--accent-primary)',
-              hover: 'var(--accent-primary-hover)',
-              dark: 'var(--accent-gradient-end)',
-            }
-          },
-        },
-      },
-    }
-  </script>
-
   <link rel="stylesheet" href="/index.css">
-
-  <script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "@google/generative-ai": "https://esm.sh/@google/generative-ai@^0.21.0"
-  }
-}
-  </script>
 </head>
 
 <body>

@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ============================================
    İmar Mevzuat — Dual Theme (Light + Dark)
    Warm aesthetic inspired by Yupp AI
