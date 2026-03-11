@@ -30,13 +30,10 @@ export class GeminiService {
     const ai = this.getClient();
 
     const activeDocs = documents.filter(doc => doc.isActive);
-    if (activeDocs.length === 0) {
-      throw new Error("Lütfen analiz için kütüphaneden en az bir belge seçin.");
-    }
 
-    const contextText = activeDocs
-      .map(doc => `[KAYNAK: ${doc.name} | ETİKET: ${doc.description}]\n${doc.content}`)
-      .join('\n\n---\n\n');
+    const contextText = activeDocs.length > 0
+      ? activeDocs.map(doc => `[KAYNAK: ${doc.name} | ETİKET: ${doc.description}]\n${doc.content}`).join('\n\n---\n\n')
+      : "Kullanıcı kütüphaneden analiz için herhangi bir özel belge seçmedi. Lütfen geniş genel hukuk ve imar mevzuatı bilgilerini kullanarak soruyu en iyi şekilde cevapla. Cevabının başında kullanıcıya sistemde aktif belge olmadığını ve genel bilgilerinle yanıt verdiğini nazikçe belirt.";
 
     const systemInstruction = `
       Sen profesyonel bir Türkiye İmar Mevzuatı danışmanısın.
@@ -290,13 +287,10 @@ export class GeminiService {
     const ai = this.getClient();
 
     const activeDocs = documents.filter(doc => doc.isActive);
-    if (activeDocs.length === 0) {
-      throw new Error("Lütfen analiz için kütüphaneden en az bir belge seçin.");
-    }
 
-    const contextText = activeDocs
-      .map(doc => `[KAYNAK: ${doc.name} | ETİKET: ${doc.description}]\n${doc.content}`)
-      .join('\n\n---\n\n');
+    const contextText = activeDocs.length > 0
+      ? activeDocs.map(doc => `[KAYNAK: ${doc.name} | ETİKET: ${doc.description}]\n${doc.content}`).join('\n\n---\n\n')
+      : "Kullanıcı kütüphaneden analiz için herhangi bir özel belge seçmedi. Lütfen geniş genel hukuk ve imar mevzuatı bilgilerini kullanarak soruyu derinlemesine analiz et. Analizinin I. adımında kullanıcıya sistemde aktif belge olmadığını ve bu sebeple genel mevzuat üzerinden cevap verdiğini not düş.";
 
     const systemInstruction = `
       Sen Türkiye'nin en deneyimli İmar Hukuku profesörü ve danışmanısın.

@@ -51,6 +51,21 @@ declare global {
   }
 }
 
+const generateDemoDocument = (): DocumentFile => {
+  const maddeler = getAllMaddeler();
+  const content = maddeler.map(m => `Madde ${m.maddeNo} - ${m.baslik}\n${m.icerik}`).join('\n\n');
+  return {
+    id: 'demo-3194-sample-kanun',
+    name: '3194 Sayılı Kanun (Örnek)',
+    type: 'text',
+    content: content,
+    size: formatBytes(new Blob([content]).size),
+    description: 'Sistem tarafından incelenmesi için otomatik yüklenen örnek belge.',
+    uploadDate: new Date().toLocaleDateString('tr-TR'),
+    isActive: true
+  };
+};
+
 const ImarApp: React.FC = () => {
   const { user, logout, isAdmin } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -231,7 +246,9 @@ const ImarApp: React.FC = () => {
               }
               setDocuments(oldDocs);
             } else {
-              setDocuments([]);
+              const demoDoc = generateDemoDocument();
+              await saveDocToLibrary(user.uid, demoDoc);
+              setDocuments([demoDoc]);
             }
           }
         } catch (e) {
@@ -241,7 +258,20 @@ const ImarApp: React.FC = () => {
         // Giriş yapmamışsa LocalStorage'dan çek
         const savedDocs = localStorage.getItem('imar_docs');
         if (savedDocs) {
-          try { setDocuments(JSON.parse(savedDocs)); } catch (e) { console.error(e); }
+          try {
+            const parsed = JSON.parse(savedDocs);
+            if (parsed.length > 0) {
+              setDocuments(parsed);
+            } else {
+              const demoDoc = generateDemoDocument();
+              localStorage.setItem('imar_docs', JSON.stringify([demoDoc]));
+              setDocuments([demoDoc]);
+            }
+          } catch (e) { console.error(e); }
+        } else {
+          const demoDoc = generateDemoDocument();
+          localStorage.setItem('imar_docs', JSON.stringify([demoDoc]));
+          setDocuments([demoDoc]);
         }
       }
 
@@ -359,7 +389,9 @@ const ImarApp: React.FC = () => {
               }
               setDocuments(oldDocs);
             } else {
-              setDocuments([]);
+              const demoDoc = generateDemoDocument();
+              await saveDocToLibrary(user.uid, demoDoc);
+              setDocuments([demoDoc]);
             }
           }
 
@@ -378,8 +410,18 @@ const ImarApp: React.FC = () => {
       } else {
         // Logout olduğunda local'e dön
         const savedDocs = localStorage.getItem('imar_docs');
-        if (savedDocs) setDocuments(JSON.parse(savedDocs));
-        else setDocuments([]);
+        if (savedDocs) {
+          try {
+            const parsed = JSON.parse(savedDocs);
+            if (parsed.length > 0) {
+              setDocuments(parsed);
+            } else {
+              setDocuments([generateDemoDocument()]);
+            }
+          } catch (e) { console.error(e) }
+        } else {
+          setDocuments([generateDemoDocument()]);
+        }
         setMessages([]);
         setUserCredit({ subscriptionPlan: 'free', totalCredit: 100, remainingCredit: 100, subscriptionStartDate: '', subscriptionEndDate: '', autoRenew: false });
       }
@@ -767,9 +809,9 @@ const ImarApp: React.FC = () => {
     }
   };
 
-  const handleSendMessage = async (e?: React.FormEvent) => {
+  const handleSendMessage = async (e?: React.FormEvent, overrideQuery?: string) => {
     e?.preventDefault();
-    const query = inputValue.trim();
+    const query = (overrideQuery || inputValue).trim();
     if (!query || isTyping) return;
 
     // Modül ID'sini belirle
@@ -1810,21 +1852,92 @@ const ImarApp: React.FC = () => {
               </p>
 
               {/* Quick Action Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-xl">
-                {[
-                  { q: "3194 Sayılı Kanun 18. madde nedir?", icon: <BookOpen size={16} />, color: "text-blue-400" },
-                  { q: "İstanbul İmar Yönetmeliği çekme mesafesi?", icon: <Scale size={16} />, color: "text-purple-400" },
-                  { q: "Mevzuata göre otopark şartları?", icon: <Gavel size={16} />, color: "text-emerald-400" }
-                ].map((item, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setInputValue(item.q)}
-                    className="p-4 bg-dark-surface hover:bg-dark-surface-hover border border-dark-border hover:border-warm-700 rounded-2xl text-left transition-all group"
-                  >
-                    <div className={`mb-3 ${item.color}`}>{item.icon}</div>
-                    <p className="text-[11px] font-medium text-warm-200 leading-snug group-hover:text-warm-50 transition-colors">{item.q}</p>
-                  </button>
-                ))}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl">
+                {(() => {
+                  const hasCustomDocs = documents.some(d => d.id !== 'demo-3194-sample-kanun' && d.isActive);
+                  const activeDocsCount = documents.filter(d => d.isActive).length;
+
+                  let cards = [];
+                  if (activeDocsCount === 0) {
+                    cards = [
+                      {
+                        title: "Genel Soru",
+                        q: "İmar Kanunu nedir ve amacı nedir?",
+                        desc: "Seçili belge yok, genel bilgilerimle yanıt vereceğim.",
+                        icon: <Globe size={18} />, color: "text-amber-400", bg: "bg-amber-500/5", border: "hover:border-amber-500/30"
+                      },
+                      {
+                        title: "Web Araması",
+                        q: "2024 yılı güncel imar belgeleri haberleri var mı?",
+                        desc: "Web arama modunu açarak internette güncel mevzuat taraması yapın.",
+                        icon: <Search size={18} />, color: "text-blue-400", bg: "bg-blue-500/5", border: "hover:border-blue-500/30"
+                      },
+                      {
+                        title: "Biliyor muydunuz?",
+                        q: "Ruhsatsız bir yapının yıkım kararı nasıl alınır?",
+                        desc: "Genel hukuki tecrübem ile size sürecin işleyişini anlatayım.",
+                        icon: <Brain size={18} />, color: "text-purple-400", bg: "bg-purple-500/5", border: "hover:border-purple-500/30"
+                      }
+                    ];
+                  } else if (hasCustomDocs) {
+                    cards = [
+                      {
+                        title: "Belge Özeti",
+                        q: "Yüklediğim belgelerin kapsamlı bir özetini çıkarır mısın?",
+                        desc: "Yüklediğiniz mevzuat belgelerinin genel analizini yapın.",
+                        icon: <FileText size={18} />, color: "text-indigo-400", bg: "bg-indigo-500/5", border: "hover:border-indigo-500/30"
+                      },
+                      {
+                        title: "Kritik Hususlar",
+                        q: "Bu belgelerde dikkat etmem gereken zorunluluklar veya tarihler nelerdir?",
+                        desc: "Belge içindeki hukuki süreleri ve yaptırımları bulun.",
+                        icon: <Clock size={18} />, color: "text-emerald-400", bg: "bg-emerald-500/5", border: "hover:border-emerald-500/30"
+                      },
+                      {
+                        title: "Risk Analizi",
+                        q: "Belgedeki hükümlere uymamanın yasal yaptırımları nelerdir?",
+                        desc: "Mevzuattaki riskleri detaylandırır.",
+                        icon: <AlertTriangle size={18} />, color: "text-rose-400", bg: "bg-rose-500/5", border: "hover:border-rose-500/30"
+                      }
+                    ];
+                  } else {
+                    cards = [
+                      {
+                        title: "Hızlı Senaryo 1",
+                        q: "3194 Sayılı Kanun 18. fıkrasına göre DOP oranı nedir?",
+                        desc: "Madde-18 (Arazi Düzenlemesi) üzerinden hızlı test yapın.",
+                        icon: <BookOpen size={18} />, color: "text-blue-400", bg: "bg-blue-500/5", border: "hover:border-blue-500/30"
+                      },
+                      {
+                        title: "Hızlı Senaryo 2",
+                        q: "Bina derinliği ve çekme mesafesi yönetmeliği nedir?",
+                        desc: "Yüklenen mevzuat üzerinden teknik detayları sorgulayın.",
+                        icon: <Scale size={18} />, color: "text-purple-400", bg: "bg-purple-500/5", border: "hover:border-purple-500/30"
+                      },
+                      {
+                        title: "Hızlı Senaryo 3",
+                        q: "İmar para cezası 2024 yılı için nasıl hesaplanır?",
+                        desc: "42. madde kapsamındaki cezai işlemleri analiz edin.",
+                        icon: <Gavel size={18} />, color: "text-emerald-400", bg: "bg-emerald-500/5", border: "hover:border-emerald-500/30"
+                      }
+                    ];
+                  }
+
+                  return cards.map((item, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setInputValue(item.q)}
+                      className={`flex flex-col p-5 bg-dark-secondary ${item.bg} border border-dark-border ${item.border} rounded-2xl text-left transition-all duration-300 group hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20`}
+                    >
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 bg-dark-surface border border-dark-border group-hover:scale-110 transition-transform ${item.color}`}>
+                        {item.icon}
+                      </div>
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-warm-500 mb-1">{item.title}</h4>
+                      <p className="text-[13px] font-bold text-warm-100 mb-2 leading-tight group-hover:text-accent transition-colors">{item.q}</p>
+                      <p className="text-[11px] text-warm-500 leading-snug">{item.desc}</p>
+                    </button>
+                  ));
+                })()}
               </div>
             </div>
           ) : (
