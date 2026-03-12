@@ -20,6 +20,7 @@ import { DocumentFile, Message, FavoriteItem } from './types';
 import { parseFile, formatBytes } from './utils/fileParser';
 import { geminiService } from './services/geminiService';
 import { getMadde, getAllMaddeler, MevzuatMaddesi, getMevzuatGraph } from './data/mevzuatVeritabani';
+import { getDemoDocuments } from './data/demoMevzuat';
 
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AuthModal } from './components/AuthModal';
@@ -51,19 +52,15 @@ declare global {
   }
 }
 
-const generateDemoDocument = (): DocumentFile => {
-  const maddeler = getAllMaddeler();
-  const content = maddeler.map(m => `Madde ${m.maddeNo} - ${m.baslik}\n${m.icerik}`).join('\n\n');
-  return {
-    id: 'demo-3194-sample-kanun',
-    name: '3194 Sayılı Kanun (Örnek)',
-    type: 'text',
-    content: content,
-    size: formatBytes(new Blob([content]).size),
-    description: 'Sistem tarafından incelenmesi için otomatik yüklenen örnek belge.',
-    uploadDate: new Date().toLocaleDateString('tr-TR'),
-    isActive: true
-  };
+const generateDemoDocuments = (): DocumentFile[] => {
+  const extraDocs = getDemoDocuments();
+
+  // Sadece sizin yüklediğiniz 3 belgeyi dönüyoruz.
+  // İmar Kanunu (id: auto-imar-kanunu) varsayılan olarak aktif gelsin.
+  return extraDocs.map((doc, index) => ({
+    ...doc,
+    isActive: index === 2 // İmar Kanunu listenin 3. sırasında (index 2)
+  }));
 };
 
 const ImarApp: React.FC = () => {
@@ -246,9 +243,11 @@ const ImarApp: React.FC = () => {
               }
               setDocuments(oldDocs);
             } else {
-              const demoDoc = generateDemoDocument();
-              await saveDocToLibrary(user.uid, demoDoc);
-              setDocuments([demoDoc]);
+              const demoDocs = generateDemoDocuments();
+              for (const d of demoDocs) {
+                await saveDocToLibrary(user.uid, d);
+              }
+              setDocuments(demoDocs);
             }
           }
         } catch (e) {
@@ -263,15 +262,15 @@ const ImarApp: React.FC = () => {
             if (parsed.length > 0) {
               setDocuments(parsed);
             } else {
-              const demoDoc = generateDemoDocument();
-              localStorage.setItem('imar_docs', JSON.stringify([demoDoc]));
-              setDocuments([demoDoc]);
+              const demoDocs = generateDemoDocuments();
+              localStorage.setItem('imar_docs', JSON.stringify(demoDocs));
+              setDocuments(demoDocs);
             }
           } catch (e) { console.error(e); }
         } else {
-          const demoDoc = generateDemoDocument();
-          localStorage.setItem('imar_docs', JSON.stringify([demoDoc]));
-          setDocuments([demoDoc]);
+          const demoDocs = generateDemoDocuments();
+          localStorage.setItem('imar_docs', JSON.stringify(demoDocs));
+          setDocuments(demoDocs);
         }
       }
 
@@ -389,9 +388,11 @@ const ImarApp: React.FC = () => {
               }
               setDocuments(oldDocs);
             } else {
-              const demoDoc = generateDemoDocument();
-              await saveDocToLibrary(user.uid, demoDoc);
-              setDocuments([demoDoc]);
+              const demoDocs = generateDemoDocuments();
+              for (const d of demoDocs) {
+                await saveDocToLibrary(user.uid, d);
+              }
+              setDocuments(demoDocs);
             }
           }
 
@@ -416,11 +417,11 @@ const ImarApp: React.FC = () => {
             if (parsed.length > 0) {
               setDocuments(parsed);
             } else {
-              setDocuments([generateDemoDocument()]);
+              setDocuments(generateDemoDocuments());
             }
           } catch (e) { console.error(e) }
         } else {
-          setDocuments([generateDemoDocument()]);
+          setDocuments(generateDemoDocuments());
         }
         setMessages([]);
         setUserCredit({ subscriptionPlan: 'free', totalCredit: 100, remainingCredit: 100, subscriptionStartDate: '', subscriptionEndDate: '', autoRenew: false });
