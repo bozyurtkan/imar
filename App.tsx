@@ -28,6 +28,7 @@ import { HistoryModal } from './components/HistoryModal';
 import { FavoritesModal } from './components/FavoritesModal';
 import { AdminPanel } from './components/AdminPanel';
 import { OnboardingTour } from './components/OnboardingTour';
+import { HelpCenterModal } from './components/HelpCenterModal';
 import { db, saveChatHistory, getChatSession, saveDocToLibrary, deleteDocFromLibrary, loadLibraryDocs, saveFavorite, deleteFavorite, getFavorites } from './services/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { User, LogOut, LogIn, Clock, History, Shield, AlertCircle } from 'lucide-react';
@@ -118,6 +119,8 @@ const ImarApp: React.FC = () => {
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return localStorage.getItem('imar_onboarding_completed') !== 'true';
   });
+  const [activeTour, setActiveTour] = useState<'library' | 'webSearch'>('library');
+  const [showHelpCenter, setShowHelpCenter] = useState(false);
 
   const handleCopyMessage = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
@@ -1632,7 +1635,7 @@ const ImarApp: React.FC = () => {
               <span className="sidebar-label">Admin Paneli</span>
             </button>
           )}
-          <button onClick={() => { setShowOnboarding(true); setIsMobileMenuOpen(false); }} className="sidebar-nav-item" data-tip="Kullanım Rehberi">
+          <button onClick={() => { setShowHelpCenter(true); setIsMobileMenuOpen(false); }} className="sidebar-nav-item" data-tip="Kullanım Rehberi">
             <HelpCircle size={20} className="nav-icon flex-shrink-0" />
             <span className="sidebar-label">Kullanım Rehberi</span>
           </button>
@@ -1840,6 +1843,8 @@ const ImarApp: React.FC = () => {
               </button>
             )}
             <button
+              id="tour-web-toggle"
+              data-tour-id="tour-web-toggle"
               onClick={() => setIsGeneralMode(!isGeneralMode)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-semibold transition-all border ${isGeneralMode ? 'bg-accent/15 text-accent border-accent/30' : 'bg-dark-surface text-warm-300 border-dark-border hover:bg-dark-surface-hover hover:text-warm-50'}`}
             >
@@ -2126,6 +2131,8 @@ const ImarApp: React.FC = () => {
                 {/* Deep Think Toggle */}
                 <button
                   type="button"
+                  id="tour-deep-think"
+                  data-tour-id="tour-deep-think"
                   onClick={() => {
                     const newState = !isDeepThinkMode;
                     setIsDeepThinkMode(newState);
@@ -2334,9 +2341,21 @@ const ImarApp: React.FC = () => {
 
       <PDFSettingsModal />
 
+      {/* Help Center Modal */}
+      <HelpCenterModal
+        isOpen={showHelpCenter}
+        onClose={() => setShowHelpCenter(false)}
+        onSelectTour={(tType) => {
+          setActiveTour(tType);
+          setShowHelpCenter(false);
+          setShowOnboarding(true);
+        }}
+      />
+
       {/* Onboarding Tour */}
       <OnboardingTour
         isOpen={showOnboarding}
+        tourType={activeTour}
         onClose={() => setShowOnboarding(false)}
         onExpandSidebar={() => setIsSidebarExpanded(true)}
       />

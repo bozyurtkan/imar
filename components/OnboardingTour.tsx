@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { X, ChevronRight, ChevronLeft, BookOpen, CheckSquare, Upload, MessageSquare, HelpCircle } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, BookOpen, CheckSquare, Upload, MessageSquare, HelpCircle, Globe, Brain, Send } from 'lucide-react';
+
+export type TourType = 'library' | 'webSearch';
 
 interface TourStep {
     targetId: string;
@@ -12,11 +14,12 @@ interface TourStep {
 
 interface OnboardingTourProps {
     isOpen: boolean;
+    tourType: TourType;
     onClose: () => void;
     onExpandSidebar?: () => void;
 }
 
-const TOUR_STEPS: TourStep[] = [
+const LIBRARY_TOUR_STEPS: TourStep[] = [
     {
         targetId: 'tour-library-title',
         title: 'Mevzuat Kütüphanesi',
@@ -47,15 +50,41 @@ const TOUR_STEPS: TourStep[] = [
     },
 ];
 
-export const OnboardingTour: React.FC<OnboardingTourProps> = ({ isOpen, onClose, onExpandSidebar }) => {
+const WEB_SEARCH_TOUR_STEPS: TourStep[] = [
+    {
+        targetId: 'tour-web-toggle',
+        title: 'Web Araması Modu',
+        description: 'Bu butona tıklayarak Web Aramasını açabilirsiniz. İnternetteki en güncel mevzuat ve içtihatları tarayarak size güncel bilgiler sunar.',
+        icon: <Globe size={20} />,
+        position: 'bottom',
+    },
+    {
+        targetId: 'tour-deep-think',
+        title: 'Derin Düşünce (Deep Think)',
+        description: 'Karmaşık sorularda daha derin mantıksal analiz ve muhakeme yapmak isterseniz bu modu açarak çok adımlı analiz yapabilirsiniz.',
+        icon: <Brain size={20} />,
+        position: 'top',
+    },
+    {
+        targetId: 'tour-prompt-cards',
+        title: 'Soru Gönderin',
+        description: 'Web araması veya Derin Düşünce açıkken sorularınızı buradan gönderebilirsiniz.',
+        icon: <Send size={20} />,
+        position: 'top',
+    },
+];
+
+export const OnboardingTour: React.FC<OnboardingTourProps> = ({ isOpen, tourType, onClose, onExpandSidebar }) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
     const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({});
     const [isAnimating, setIsAnimating] = useState(false);
     const tooltipRef = useRef<HTMLDivElement>(null);
 
+    const activeSteps = tourType === 'library' ? LIBRARY_TOUR_STEPS : WEB_SEARCH_TOUR_STEPS;
+
     const updateTargetPosition = useCallback(() => {
-        const step = TOUR_STEPS[currentStep];
+        const step = activeSteps[currentStep];
         if (!step) return;
 
         const el = document.querySelector(`[data-tour-id="${step.targetId}"]`);
@@ -63,29 +92,27 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ isOpen, onClose,
             const rect = el.getBoundingClientRect();
             setTargetRect(rect);
         }
-    }, [currentStep]);
+    }, [currentStep, activeSteps]);
 
     useEffect(() => {
         if (!isOpen) return;
 
-        // Sidebar'ı genişlet (kütüphane adımları için)
-        if (currentStep < 3 && onExpandSidebar) {
+        if (tourType === 'library' && currentStep < 3 && onExpandSidebar) {
             onExpandSidebar();
         }
 
-        // Biraz gecikme ile hedef elemanı bul (sidebar açılma animasyonu için)
         const timer = setTimeout(() => {
             updateTargetPosition();
         }, 350);
 
         return () => clearTimeout(timer);
-    }, [isOpen, currentStep, updateTargetPosition, onExpandSidebar]);
+    }, [isOpen, currentStep, updateTargetPosition, onExpandSidebar, tourType]);
 
     // Tooltip pozisyonunu hesapla
     useEffect(() => {
         if (!targetRect || !isOpen) return;
 
-        const step = TOUR_STEPS[currentStep];
+        const step = activeSteps[currentStep];
         const padding = 16;
         const tooltipWidth = 320;
         const tooltipHeight = 200;
@@ -137,7 +164,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ isOpen, onClose,
     }, [isOpen, updateTargetPosition]);
 
     const handleNext = () => {
-        if (currentStep < TOUR_STEPS.length - 1) {
+        if (currentStep < activeSteps.length - 1) {
             setIsAnimating(true);
             setTimeout(() => {
                 setCurrentStep(prev => prev + 1);
@@ -170,7 +197,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ isOpen, onClose,
 
     if (!isOpen || !targetRect) return null;
 
-    const step = TOUR_STEPS[currentStep];
+    const step = activeSteps[currentStep];
     const spotlightPadding = 8;
 
     return (
@@ -267,20 +294,20 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ isOpen, onClose,
                         {/* Step indicator + skip */}
                         <div className="flex items-center gap-3">
                             <div className="flex items-center gap-1.5">
-                                {TOUR_STEPS.map((_, i) => (
+                                {activeSteps.map((_, i) => (
                                     <div
                                         key={i}
                                         className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === currentStep
-                                                ? 'bg-accent w-4'
-                                                : i < currentStep
-                                                    ? 'bg-accent/50'
-                                                    : 'bg-warm-600'
+                                            ? 'bg-accent w-4'
+                                            : i < currentStep
+                                                ? 'bg-accent/50'
+                                                : 'bg-warm-600'
                                             }`}
                                     />
                                 ))}
                             </div>
                             <span className="text-[10px] text-warm-500 font-medium">
-                                {currentStep + 1} / {TOUR_STEPS.length}
+                                {currentStep + 1} / {activeSteps.length}
                             </span>
                         </div>
 
@@ -306,7 +333,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ isOpen, onClose,
                                 onClick={handleNext}
                                 className="px-4 py-1.5 text-[11px] font-bold bg-gradient-to-r from-accent to-accent-dark hover:from-accent-hover hover:to-accent text-white rounded-lg transition-all flex items-center gap-1 shadow-lg shadow-accent/20"
                             >
-                                {currentStep === TOUR_STEPS.length - 1 ? (
+                                {currentStep === activeSteps.length - 1 ? (
                                     'Tamam'
                                 ) : (
                                     <>İleri <ChevronRight size={14} /></>
