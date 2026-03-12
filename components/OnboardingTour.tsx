@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { X, ChevronRight, ChevronLeft, BookOpen, CheckSquare, Upload, MessageSquare, HelpCircle, Globe, Brain, Send } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, BookOpen, CheckSquare, Upload, MessageSquare, HelpCircle, Globe, Brain, Send, GitBranch, Link2, Sparkles } from 'lucide-react';
 
-export type TourType = 'library' | 'webSearch';
+export type TourType = 'library' | 'webSearch' | 'comparison';
 
 interface TourStep {
     targetId: string;
@@ -74,6 +74,30 @@ const WEB_SEARCH_TOUR_STEPS: TourStep[] = [
     },
 ];
 
+const COMPARISON_TOUR_STEPS: TourStep[] = [
+    {
+        targetId: 'tour-compare-btn',
+        title: 'Mevzuat Karşılaştırma',
+        description: 'Bu butona tıklayarak karşılaştırma aracını açabilirsiniz. Resmi Gazete linklerini kullanarak değişiklikleri analiz eder.',
+        icon: <GitBranch size={20} />,
+        position: 'right',
+    },
+    {
+        targetId: 'tour-compare-input',
+        title: 'Link Girişi',
+        description: 'Buraya analiz etmek istediğiniz Resmi Gazete linkini yapıştırın. Örnek bir link sizin için eklendi.',
+        icon: <Link2 size={20} />,
+        position: 'bottom',
+    },
+    {
+        targetId: 'tour-compare-submit',
+        title: 'Analizi Başlat',
+        description: 'Butona bastığınızda yapay zeka hem mevcut mevzuatı hem de linkteki yeni düzenlemeyi karşılaştırarak farkları raporlar.',
+        icon: <Sparkles size={16} />,
+        position: 'top',
+    },
+];
+
 export const OnboardingTour: React.FC<OnboardingTourProps> = ({ isOpen, tourType, onClose, onExpandSidebar }) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
@@ -81,7 +105,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ isOpen, tourType
     const [isAnimating, setIsAnimating] = useState(false);
     const tooltipRef = useRef<HTMLDivElement>(null);
 
-    const activeSteps = tourType === 'library' ? LIBRARY_TOUR_STEPS : WEB_SEARCH_TOUR_STEPS;
+    const activeSteps = tourType === 'library' ? LIBRARY_TOUR_STEPS : (tourType === 'webSearch' ? WEB_SEARCH_TOUR_STEPS : COMPARISON_TOUR_STEPS);
 
     const updateTargetPosition = useCallback(() => {
         const step = activeSteps[currentStep];
@@ -165,6 +189,26 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ isOpen, tourType
 
     const handleNext = () => {
         if (currentStep < activeSteps.length - 1) {
+            // Karşılaştırma turu için özel tetikleyiciler (Otomatik Demo)
+            if (tourType === 'comparison') {
+                if (currentStep === 0) {
+                    // 1. ADIM: Karşılaştırma modalını aç
+                    const compareBtn = document.querySelector('[data-tour-id="tour-compare-btn"]') as HTMLButtonElement;
+                    if (compareBtn) compareBtn.click();
+                } else if (currentStep === 1) {
+                    // 2. ADIM: Linki inputa otomatik doldur
+                    const compareInput = document.querySelector('[data-tour-id="tour-compare-input"]') as HTMLInputElement;
+                    if (compareInput) {
+                        const demoUrl = "https://www.resmigazete.gov.tr/eskiler/2026/01/20260114-1.htm";
+
+                        // React'in state değişimini yakalaması için input olayı tetiklenmeli
+                        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
+                        nativeInputValueSetter?.call(compareInput, demoUrl);
+                        compareInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+            }
+
             setIsAnimating(true);
             setTimeout(() => {
                 setCurrentStep(prev => prev + 1);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, BookOpen, Globe, ChevronRight } from 'lucide-react';
+import { X, BookOpen, Globe, ChevronRight, GitBranch } from 'lucide-react';
 import { TourType } from './OnboardingTour';
 
 interface HelpCenterModalProps {
@@ -64,6 +64,25 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({ isOpen, onClos
                             </h4>
                             <p className="text-xs text-warm-400 leading-relaxed">
                                 İnternette canlı mevzuat taramasını ve karmaşık sorular için derin analizi (Deep Think) keşfedin.
+                            </p>
+                        </div>
+                    </button>
+
+                    {/* Comparison Tour Card */}
+                    <button
+                        onClick={() => onSelectTour('comparison')}
+                        className="w-full group flex items-start gap-4 p-4 bg-dark-secondary hover:bg-dark-surface border border-dark-border hover:border-emerald-500/40 rounded-2xl text-left transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20"
+                    >
+                        <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <GitBranch size={24} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-bold text-warm-50 mb-1 group-hover:text-emerald-400 transition-colors flex items-center justify-between">
+                                Mevzuat Karşılaştırma
+                                <ChevronRight size={16} className="text-warm-600 group-hover:text-emerald-400" />
+                            </h4>
+                            <p className="text-xs text-warm-400 leading-relaxed">
+                                Resmi Gazete linklerini kullanarak eski ve yeni mevzuat arasındaki farkları otomatik analiz edin.
                             </p>
                         </div>
                     </button>

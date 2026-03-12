@@ -1619,7 +1619,7 @@ const ImarApp: React.FC = () => {
             <span className="sidebar-label">Mevzuat Grafiği</span>
           </button>
 
-          <button onClick={() => setShowLinkModal(true)} className="sidebar-nav-item" data-tip="Mevzuat Karşılaştır">
+          <button onClick={() => setShowLinkModal(true)} className="sidebar-nav-item" data-tip="Mevzuat Karşılaştır" data-tour-id="tour-compare-btn">
             <Globe size={20} className="nav-icon flex-shrink-0" />
             <span className="sidebar-label">Mevzuat Karşılaştır</span>
           </button>
@@ -2280,6 +2280,7 @@ const ImarApp: React.FC = () => {
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
                 placeholder="https://www.resmigazete.gov.tr/..."
+                data-tour-id="tour-compare-input"
                 className="w-full bg-dark-surface border border-dark-border focus:border-emerald-500/40 rounded-xl px-4 py-3 text-sm focus:outline-none text-warm-50 placeholder-warm-600 transition-all"
                 onKeyDown={(e) => e.key === 'Enter' && handleLinkComparison()}
               />
@@ -2288,6 +2289,7 @@ const ImarApp: React.FC = () => {
             <button
               onClick={handleLinkComparison}
               disabled={!linkUrl.trim()}
+              data-tour-id="tour-compare-submit"
               className="w-full py-3 bg-emerald-600 disabled:bg-dark-elevated disabled:text-warm-600 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg hover:bg-emerald-500 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
             >
               <GitBranch size={16} />
