@@ -10,7 +10,7 @@ import {
   ShieldCheck, Sun, Moon, CheckSquare,
   Square, Globe, ExternalLink, Zap, Sparkles, Key, AlertTriangle, Home, RotateCcw,
   ChevronRight, X, Download, Search, Menu, Link2, GitBranch, Gavel, ArrowRight, Hash,
-  Mic, MicOff, ScrollText, Brain, Copy, Check, Star
+  Mic, MicOff, ScrollText, Brain, Copy, Check, Star, HelpCircle
 } from 'lucide-react';
 // ... rest of imports
 
@@ -27,6 +27,7 @@ import { AuthModal } from './components/AuthModal';
 import { HistoryModal } from './components/HistoryModal';
 import { FavoritesModal } from './components/FavoritesModal';
 import { AdminPanel } from './components/AdminPanel';
+import { OnboardingTour } from './components/OnboardingTour';
 import { db, saveChatHistory, getChatSession, saveDocToLibrary, deleteDocFromLibrary, loadLibraryDocs, saveFavorite, deleteFavorite, getFavorites } from './services/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { User, LogOut, LogIn, Clock, History, Shield, AlertCircle } from 'lucide-react';
@@ -114,6 +115,9 @@ const ImarApp: React.FC = () => {
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    return localStorage.getItem('imar_onboarding_completed') !== 'true';
+  });
 
   const handleCopyMessage = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
@@ -1628,6 +1632,10 @@ const ImarApp: React.FC = () => {
               <span className="sidebar-label">Admin Paneli</span>
             </button>
           )}
+          <button onClick={() => { setShowOnboarding(true); setIsMobileMenuOpen(false); }} className="sidebar-nav-item" data-tip="Kullanım Rehberi">
+            <HelpCircle size={20} className="nav-icon flex-shrink-0" />
+            <span className="sidebar-label">Kullanım Rehberi</span>
+          </button>
         </div>
 
         {/* Expandable content sections */}
@@ -1657,7 +1665,7 @@ const ImarApp: React.FC = () => {
           {/* Documents Library - scrollable */}
           <div className="flex-1 overflow-y-auto px-3 pt-3 pb-3 custom-scrollbar min-h-0">
             <div className="flex items-center justify-between px-1 mb-2">
-              <span className="text-[10px] font-bold text-warm-500 uppercase tracking-widest">Kütüphane</span>
+              <span className="text-[10px] font-bold text-warm-500 uppercase tracking-widest" data-tour-id="tour-library-title">Kütüphane</span>
               <span className="text-[9px] bg-dark-surface text-warm-400 px-2 py-0.5 rounded-full font-bold">{documents.length}</span>
             </div>
 
@@ -1682,7 +1690,7 @@ const ImarApp: React.FC = () => {
                 filteredDocuments.map(doc => (
                   <div key={doc.id} className={`p-2.5 rounded-xl border transition-all cursor-default ${doc.isActive ? 'bg-accent/5 border-accent/20' : 'bg-dark-surface border-dark-border hover:border-warm-700'}`}>
                     <div className="flex gap-2">
-                      <div onClick={() => saveDocuments(documents.map(d => d.id === doc.id ? { ...d, isActive: !d.isActive } : d))} className="mt-0.5 cursor-pointer flex-shrink-0">
+                      <div onClick={() => saveDocuments(documents.map(d => d.id === doc.id ? { ...d, isActive: !d.isActive } : d))} className="mt-0.5 cursor-pointer flex-shrink-0" data-tour-id={doc === filteredDocuments[0] ? 'tour-doc-toggle' : undefined}>
                         {doc.isActive ? <CheckSquare size={14} className="text-accent" /> : <Square size={14} className="text-warm-600" />}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -1707,7 +1715,7 @@ const ImarApp: React.FC = () => {
           <input type="file" ref={fileInputRef} onChange={(e) => e.target.files && setUploadPendingFiles(Array.from(e.target.files))} className="hidden" multiple accept=".pdf,.docx,.jpg,.jpeg,.png" />
 
           {expanded ? (
-            <button onClick={() => fileInputRef.current?.click()} className="w-full bg-gradient-to-r from-accent to-accent-dark hover:from-accent-hover hover:to-accent text-white py-2.5 rounded-xl shadow-lg shadow-accent/15 flex items-center justify-center gap-2 text-xs font-bold transition-all hover:shadow-accent/25 active:scale-[0.98]">
+            <button onClick={() => fileInputRef.current?.click()} data-tour-id="tour-upload-btn" className="w-full bg-gradient-to-r from-accent to-accent-dark hover:from-accent-hover hover:to-accent text-white py-2.5 rounded-xl shadow-lg shadow-accent/15 flex items-center justify-center gap-2 text-xs font-bold transition-all hover:shadow-accent/25 active:scale-[0.98]">
               <Plus size={15} /> Mevzuat Yükle
             </button>
           ) : (
@@ -1887,7 +1895,7 @@ const ImarApp: React.FC = () => {
               </p>
 
               {/* Quick Action Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl" data-tour-id="tour-prompt-cards">
                 {(() => {
                   const hasCustomDocs = documents.some(d => d.id !== 'demo-3194-sample-kanun' && d.isActive);
                   const activeDocsCount = documents.filter(d => d.isActive).length;
@@ -2325,6 +2333,13 @@ const ImarApp: React.FC = () => {
       )}
 
       <PDFSettingsModal />
+
+      {/* Onboarding Tour */}
+      <OnboardingTour
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+        onExpandSidebar={() => setIsSidebarExpanded(true)}
+      />
     </div >
   );
 };
