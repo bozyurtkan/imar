@@ -57,9 +57,9 @@ const generateDemoDocuments = (): DocumentFile[] => {
 
   // Sadece sizin yüklediğiniz 3 belgeyi dönüyoruz.
   // İmar Kanunu (id: auto-imar-kanunu) varsayılan olarak aktif gelsin.
-  return extraDocs.map((doc, index) => ({
+  return extraDocs.map((doc) => ({
     ...doc,
-    isActive: index === 2 // İmar Kanunu listenin 3. sırasında (index 2)
+    isActive: doc.id === 'auto-imar-kanunu'
   }));
 };
 
@@ -219,7 +219,15 @@ const ImarApp: React.FC = () => {
         try {
           const libraryDocs = await loadLibraryDocs(user.uid);
           if (libraryDocs.length > 0) {
-            setDocuments(libraryDocs);
+            const hasActive = libraryDocs.some(d => d.isActive);
+            if (!hasActive) {
+              const updatedDocs = libraryDocs.map(d =>
+                d.id === 'auto-imar-kanunu' ? { ...d, isActive: true } : d
+              );
+              setDocuments(updatedDocs);
+            } else {
+              setDocuments(libraryDocs);
+            }
           } else {
             // Migration: eski yapılardan veri taşıma
             let oldDocs: DocumentFile[] = [];
@@ -258,9 +266,18 @@ const ImarApp: React.FC = () => {
         const savedDocs = localStorage.getItem('imar_docs');
         if (savedDocs) {
           try {
-            const parsed = JSON.parse(savedDocs);
+            const parsed: DocumentFile[] = JSON.parse(savedDocs);
             if (parsed.length > 0) {
-              setDocuments(parsed);
+              const hasActive = parsed.some(d => d.isActive);
+              if (!hasActive) {
+                const updatedParsed = parsed.map(d =>
+                  d.id === 'auto-imar-kanunu' ? { ...d, isActive: true } : d
+                );
+                setDocuments(updatedParsed);
+                localStorage.setItem('imar_docs', JSON.stringify(updatedParsed));
+              } else {
+                setDocuments(parsed);
+              }
             } else {
               const demoDocs = generateDemoDocuments();
               localStorage.setItem('imar_docs', JSON.stringify(demoDocs));
@@ -362,7 +379,15 @@ const ImarApp: React.FC = () => {
           // 1. Belgeleri Yükle
           const libraryDocs = await loadLibraryDocs(user.uid);
           if (libraryDocs.length > 0) {
-            setDocuments(libraryDocs);
+            const hasActive = libraryDocs.some(d => d.isActive);
+            if (!hasActive) {
+              const updatedDocs = libraryDocs.map(d =>
+                d.id === 'auto-imar-kanunu' ? { ...d, isActive: true } : d
+              );
+              setDocuments(updatedDocs);
+            } else {
+              setDocuments(libraryDocs);
+            }
           } else {
             let oldDocs: DocumentFile[] = [];
             const libraryRef = doc(db, "users", user.uid, "data", "library");
@@ -413,9 +438,18 @@ const ImarApp: React.FC = () => {
         const savedDocs = localStorage.getItem('imar_docs');
         if (savedDocs) {
           try {
-            const parsed = JSON.parse(savedDocs);
+            const parsed: DocumentFile[] = JSON.parse(savedDocs);
             if (parsed.length > 0) {
-              setDocuments(parsed);
+              const hasActive = parsed.some(d => d.isActive);
+              if (!hasActive) {
+                const updatedParsed = parsed.map(d =>
+                  d.id === 'auto-imar-kanunu' ? { ...d, isActive: true } : d
+                );
+                setDocuments(updatedParsed);
+                localStorage.setItem('imar_docs', JSON.stringify(updatedParsed));
+              } else {
+                setDocuments(parsed);
+              }
             } else {
               setDocuments(generateDemoDocuments());
             }
