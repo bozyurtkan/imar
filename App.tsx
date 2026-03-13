@@ -2368,8 +2368,16 @@ const ImarApp: React.FC = () => {
 
 const AppRouter: React.FC = () => {
   const { user, loading } = useAuth();
-  const [currentPage, setCurrentPage] = useState<'landing' | 'login' | 'app' | 'legal' | 'article'>('landing');
-  const [currentArticle, setCurrentArticle] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState<'landing' | 'login' | 'app' | 'legal' | 'article'>(() => {
+    const path = window.location.pathname;
+    if (path.startsWith('/makale/')) return 'article';
+    return 'landing';
+  });
+  const [currentArticle, setCurrentArticle] = useState<string>(() => {
+    const path = window.location.pathname;
+    if (path.startsWith('/makale/')) return path.replace('/makale/', '');
+    return '';
+  });
   const [legalTab, setLegalTab] = useState('teslimat');
 
   // Kullanıcı login sayfasındayken giriş yaparsa → app'e yönlendir
@@ -2377,8 +2385,10 @@ const AppRouter: React.FC = () => {
   useEffect(() => {
     if (user && currentPage === 'login') {
       setCurrentPage('app');
+      window.history.pushState({}, '', '/');
     } else if (!user && !loading && currentPage === 'app') {
       setCurrentPage('landing');
+      window.history.pushState({}, '', '/');
     }
   }, [user, loading, currentPage]);
 
@@ -2394,11 +2404,13 @@ const AppRouter: React.FC = () => {
   const handleOpenLegal = (tab: string) => {
     setLegalTab(tab);
     setCurrentPage('legal');
+    window.history.pushState({}, '', `/legal/${tab}`);
   };
 
   const handleReadArticle = (slug: string) => {
     setCurrentArticle(slug);
     setCurrentPage('article');
+    window.history.pushState({}, '', `/makale/${slug}`);
   };
 
   if (loading) {
@@ -2427,7 +2439,10 @@ const AppRouter: React.FC = () => {
       pageContent = <LegalPage onBack={() => setCurrentPage('landing')} initialTab={legalTab} />;
       break;
     case 'article':
-      pageContent = <ArticlePage onBack={() => setCurrentPage('landing')} slug={currentArticle} />;
+      pageContent = <ArticlePage onBack={() => {
+        setCurrentPage('landing');
+        window.history.pushState({}, '', '/');
+      }} slug={currentArticle} />;
       break;
     case 'app':
       pageContent = <ImarApp />;
