@@ -4,6 +4,7 @@ import { OfficialGazetteModal } from './components/OfficialGazetteModal';
 import { LandingPage } from './components/LandingPage';
 import { LoginPage } from './components/LoginPage';
 import { LegalPage } from './components/LegalPage';
+import { ArticlePage } from './components/ArticlePage';
 import { CookieBanner } from './components/CookieBanner';
 import {
   FileText, Send, Trash2, Plus, BookOpen, Loader2, Scale,
@@ -1887,7 +1888,7 @@ const ImarApp: React.FC = () => {
         {/* Chat Content Area */}
         <div className="flex-1 overflow-y-auto px-4 lg:px-8 space-y-4 lg:space-y-5 custom-scrollbar overscroll-contain z-10">
           {messages.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto px-4">
+            <div className="h-full flex flex-col items-center pt-8 lg:pt-20 text-center max-w-2xl mx-auto px-4">
               {/* Hero Section - Like Yupp AI */}
               <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center mb-8 float-anim border border-accent/10">
                 <Scale size={32} className="text-accent" />
@@ -2367,7 +2368,8 @@ const ImarApp: React.FC = () => {
 
 const AppRouter: React.FC = () => {
   const { user, loading } = useAuth();
-  const [currentPage, setCurrentPage] = useState<'landing' | 'login' | 'app' | 'legal'>('landing');
+  const [currentPage, setCurrentPage] = useState<'landing' | 'login' | 'app' | 'legal' | 'article'>('landing');
+  const [currentArticle, setCurrentArticle] = useState<string>('');
   const [legalTab, setLegalTab] = useState('teslimat');
 
   // Kullanıcı login sayfasındayken giriş yaparsa → app'e yönlendir
@@ -2394,6 +2396,11 @@ const AppRouter: React.FC = () => {
     setCurrentPage('legal');
   };
 
+  const handleReadArticle = (slug: string) => {
+    setCurrentArticle(slug);
+    setCurrentPage('article');
+  };
+
   if (loading) {
     return (
       <div className="loading-screen">
@@ -2411,7 +2418,7 @@ const AppRouter: React.FC = () => {
   let pageContent;
   switch (currentPage) {
     case 'landing':
-      pageContent = <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} />;
+      pageContent = <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} onReadArticle={handleReadArticle} />;
       break;
     case 'login':
       pageContent = <LoginPage onBack={() => setCurrentPage('landing')} />;
@@ -2419,11 +2426,14 @@ const AppRouter: React.FC = () => {
     case 'legal':
       pageContent = <LegalPage onBack={() => setCurrentPage('landing')} initialTab={legalTab} />;
       break;
+    case 'article':
+      pageContent = <ArticlePage onBack={() => setCurrentPage('landing')} slug={currentArticle} />;
+      break;
     case 'app':
       pageContent = <ImarApp />;
       break;
     default:
-      pageContent = <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} />;
+      pageContent = <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} onReadArticle={handleReadArticle} />;
       break;
   }
 

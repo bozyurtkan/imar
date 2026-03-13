@@ -10,6 +10,7 @@ import { BlogSection } from './BlogSection';
 interface LandingPageProps {
     onGetStarted: () => void;
     onOpenLegal?: (tab: string) => void;
+    onReadArticle?: (slug: string) => void;
 }
 
 const features = [
@@ -139,7 +140,7 @@ const targetAudienceData = [
 ];
 
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLegal }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLegal, onReadArticle }) => {
     const [expandedFeature, setExpandedFeature] = useState<number | null>(null);
     const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
     const [currentMockupIndex, setCurrentMockupIndex] = useState(0);
@@ -520,7 +521,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
             </section>
 
             {/* Blog / E-E-A-T Section */}
-            <BlogSection />
+            <BlogSection onReadArticle={onReadArticle} />
 
             {/* FAQ Section */}
             <FAQSection />

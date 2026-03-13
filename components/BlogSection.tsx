@@ -16,7 +16,8 @@ const blogPosts = [
         readTime: "8 dk okuma",
         date: "25 Şubat 2026",
         desc: "Çekme mesafeleri, otopark yönetmeliği uyumu ve kat yüksekliği sınırlandırmaları başta olmak üzere Çevre, Şehircilik ve İklim Değişikliği Bakanlığı'nın yayınladığı son yönetmelik değişikliklerinin teknik özeti.",
-        icon: <FileText size={32} />
+        icon: <FileText size={32} />,
+        slug: "planli-alanlar-garaj-rüzgarlik-degisikligi"
     },
     {
         title: "İmar Planı İptal Davalarında Yürütmeyi Durdurma ve Emsal Danıştay Kararları",
@@ -28,7 +29,11 @@ const blogPosts = [
     }
 ];
 
-export const BlogSection: React.FC = () => {
+interface BlogSectionProps {
+    onReadArticle?: (slug: string) => void;
+}
+
+export const BlogSection: React.FC<BlogSectionProps> = ({ onReadArticle }) => {
     const handleComingSoon = () => {
         alert("Bu özellik ve detaylı makaleler çok yakında aktif edilecektir. İlginiz için teşekkürler!");
     };
@@ -47,15 +52,23 @@ export const BlogSection: React.FC = () => {
                     {blogPosts.map((post, index) => (
                         <div
                             key={index}
-                            onClick={handleComingSoon}
+                            onClick={() => {
+                                if (post.slug && onReadArticle) {
+                                    onReadArticle(post.slug);
+                                } else {
+                                    handleComingSoon();
+                                }
+                            }}
                             className="group relative bg-dark-elevated rounded-2xl p-6 sm:p-8 border border-dark-border/50 hover:border-accent/30 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] flex flex-col h-full cursor-pointer overflow-hidden"
                         >
                             {/* Coming Soon Badge */}
-                            <div className="absolute top-0 right-0 z-20">
-                                <div className="bg-accent text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl shadow-lg transform translate-x-1 -translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-300">
-                                    ÇOK YAKINDA
+                            {!post.slug && (
+                                <div className="absolute top-0 right-0 z-20">
+                                    <div className="bg-accent text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl shadow-lg transform translate-x-1 -translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-300">
+                                        ÇOK YAKINDA
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Hover Glow Effect */}
                             <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
