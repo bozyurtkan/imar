@@ -3,12 +3,13 @@ import { BookOpen, ArrowRight, Clock, FileText, Gavel } from 'lucide-react';
 
 const blogPosts = [
     {
-        title: "3194 Sayılı İmar Kanunu Madde 32: Ruhsatsız Yapılar İçin Yıkım ve Para Cezası Süreçleri",
+        title: "Mevcut Binalarda Yangın Merdiveni Çıkmazı Bitiyor: Bahçe Mesafelerinde Yeni Esneklik!",
         category: "Mevzuat Analizi",
-        readTime: "5 dk okuma",
-        date: "08 Mart 2026",
-        desc: "Ruhsatsız veya ruhsat eklerine aykırı olarak başlanan yapılar için belediyelerin uyguladığı mühürleme, yıkım kararı ve idari para cezası hesaplama yöntemlerine dair kapsamlı Yargıtay incelemesi.",
-        icon: <Gavel size={32} />
+        readTime: "6 dk okuma",
+        date: "14 Ocak 2026",
+        desc: "Mevzuat değişikliği veya kullanım amacı değişimleri nedeniyle yangın merdiveni zorunlu hale gelen mevcut yapılara ilişkin bahçe mesafesi istisnalarının uzman analizi.",
+        icon: <Gavel size={32} />,
+        slug: "mevcut-binalarda-yangin-merdiveni-esnekligi"
     },
     {
         title: "Planlı Alanlar İmar Yönetmeliği 2026 Değişiklikleri Neler Getiriyor?",

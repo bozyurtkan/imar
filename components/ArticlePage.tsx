@@ -9,11 +9,17 @@ interface ArticlePageProps {
 export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
     // SEO: Structured Data (Article Schema)
     useEffect(() => {
+        const isFireEscape = slug === 'mevcut-binalarda-yangin-merdiveni-esnekligi';
+
         const schema = {
             "@context": "https://schema.org",
             "@type": "Article",
-            "headline": "Müstakil Ev Sahiplerine İmar Müjdesi: Garaj ve Rüzgarlıkta Ruhsat Süreci Bitti!",
-            "image": "https://imarmevzuat.com.tr/images/planli-alanlar.jpg",
+            "headline": isFireEscape
+                ? "Mevcut Binalarda Yangın Merdiveni Çıkmazı Bitiyor: Bahçe Mesafelerinde Yeni Esneklik!"
+                : "Müstakil Ev Sahiplerine İmar Müjdesi: Garaj ve Rüzgarlıkta Ruhsat Süreci Bitti!",
+            "image": isFireEscape
+                ? "https://imarmevzuat.com.tr/images/yangin-merdiveni.jpg"
+                : "https://imarmevzuat.com.tr/images/planli-alanlar.jpg",
             "author": {
                 "@type": "Organization",
                 "name": "İmar Mevzuat"
@@ -28,7 +34,9 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
             },
             "datePublished": "2026-01-14",
             "dateModified": "2026-03-13",
-            "description": "Planlı Alanlar İmar Yönetmeliği 2026 değişikliği ile müstakil konutlarda ruhsatsız garaj ve rüzgarlık yapımı dönemi başladı. Detaylı uzman analizi."
+            "description": isFireEscape
+                ? "Mevcut yapılarda yangın merdiveni zorunluluğu durumunda bahçe mesafesi ihlallerine getirilen 1.50m ve 3.00m istisnaları."
+                : "Planlı Alanlar İmar Yönetmeliği 2026 değişikliği ile müstakil konutlarda ruhsatsız garaj ve rüzgarlık yapımı dönemi başladı."
         };
 
         const script = document.createElement('script');
@@ -39,7 +47,9 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
         return () => {
             document.head.removeChild(script);
         };
-    }, []);
+    }, [slug]);
+
+    const isFireEscape = slug === 'mevcut-binalarda-yangin-merdiveni-esnekligi';
 
     return (
         <div className="landing-page min-h-screen relative overflow-hidden bg-dark-bg">
@@ -76,8 +86,13 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                             <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Clock size={14} /> 8 dk okuma</span>
                         </div>
                         <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-warm-50 tracking-tight leading-[1.15]">
-                            Müstakil Ev Sahiplerine İmar Müjdesi:<br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover inline-block mt-2">Garaj ve Rüzgarlıkta Ruhsat Süreci Bitti!</span>
+                            {isFireEscape ? (
+                                <>Mevcut Binalarda Yangın Merdiveni Çıkmazı Bitiyor:<br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover inline-block mt-2">Bahçe Mesafelerinde Yeni Esneklik!</span></>
+                            ) : (
+                                <>Müstakil Ev Sahiplerine İmar Müjdesi:<br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover inline-block mt-2">Garaj ve Rüzgarlıkta Ruhsat Süreci Bitti!</span></>
+                            )}
                         </h1>
                     </div>
 
@@ -85,8 +100,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                     <div className="w-full aspect-[16/9] mb-12 rounded-3xl overflow-hidden shadow-2xl ring-1 ring-dark-border/50 relative group">
                         <div className="absolute inset-0 bg-accent/5 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
                         <img
-                            src="/images/planli-alanlar.jpg"
-                            alt="Bağımsız Bölüm Eklentileri Garaj ve Rüzgarlık"
+                            src={isFireEscape ? "/images/yangin-merdiveni.jpg" : "/images/planli-alanlar.jpg"}
+                            alt={isFireEscape ? "Mevcut Binaya İlave Yangın Merdiveni" : "Bağımsız Bölüm Eklentileri Garaj ve Rüzgarlık"}
                             className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
                         />
                     </div>
@@ -100,65 +115,117 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                         prose-ul:marker:text-accent
                         prose-li:my-1
                     ">
+                        {isFireEscape ? (
+                            <>
+                                <h3 className="text-2xl mt-12 mb-6">Giriş</h3>
+                                <p>
+                                    Eski binalarda yapılan tadilatlar veya mevzuat değişiklikleri nedeniyle "yangın merdiveni zorunluluğu" doğduğunda, bina sahipleri ve yöneticileri çoğu zaman teknik bir imkansızlıkla karşı karşıya kalıyordu: Bina içinde yer yok, dışarıda ise bahçe mesafeleri (çekme mesafeleri) engel teşkil ediyor. 14 Ocak 2026 tarihli Resmi Gazete'de yayımlanan yönetmelik değişikliği, bu krizi can güvenliğini önceliğe alarak çözüme kavuşturuyor.
+                                </p>
+                                <p>
+                                    Peki, mevcut binanıza dışarıdan yangın merdiveni eklemek istediğinizde bahçeye ne kadar taşabilirsiniz? Hangi şartlar aranıyor? Gelin, hem bina sakinlerinin hem de uzmanların merak ettiği detaylara imar hukuku perspektifiyle bakalım.
+                                </p>
 
-                        <h3 className="text-2xl mt-12 mb-6">Giriş</h3>
-                        <p>
-                            Evimize küçük ancak hayatımızı kolaylaştıran eklemeler yapmak istediğimizde, imar mevzuatının karmaşık yapısıyla ve uzun ruhsat süreçleriyle karşılaşırız. Ancak 14 Ocak 2026 tarihli Resmi Gazete'de yayımlanan <strong>Planlı Alanlar İmar Yönetmeliği</strong> değişikliği ile müstakil ev sahiplerine çok güzel bir haber geldi! Artık bahçenize portatif bir garaj yapmak veya kapınızın önüne kışın soğuğu kesecek bir rüzgarlık eklemek için belediyeden "yapı ruhsatı" beklemenize gerek yok.
-                        </p>
-                        <p>
-                            Peki, herkes bahçesine dilediği gibi garaj yapabilir mi? Hangi kurallara uymak gerekiyor? Gelin hem ev sahiplerinin rahatlıkla anlayacağı dilden hem de bir imar uzmanının dikkat edeceği teknik detaylarla bu yeniliği inceleyelim.
-                        </p>
+                                <hr className="border-dark-border my-10" />
 
-                        <hr className="border-dark-border my-10" />
+                                <h3 className="text-2xl mt-10 mb-6">Yangın Merdiveni Eklentisinde "Mesafe" Devrimi</h3>
+                                <p>Bugüne kadar yan ve arka bahçelerde çekme mesafelerini ihlal etmek neredeyse imkansızdı. Yeni düzenleme ile <strong>can ve mal güvenliğini teminen</strong> şu istisnalar getirilmiştir:</p>
+                                <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
+                                    <li><strong className="text-accent-hover">Yan ve Arka Bahçelerde:</strong> Eğer bina içinde tadilatla yangın merdiveni yapılamıyorsa; parsel sınırına <strong>en az 1.50 metre</strong> mesafe bırakmak kaydıyla yan ve arka bahçe mesafeleri içinde yangın merdiveni yapılabilir.</li>
+                                    <li><strong className="text-accent-hover">Ön Bahçelerde:</strong> Parsel sınırına (yola) <strong>en az 3.00 metre</strong> mesafe bırakılması şartıyla ön bahçe alanına da yangın merdiveni inşa edilebilir.</li>
+                                </ul>
 
-                        <h3 className="text-2xl mt-10 mb-6">Kimler Bu Düzenlemeden Yararlanabilir?</h3>
-                        <p>
-                            Bu yeni haktan faydalanabilmek için en önemli şart; bulunduğunuz parselde <strong>sadece sizin evinizin (tek bir bağımsız bölümün) yer almasıdır.</strong> Yani, apartman bahçeleri veya birden fazla konutun yer aldığı arsalar bu kapsama girmiyor.
-                        </p>
+                                <hr className="border-dark-border my-10" />
 
-                        <blockquote>
-                            <strong className="text-accent flex items-center gap-2 mb-2"><Scale size={18} />Önemli Not:</strong> Eğer eviniz bir site içinde yer alan müstakil bir yapıysa, 634 sayılı Kat Mülkiyeti Kanunu gereği mutlaka çevrenizdeki diğer ev sahiplerinden (kat maliklerinden) görsel ve yapısal bütünlüğü bozmamak adına onay (muvafakat) almanız zorunludur.
-                        </blockquote>
+                                <h3 className="text-2xl mt-10 mb-6">Hangi Durumlarda Bu Haktan Yararlanılabilir?</h3>
+                                <p>Bu düzenleme sadece yeni yapılan binalar için değil, özellikle <strong>mevcut binalar</strong> için bir kurtarıcıdır:</p>
+                                <ul className="space-y-2 mb-8">
+                                    <li>Mevzuat değişikliği nedeniyle yangın merdiveni zorunlu hale gelmişse,</li>
+                                    <li>Binadaki yükseklik, kat veya alan artışları yangın güvenliği ihtiyacını doğurmuşsa,</li>
+                                    <li>Yapının kullanım amacı değişmişse (Örneğin konuttan işyerine veya otele dönüşüm gibi).</li>
+                                </ul>
 
-                        <hr className="border-dark-border my-10" />
+                                <hr className="border-dark-border my-10" />
 
-                        <h3 className="text-2xl mt-10 mb-6">Neler Yapabilirsiniz? Düzenlemenin Şartları Neler?</h3>
+                                <h3 className="text-2xl mt-10 mb-6 flex items-center gap-3">
+                                    <span className="bg-accent/20 p-2 rounded-lg text-accent"><Scale size={24} /></span> Bir İmar Uzmanı Olarak Teknik Analiz ve Uyarılarım
+                                </h3>
+                                <p>Bu esneklik mülk sahipleri için büyük bir kolaylık olsa da, ruhsat sürecinde ve uygulamada dikkat edilmesi gereken hayati noktalar vardır:</p>
+                                <ol className="space-y-4 pl-0 mt-6 marker:font-bold marker:text-accent">
+                                    <li className="pl-4"><strong>Önce İç Çözüm Zorunluluğu:</strong> Belediyeye başvurduğunuzda mimari projeniz incelenir. Eğer bina içerisinde yangın merdiveni yapılabilecek bir alan varsa, bahçeye çıkmanıza izin verilmeyecektir.</li>
+                                    <li className="pl-4"><strong>Yangın Yönetmeliği Koşulları:</strong> Planlı Alanlar İmar Yönetmeliği mesafeyi esnetse de, imalatın kendisi <strong>"Binaların Yangından Korunması Hakkında Yönetmelik"</strong>teki teknik koşullara harfiyen uymak zorundadır.</li>
+                                    <li className="pl-4"><strong>Parsel Sınırı İhlali Riski:</strong> Yan bahçede 1.50 metre, ön bahçede 3.00 metre kuralı hayati önemdedir. Bu mesafelerin altına düşülmesi durumunda komşu parselin hakları ihlal edilmiş sayılır.</li>
+                                    <li className="pl-4"><strong>Tadilat Ruhsatı Şartı:</strong> Bu işlem için mutlaka ilgili belediyeden <strong>"Tadilat Ruhsatı"</strong> alınmalıdır. Kendi başınıza yaptırmanız sizi hukuki sorumluluk altına sokar.</li>
+                                </ol>
 
-                        <h4 className="text-xl text-warm-100 mt-8 mb-4">1. Aracınız İçin Sökülüp Takılabilir Garaj (Otopark Örtüsü)</h4>
-                        <p>Arabanızı güneşten ve kardan korumak için bahçenize sundurma tarzı bir garaj inşa edebilirsiniz ancak şu kurallara kesinlikle uymalısınız:</p>
-                        <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
-                            <li><strong className="text-accent-hover">Büyüklüğü:</strong> Sadece sizin evinize tahsis edilen zorunlu otopark büyüklüğü kadar olabilir (Otopark Yönetmeliği uyarınca).</li>
-                            <li><strong className="text-accent-hover">Açıklık ve Yükseklik:</strong> Yapacağınız garajın iç yüksekliği en fazla <strong>3.00 metre</strong> olmalı ve garajın en az iki tarafı tamamen açık olmalıdır. (Yani etrafını kapatıp kapalı bir kutu haline getiremezsiniz).</li>
-                            <li><strong className="text-accent-hover">Malzemesi:</strong> En önemli husus malzemedir! Tuğla, beton gibi kalıcı bir imalat kullanmak kesinlikle yasaktır. Yangına dayanıklı, metal profillerden oluşan ve istendiğinde <strong>kolayca sökülüp takılabilen (portatif)</strong> hafif örtüler (mesh sistemler, branda, sac vb.) tercih edilmelidir.</li>
-                        </ul>
+                                <div className="bg-dark-elevated p-8 rounded-3xl border border-dark-border mt-12 mb-8 text-center shadow-xl">
+                                    <h3 className="text-xl text-warm-50 font-bold mb-4 mt-0">Sonuç Olarak</h3>
+                                    <p className="text-warm-300 mb-0">
+                                        Can güvenliği, imar çekme mesafelerinden daha önceliklidir. Bu yeni madde ile binalarımızı deprem kadar yangın riskine karşı da güçlendirmek için önemli bir hukuki zemin oluşmuştur. Binanızda böyle bir ihtiyaç varsa, uzman bir mimardan mevcut projeniz üzerinden analiz yapmasını talep edin.
+                                    </p>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <h3 className="text-2xl mt-12 mb-6">Giriş</h3>
+                                <p>
+                                    Evimize küçük ancak hayatımızı kolaylaştıran eklemeler yapmak istediğimizde, imar mevzuatının karmaşık yapısıyla ve uzun ruhsat süreçleriyle karşılaşırız. Ancak 14 Ocak 2026 tarihli Resmi Gazete'de yayımlanan <strong>Planlı Alanlar İmar Yönetmeliği</strong> değişikliği ile müstakil ev sahiplerine çok güzel bir haber geldi! Artık bahçenize portatif bir garaj yapmak veya kapınızın önüne kışın soğuğu kesecek bir rüzgarlık eklemek için belediyeden "yapı ruhsatı" beklemenize gerek yok.
+                                </p>
+                                <p>
+                                    Peki, herkes bahçesine dilediği gibi garaj yapabilir mi? Hangi kurallara uymak gerekiyor? Gelin hem ev sahiplerinin rahatlıkla anlayacağı dilden hem de bir imar uzmanının dikkat edeceği teknik detaylarla bu yeniliği inceleyelim.
+                                </p>
 
-                        <h4 className="text-xl text-warm-100 mt-8 mb-4">2. Evin Girişine Rüzgarlık (Giriş Holü)</h4>
-                        <p>Kışın rüzgarın ve soğuğun doğrudan içeri girmesini engellemek, kapı önüne korunaklı bir ön alan yaratmak artık çok daha basit:</p>
-                        <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
-                            <li><strong className="text-accent-hover">Büyüklüğü:</strong> Rüzgarlığın taban alanı en fazla <strong>7 metrekare</strong> olabilir. İç yüksekliği de aynı şekilde <strong>3.00 metreyi</strong> geçmemelidir.</li>
-                            <li><strong className="text-accent-hover">Malzemesi:</strong> Bu alan da tıpkı garaj gibi hafif malzemeden, sökülebilir özellikte olmalı ve evinizin doğrudan dışarı açılan ön kapısına inşa edilmelidir (örneğin hafif profilli portatif camlama sistemleri).</li>
-                        </ul>
+                                <hr className="border-dark-border my-10" />
 
-                        <hr className="border-dark-border my-10" />
+                                <h3 className="text-2xl mt-10 mb-6">Kimler Bu Düzenlemeden Yararlanabilir?</h3>
+                                <p>
+                                    Bu yeni haktan faydalanabilmek için en önemli şart; bulunduğunuz parselde <strong>sadece sizin evinizin (tek bir bağımsız bölümün) yer almasıdır.</strong> Yani, apartman bahçeleri veya birden fazla konutun yer aldığı arsalar bu kapsama girmiyor.
+                                </p>
 
-                        <h3 className="text-2xl mt-10 mb-6 flex items-center gap-3">
-                            <span className="bg-accent/20 p-2 rounded-lg text-accent"><Scale size={24} /></span> Bir İmar Uzmanı Olarak Analiz ve Uyarılarım
-                        </h3>
-                        <p>
-                            Belediyelerin iş yükünü azaltan ve vatandaşa rahat bir nefes aldıran bu muafiyet, pratikte çok dikkatli uygulanmalıdır. Hem ev sahiplerinin hem de bu uygulamaları yapacak ustaların/mimarların aşağıdaki hayati uyarılara dikkat etmesi gerekir:
-                        </p>
-                        <ol className="space-y-4 pl-0 mt-6 marker:font-bold marker:text-accent">
-                            <li className="pl-4"><strong>Taşıyıcı Sisteme Asla Zarar Vermeyin:</strong> Kuracağınız garajın veya rüzgarlığın montajı sırasında, kesinlikle evinizin taşıyıcı sistemine (kolon, kiriş, perde beton) ekstra bir yük bindirmemelisiniz. Aksi takdirde masum bir ekleme yüzünden evinizin deprem dayanımını riske atmış olursunuz.</li>
-                            <li className="pl-4"><strong>Sınırlarınızı İhlal Etmeyin ve Yangın Güvenliğini Sağlayın:</strong> Yapılan imalatlar komşu parsele ya da yola kesinlikle taşmamalıdır. Ayrıca uygulamalar esnasında yangın tahliye senaryoları ve can güvenliği tedbirleri mutlak suretle ön planda tutulmalıdır.</li>
-                            <li className="pl-4"><strong>Kalıcı İmalata Çevirme Hatası (Kaçak Yapı Riski):</strong> Uygulamada karşılaşılan en büyük hata; hafif konstrüksiyonla kurulan bu alanların zaman içinde tuğla veya betonla örülerek kapalı, yalıtımlı odalara dönüştürülmesidir. Denetimlerde veya bir şikayet sonucu bu durum tespit edilirse, yapınız <strong>"kaçak yapı"</strong> konumuna düşer ve İmar Kanunu’nun 32. ve 42. maddeleri gereği hukuki işlem (yıkım kararı ve oldukça ağır idari para cezaları) ile karşı karşıya kalabilirsiniz.</li>
-                        </ol>
+                                <blockquote>
+                                    <strong className="text-accent flex items-center gap-2 mb-2"><Scale size={18} />Önemli Not:</strong> Eğer eviniz bir site içinde yer alan müstakil bir yapıysa, 634 sayılı Kat Mülkiyeti Kanunu gereği mutlaka çevrenizdeki diğer ev sahiplerinden (kat maliklerinden) görsel ve yapısal bütünlüğü bozmamak adına onay (muvafakat) almanız zorunludur.
+                                </blockquote>
 
-                        <div className="bg-dark-elevated p-8 rounded-3xl border border-dark-border mt-12 mb-8 text-center shadow-xl">
-                            <h3 className="text-xl text-warm-50 font-bold mb-4 mt-0">Sonuç Olarak</h3>
-                            <p className="text-warm-300 mb-0">
-                                Yönetmeliğe eklenen bu madde, doğru kullanıldığında müstakil ev sahipleri ve yapılaşma pratikliği açısından harika bir fırsattır. Evinizi güzelleştirirken kalıcı ve ağır inşai faaliyetlerden uzak durun, sökülebilir ve estetik malzemeleri tercih edin. Değişikliğin tüm yapı sektörüne ve mülk sahiplerine hayırlı olmasını dileriz.
-                            </p>
-                        </div>
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl mt-10 mb-6">Neler Yapabilirsiniz? Düzenlemenin Şartları Neler?</h3>
+
+                                <h4 className="text-xl text-warm-100 mt-8 mb-4">1. Aracınız İçin Sökülüp Takılabilir Garaj (Otopark Örtüsü)</h4>
+                                <p>Arabanızı güneşten ve kardan korumak için bahçeye sundurma tarzı bir garaj inşa edebilirsiniz ancak şu kurallara kesinlikle uymalısınız:</p>
+                                <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
+                                    <li><strong className="text-accent-hover">Büyüklüğü:</strong> Sadece sizin evinize tahsis edilen zorunlu otopark büyüklüğü kadar olabilir (Otopark Yönetmeliği uyarınca).</li>
+                                    <li><strong className="text-accent-hover">Açıklık ve Yükseklik:</strong> Yapacağınız garajın iç yüksekliği en fazla <strong>3.00 metre</strong> olmalı ve garajın en az iki tarafı tamamen açık olmalıdır. (Yani etrafını kapatıp kapalı bir kutu haline getiremezsiniz).</li>
+                                    <li><strong className="text-accent-hover">Malzemesi:</strong> En önemli husus malzemedir! Tuğla, beton gibi kalıcı bir imalat kullanmak kesinlikle yasaktır. Yangına dayanıklı, metal profillerden oluşan ve istendiğinde <strong>kolayca sökülüp takılabilen (portatif)</strong> hafif örtüler (mesh sistemler, branda, sac vb.) tercih edilmelidir.</li>
+                                </ul>
+
+                                <h4 className="text-xl text-warm-100 mt-8 mb-4">2. Evin Girişine Rüzgarlık (Giriş Holü)</h4>
+                                <p>Kışın rüzgarın ve soğuğun doğrudan içeri girmesini engellemek, kapı önüne korunaklı bir ön alan yaratmak artık çok daha basit:</p>
+                                <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
+                                    <li><strong className="text-accent-hover">Büyüklüğü:</strong> Rüzgarlığın taban alanı en fazla <strong>7 metrekare</strong> olabilir. İç yüksekliği de aynı şekilde <strong>3.00 metreyi</strong> geçmemelidir.</li>
+                                    <li><strong className="text-accent-hover">Malzemesi:</strong> Bu alan da tıpkı garaj gibi hafif malzemeden, sökülebilir özellikte olmalı ve evinizin doğrudan dışarı açılan ön kapısına inşa edilmelidir (örneğin hafif profilli portatif camlama sistemleri).</li>
+                                </ul>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl mt-10 mb-6 flex items-center gap-3">
+                                    <span className="bg-accent/20 p-2 rounded-lg text-accent"><Scale size={24} /></span> Bir İmar Uzmanı Olarak Analiz ve Uyarılarım
+                                </h3>
+                                <p>
+                                    Belediyelerin iş yükünü azaltan ve vatandaşa rahat bir nefes aldıran bu muafiyet, pratikte çok dikkatli uygulanmalıdır. Hem ev sahiplerinin hem de bu uygulamaları yapacak ustaların/mimarların aşağıdaki hayati uyarılara dikkat etmesi gerekir:
+                                </p>
+                                <ol className="space-y-4 pl-0 mt-6 marker:font-bold marker:text-accent">
+                                    <li className="pl-4"><strong>Taşıyıcı Sisteme Asla Zarar Vermeyin:</strong> Kuracağınız garajın veya rüzgarlığın montajı sırasında, kesinlikle evinizin taşıyıcı sistemine (kolon, kiriş, perde beton) ekstra bir yük bindirmemelisiniz. Aksi takdirde masum bir ekleme yüzünden evinizin deprem dayanımını riske atmış olursunuz.</li>
+                                    <li className="pl-4"><strong>Sınırlarınızı İhlal Etmeyin ve Yangın Güvenliğini Sağlayın:</strong> Yapılan imalatlar komşu parsele ya da yola kesinlikle taşmamalıdır. Ayrıca uygulamalar esnasında yangın tahliye senaryoları ve can güvenliği tedbirleri mutlak suretle ön planda tutulmalıdır.</li>
+                                    <li className="pl-4"><strong>Kalıcı İmalata Çevirme Hatası (Kaçak Yapı Riski):</strong> Uygulamada karşılaşılan en büyük hata; hafif konstrüksiyonla kurulan bu alanların zaman içinde tuğla veya betonla örülerek kapalı, yalıtımlı odalara dönüştürülmesidir. Denetimlerde veya bir şikayet sonucu bu durum tespit edilirse, yapınız <strong>"kaçak yapı"</strong> konumuna düşer ve İmar Kanunu’nun 32. ve 42. maddeleri gereği hukuki işlem (yıkım kararı ve oldukça ağır idari para cezaları) ile karşı karşıya kalabilirsiniz.</li>
+                                </ol>
+
+                                <div className="bg-dark-elevated p-8 rounded-3xl border border-dark-border mt-12 mb-8 text-center shadow-xl">
+                                    <h3 className="text-xl text-warm-50 font-bold mb-4 mt-0">Sonuç Olarak</h3>
+                                    <p className="text-warm-300 mb-0">
+                                        Yönetmeliğe eklenen bu madde, doğru kullanıldığında müstakil ev sahipleri ve yapılaşma pratikliği açısından harika bir fırsattır. Evinizi güzelleştirirken kalıcı ve ağır inşai faaliyetlerden uzak durun, sökülebilir ve estetik malzemeleri tercih edin. Değişikliğin tüm yapı sektörüne ve mülk sahiplerine hayırlı olmasını dileriz.
+                                    </p>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </article>
             </div>
