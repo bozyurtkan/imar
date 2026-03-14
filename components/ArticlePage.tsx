@@ -59,23 +59,33 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
 
             {/* Navbar */}
             <nav className="landing-nav" style={{ borderBottom: '1px solid var(--dark-border)' }}>
-                <div className="landing-container landing-nav-inner flex items-center justify-between h-16 sm:h-20">
-                    <button
-                        onClick={onBack}
-                        className="flex items-center gap-2 text-warm-300 hover:text-accent font-semibold transition-colors bg-dark-surface/50 px-4 py-2 rounded-xl backdrop-blur-sm"
+                <div className="landing-container landing-nav-inner">
+                    <div
+                        className="landing-nav-brand cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={() => {
+                            window.history.pushState({}, '', '/');
+                            window.dispatchEvent(new PopStateEvent('popstate'));
+                        }}
                     >
-                        <ArrowLeft size={18} />
-                        <span>Ana Sayfaya Dön</span>
-                    </button>
-                    <div className="landing-nav-brand flex items-center gap-2">
-                        <Scale size={20} className="text-accent" />
-                        <span className="font-bold text-warm-50 tracking-wide text-lg">İmar Mevzuat</span>
+                        <div className="landing-nav-logo">
+                            <Scale size={20} className="text-white" />
+                        </div>
+                        <span className="landing-nav-title">İmar Mevzuat</span>
+                    </div>
+                    <div className="landing-nav-actions">
+                        <button
+                            onClick={onBack}
+                            className="landing-btn-ghost flex items-center gap-2"
+                        >
+                            <ArrowLeft size={16} />
+                            <span>Geri</span>
+                        </button>
                     </div>
                 </div>
             </nav>
 
-            <div className="max-w-4xl mx-auto px-4 py-12 sm:py-20 relative z-10">
-                <article className="mt-8">
+            <div className="max-w-4xl mx-auto px-4 py-6 sm:py-10 relative z-10">
+                <article className="mt-4">
                     {/* Header */}
                     <div className="mb-10 text-center space-y-4">
                         <div className="flex items-center justify-center gap-4 text-xs sm:text-sm font-medium text-warm-400 mb-6">
@@ -100,7 +110,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                     <div className="w-full aspect-[16/9] mb-12 rounded-3xl overflow-hidden shadow-2xl ring-1 ring-dark-border/50 relative group">
                         <div className="absolute inset-0 bg-accent/5 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
                         <img
-                            src={isFireEscape ? "/images/yangin-merdiveni.jpg" : "/images/planli-alanlar.jpg"}
+                            src={isFireEscape ? "/images/yangin-merdiveni-sema.jpg" : "/images/planli-alanlar.jpg"}
                             alt={isFireEscape ? "Mevcut Binaya İlave Yangın Merdiveni" : "Bağımsız Bölüm Eklentileri Garaj ve Rüzgarlık"}
                             className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
                         />
@@ -133,6 +143,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                                     <li><strong className="text-accent-hover">Yan ve Arka Bahçelerde:</strong> Eğer bina içinde tadilatla yangın merdiveni yapılamıyorsa; parsel sınırına <strong>en az 1.50 metre</strong> mesafe bırakmak kaydıyla yan ve arka bahçe mesafeleri içinde yangın merdiveni yapılabilir.</li>
                                     <li><strong className="text-accent-hover">Ön Bahçelerde:</strong> Parsel sınırına (yola) <strong>en az 3.00 metre</strong> mesafe bırakılması şartıyla ön bahçe alanına da yangın merdiveni inşa edilebilir.</li>
                                 </ul>
+
 
                                 <hr className="border-dark-border my-10" />
 

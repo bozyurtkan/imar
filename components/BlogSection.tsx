@@ -32,15 +32,23 @@ const blogPosts = [
 
 interface BlogSectionProps {
     onReadArticle?: (slug: string) => void;
+    onOpenBlog?: () => void;
+    isStandalone?: boolean;
 }
 
-export const BlogSection: React.FC<BlogSectionProps> = ({ onReadArticle }) => {
+export const BlogSection: React.FC<BlogSectionProps> = ({ onReadArticle, onOpenBlog, isStandalone }) => {
     const handleComingSoon = () => {
         alert("Bu özellik ve detaylı makaleler çok yakında aktif edilecektir. İlginiz için teşekkürler!");
     };
 
     return (
-        <section className="landing-features" style={{ backgroundColor: 'var(--bg-surface)' }}>
+        <section
+            className="landing-features"
+            style={{
+                backgroundColor: 'var(--bg-surface)',
+                ...(isStandalone ? { paddingTop: '32px' } : {})
+            }}
+        >
             <div className="landing-container">
                 <h2 className="landing-section-title">
                     İmar Hukuku Rehberleri & Makaleler
@@ -107,7 +115,14 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ onReadArticle }) => {
                 </div>
 
                 <div className="mt-12 text-center">
-                    <button onClick={handleComingSoon} className="landing-btn-ghost text-sm font-medium hover:text-accent-primary">
+                    <button onClick={() => {
+                        if (onOpenBlog) {
+                            onOpenBlog();
+                        } else {
+                            window.history.pushState({}, '', '/makaleler');
+                            window.dispatchEvent(new PopStateEvent('popstate'));
+                        }
+                    }} className="landing-btn-ghost text-sm font-medium hover:text-accent-primary">
                         Tüm Makaleleri Görüntüle <ArrowRight size={16} className="inline-block ml-1" />
                     </button>
                 </div>

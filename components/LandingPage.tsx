@@ -11,6 +11,7 @@ interface LandingPageProps {
     onGetStarted: () => void;
     onOpenLegal?: (tab: string) => void;
     onReadArticle?: (slug: string) => void;
+    onOpenBlog?: () => void;
 }
 
 const features = [
@@ -140,7 +141,7 @@ const targetAudienceData = [
 ];
 
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLegal, onReadArticle }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLegal, onReadArticle, onOpenBlog }) => {
     const [expandedFeature, setExpandedFeature] = useState<number | null>(null);
     const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
     const [currentMockupIndex, setCurrentMockupIndex] = useState(0);
@@ -283,6 +284,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                         <span className="landing-nav-title">İmar Mevzuat</span>
                     </div>
                     <div className="landing-nav-actions">
+                        <button onClick={onOpenBlog} className="landing-btn-ghost font-semibold text-warm-300 hover:text-accent mr-2">
+                            Blog
+                        </button>
                         <button onClick={onGetStarted} className="landing-btn-ghost">
                             Giriş Yap
                         </button>
@@ -521,7 +525,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
             </section>
 
             {/* Blog / E-E-A-T Section */}
-            <BlogSection onReadArticle={onReadArticle} />
+            <BlogSection onReadArticle={onReadArticle} onOpenBlog={onOpenBlog} />
 
             {/* FAQ Section */}
             <FAQSection />

@@ -5,6 +5,7 @@ import { LandingPage } from './components/LandingPage';
 import { LoginPage } from './components/LoginPage';
 import { LegalPage } from './components/LegalPage';
 import { ArticlePage } from './components/ArticlePage';
+import { BlogPage } from './components/BlogPage';
 import { CookieBanner } from './components/CookieBanner';
 import {
   FileText, Send, Trash2, Plus, BookOpen, Loader2, Scale,
@@ -2368,9 +2369,10 @@ const ImarApp: React.FC = () => {
 
 const AppRouter: React.FC = () => {
   const { user, loading } = useAuth();
-  const [currentPage, setCurrentPage] = useState<'landing' | 'login' | 'app' | 'legal' | 'article'>(() => {
+  const [currentPage, setCurrentPage] = useState<'landing' | 'login' | 'app' | 'legal' | 'article' | 'blog'>(() => {
     const path = window.location.pathname;
     if (path.startsWith('/makale/')) return 'article';
+    if (path.startsWith('/makaleler')) return 'blog';
     return 'landing';
   });
   const [currentArticle, setCurrentArticle] = useState<string>(() => {
@@ -2391,6 +2393,25 @@ const AppRouter: React.FC = () => {
       window.history.pushState({}, '', '/');
     }
   }, [user, loading, currentPage]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      if (path.startsWith('/makale/')) {
+        setCurrentArticle(path.replace('/makale/', ''));
+        setCurrentPage('article');
+      } else if (path.startsWith('/makaleler')) {
+        setCurrentPage('blog');
+      } else if (path.startsWith('/legal/')) {
+        setLegalTab(path.replace('/legal/', ''));
+        setCurrentPage('legal');
+      } else {
+        setCurrentPage('landing');
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // "Hemen Başlayın" tıklandığında: giriş yapmışsa app'e, yapmamışsa login'e
   const handleGetStarted = () => {
@@ -2413,6 +2434,11 @@ const AppRouter: React.FC = () => {
     window.history.pushState({}, '', `/makale/${slug}`);
   };
 
+  const handleOpenBlog = () => {
+    setCurrentPage('blog');
+    window.history.pushState({}, '', `/makaleler`);
+  };
+
   if (loading) {
     return (
       <div className="loading-screen">
@@ -2430,7 +2456,7 @@ const AppRouter: React.FC = () => {
   let pageContent;
   switch (currentPage) {
     case 'landing':
-      pageContent = <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} onReadArticle={handleReadArticle} />;
+      pageContent = <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} onReadArticle={handleReadArticle} onOpenBlog={handleOpenBlog} />;
       break;
     case 'login':
       pageContent = <LoginPage onBack={() => setCurrentPage('landing')} />;
@@ -2440,15 +2466,29 @@ const AppRouter: React.FC = () => {
       break;
     case 'article':
       pageContent = <ArticlePage onBack={() => {
-        setCurrentPage('landing');
-        window.history.pushState({}, '', '/');
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          setCurrentPage('landing');
+          window.history.pushState({}, '', '/');
+        }
       }} slug={currentArticle} />;
+      break;
+    case 'blog':
+      pageContent = <BlogPage onBack={() => {
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          setCurrentPage('landing');
+          window.history.pushState({}, '', '/');
+        }
+      }} onReadArticle={handleReadArticle} />;
       break;
     case 'app':
       pageContent = <ImarApp />;
       break;
     default:
-      pageContent = <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} onReadArticle={handleReadArticle} />;
+      pageContent = <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} onReadArticle={handleReadArticle} onOpenBlog={handleOpenBlog} />;
       break;
   }
 

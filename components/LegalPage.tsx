@@ -412,7 +412,13 @@ export const LegalPage: React.FC<LegalPageProps> = ({ onBack, initialTab = 'tesl
         <div className="legal-page">
             <nav className="landing-nav">
                 <div className="landing-container landing-nav-inner">
-                    <div className="landing-nav-brand">
+                    <div
+                        className="landing-nav-brand cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={() => {
+                            window.history.pushState({}, '', '/');
+                            window.dispatchEvent(new PopStateEvent('popstate'));
+                        }}
+                    >
                         <div className="landing-nav-logo">
                             <Scale size={20} className="text-white" />
                         </div>
