@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, BookOpen, Globe, ChevronRight, GitBranch } from 'lucide-react';
+import { X, BookOpen, Globe, ChevronRight, GitBranch, Compass } from 'lucide-react';
 import { TourType } from './OnboardingTour';
 
 interface HelpCenterModalProps {
@@ -30,6 +30,25 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({ isOpen, onClos
 
                 {/* Content */}
                 <div className="p-5 space-y-4">
+                    {/* Usage Guide Tour Card */}
+                    <button
+                        onClick={() => onSelectTour('usageGuide')}
+                        className="w-full group flex items-start gap-4 p-4 bg-dark-secondary hover:bg-dark-surface border border-dark-border hover:border-purple-500/40 rounded-2xl text-left transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20"
+                    >
+                        <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <Compass size={24} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-bold text-warm-50 mb-1 group-hover:text-purple-400 transition-colors flex items-center justify-between">
+                                Kullanım Rehberi
+                                <ChevronRight size={16} className="text-warm-600 group-hover:text-purple-400" />
+                            </h4>
+                            <p className="text-xs text-warm-400 leading-relaxed">
+                                Tüm temel özellikleri adım adım keşfedin: kütüphane, soru sorma, web arama, derin düşünce ve karşılaştırma.
+                            </p>
+                        </div>
+                    </button>
+
                     {/* Library Tour Card */}
                     <button
                         onClick={() => onSelectTour('library')}

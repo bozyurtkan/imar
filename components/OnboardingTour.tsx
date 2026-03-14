@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { X, ChevronRight, ChevronLeft, BookOpen, CheckSquare, Upload, MessageSquare, HelpCircle, Globe, Brain, Send, GitBranch, Link2, Sparkles } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, BookOpen, CheckSquare, Upload, MessageSquare, HelpCircle, Globe, Brain, Send, GitBranch, Link2, Sparkles, Compass } from 'lucide-react';
 
-export type TourType = 'library' | 'webSearch' | 'comparison';
+export type TourType = 'library' | 'webSearch' | 'comparison' | 'usageGuide';
 
 interface TourStep {
     targetId: string;
@@ -98,6 +98,44 @@ const COMPARISON_TOUR_STEPS: TourStep[] = [
     },
 ];
 
+const USAGE_GUIDE_TOUR_STEPS: TourStep[] = [
+    {
+        targetId: 'tour-library-title',
+        title: 'Mevzuat Kütüphanesi',
+        description: 'Sol panelde mevzuat belgelerinizi görebilir, aktif/pasif yapabilir ve kendi PDF belgelerinizi yükleyebilirsiniz. Başlangıçta 3 temel mevzuat sizin için hazır.',
+        icon: <BookOpen size={20} />,
+        position: 'right',
+    },
+    {
+        targetId: 'tour-prompt-cards',
+        title: 'Soru Sorun',
+        description: 'Hazır soru kartlarından birine tıklayın veya kendi sorunuzu yazın. Asistan aktif belgeleriniz üzerinden yanıt verecektir.',
+        icon: <MessageSquare size={20} />,
+        position: 'top',
+    },
+    {
+        targetId: 'tour-web-toggle',
+        title: 'Web Araması',
+        description: 'Bu butona tıklayarak internetteki en güncel mevzuat ve içtihatları tarayabilirsiniz. Kütüphanenin ötesine geçerek canlı bilgiye ulaşın.',
+        icon: <Globe size={20} />,
+        position: 'bottom',
+    },
+    {
+        targetId: 'tour-deep-think',
+        title: 'Derin Düşünce (Deep Think)',
+        description: 'Karmaşık sorularda çok adımlı mantıksal analiz yapmak için bu modu açın. Özellikle hukuki karşılaştırma ve yorum soruları için idealdir.',
+        icon: <Brain size={20} />,
+        position: 'top',
+    },
+    {
+        targetId: 'tour-compare-btn',
+        title: 'Mevzuat Karşılaştırma',
+        description: 'Resmi Gazete linkini yapıştırarak eski ve yeni mevzuat arasındaki farkları otomatik olarak analiz edebilirsiniz.',
+        icon: <GitBranch size={20} />,
+        position: 'right',
+    },
+];
+
 export const OnboardingTour: React.FC<OnboardingTourProps> = ({ isOpen, tourType, onClose, onExpandSidebar }) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
@@ -105,7 +143,16 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ isOpen, tourType
     const [isAnimating, setIsAnimating] = useState(false);
     const tooltipRef = useRef<HTMLDivElement>(null);
 
-    const activeSteps = tourType === 'library' ? LIBRARY_TOUR_STEPS : (tourType === 'webSearch' ? WEB_SEARCH_TOUR_STEPS : COMPARISON_TOUR_STEPS);
+    const getActiveSteps = () => {
+        switch (tourType) {
+            case 'usageGuide': return USAGE_GUIDE_TOUR_STEPS;
+            case 'library': return LIBRARY_TOUR_STEPS;
+            case 'webSearch': return WEB_SEARCH_TOUR_STEPS;
+            case 'comparison': return COMPARISON_TOUR_STEPS;
+            default: return USAGE_GUIDE_TOUR_STEPS;
+        }
+    };
+    const activeSteps = getActiveSteps();
 
     const updateTargetPosition = useCallback(() => {
         const step = activeSteps[currentStep];
@@ -121,7 +168,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({ isOpen, tourType
     useEffect(() => {
         if (!isOpen) return;
 
-        if (tourType === 'library' && currentStep < 3 && onExpandSidebar) {
+        if ((tourType === 'library' || (tourType === 'usageGuide' && currentStep === 0)) && onExpandSidebar) {
             onExpandSidebar();
         }
 

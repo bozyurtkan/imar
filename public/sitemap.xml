@@ -7,8 +7,20 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://imarmevzuat.com.tr/makaleler</loc>
+    <lastmod>2026-03-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://imarmevzuat.com.tr/makale/planli-alanlar-garaj-ruzgarlik-degisikligi</loc>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://imarmevzuat.com.tr/makale/mevcut-binalarda-yangin-merdiveni-esnekligi</loc>
+    <lastmod>2026-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

@@ -121,7 +121,7 @@ const ImarApp: React.FC = () => {
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return localStorage.getItem('imar_onboarding_completed') !== 'true';
   });
-  const [activeTour, setActiveTour] = useState<'library' | 'webSearch'>('library');
+  const [activeTour, setActiveTour] = useState<'library' | 'webSearch' | 'comparison' | 'usageGuide'>('usageGuide');
   const [showHelpCenter, setShowHelpCenter] = useState(false);
 
   const handleCopyMessage = (id: string, text: string) => {
