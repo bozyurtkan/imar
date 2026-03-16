@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Scale, ArrowRight, ChevronDown, ChevronUp, BookOpen, Brain, Shield,
     FileText, Search, Globe, Sparkles, MessageSquare, Lock, Zap, Users,
@@ -145,24 +145,50 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
     const [expandedFeature, setExpandedFeature] = useState<number | null>(null);
     const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
     const [currentMockupIndex, setCurrentMockupIndex] = useState(0);
+    const [visibleItems, setVisibleItems] = useState<Set<number>>(new Set());
+    const timelineRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const index = Number(entry.target.getAttribute('data-index'));
+                        setVisibleItems((prev) => {
+                            const newSet = new Set(prev);
+                            newSet.add(index);
+                            return newSet;
+                        });
+                    }
+                });
+            },
+            { threshold: 0.2, rootMargin: '0px 0px -50px 0px' }
+        );
+
+        timelineRefs.current.forEach((ref) => {
+            if (ref) observer.observe(ref);
+        });
+
+        return () => observer.disconnect();
+    }, []);
 
     const mockupConversations = [
         // 1. Derin Düşünme / Karmaşık Vaka
         (
             <div key="mock-1" className="flex flex-col gap-4 animate-in fade-in">
-                <div className="landing-mockup-msg landing-mockup-msg-user">
+                <div className="landing-mockup-msg landing-mockup-msg-user break-words">
                     <p>Bir arsada tevhit işlemi yapılmadan önce belediyenin DOP kesintisi %40 yapılmışsa, tevhit sonrası kalan miktar için tekrar DOP kesilebilir mi?</p>
                 </div>
-                <div className="landing-mockup-msg landing-mockup-msg-ai delay-1">
+                <div className="landing-mockup-msg landing-mockup-msg-ai delay-1 break-words">
                     <div className="landing-mockup-ai-badge">
                         <Brain size={12} className="text-accent" /> DERİN DÜŞÜNME MODU ANALİZİ
                     </div>
                     <p className="mb-3">İlgili mevzuatları taradım ve şu sonuca ulaştım:</p>
                     <div className="p-3 bg-dark-surface border border-dark-border rounded-lg mb-3">
-                        <p className="font-bold text-warm-100 flex items-center gap-2 mb-1">
-                            <Scale size={14} className="text-accent" /> 3194 Sayılı Kanun Madde 18 / Ek Fıkra
+                        <p className="font-bold text-warm-100 flex items-start gap-2 mb-1">
+                            <Scale size={14} className="text-accent mt-1 flex-shrink-0" /> <span className="flex-1 break-words">3194 Sayılı Kanun Madde 18 / Ek Fıkra</span>
                         </p>
-                        <p className="text-xs text-warm-300">
+                        <p className="text-xs text-warm-300 break-words">
                             Herhangi bir parselden bir defadan fazla düzenleme ortaklık payı alınamaz. Ancak, emsal artışı (nüfus artışı) halinde ilave DOP kesilebilir.
                         </p>
                     </div>
@@ -173,10 +199,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
         // 2. Belge Yükleme / Mülga Analizi
         (
             <div key="mock-2" className="flex flex-col gap-4 animate-in fade-in">
-                <div className="landing-mockup-msg landing-mockup-msg-user">
+                <div className="landing-mockup-msg landing-mockup-msg-user break-words">
                     <p>Ekteki pdf üzerinden: Arazi_düzenleme_raporu.pdf, bu rapordaki çekme mesafeleri güncel planlı alanlar imar yönetmeliğine uygun mu?</p>
                 </div>
-                <div className="landing-mockup-msg landing-mockup-msg-ai delay-1">
+                <div className="landing-mockup-msg landing-mockup-msg-ai delay-1 break-words">
                     <div className="landing-mockup-ai-badge">
                         <FileText size={12} className="text-accent" /> BELGE VE MÜLGA ANALİZİ
                     </div>
@@ -185,12 +211,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                         Ancak Planlı Alanlar İmar Yönetmeliği Madde 23'e göre (Son Güncelleme: 2024), yan bahçe mesafesi 4 kata kadar olan binalarda en az <strong>3 metre</strong>, 4 kattan sonraki her kat için <strong>0.5 metre</strong> ilave edilir.
                     </p>
                 </div>
-                <div className="landing-mockup-msg landing-mockup-msg-user delay-2">
+                <div className="landing-mockup-msg landing-mockup-msg-user delay-2 break-words">
                     <p>Bina 6 katlı olarak projelendirilmiş.</p>
                 </div>
-                <div className="landing-mockup-msg landing-mockup-msg-ai delay-3">
+                <div className="landing-mockup-msg landing-mockup-msg-ai delay-3 break-words">
                     <p>
-                        Bu durumda yan bahçe mesafesi <code>3m + (2 kat × 0.5m) = 4 metre</code> olmalıdır. <strong className="text-red-400">Raporunuzdaki 3 metre ölçüsü güncel mevzuata aykırıdır.</strong>
+                        Bu durumda yan bahçe mesafesi <code className="break-all whitespace-normal">3m + (2 kat × 0.5m) = 4 metre</code> olmalıdır. <strong className="text-red-400">Raporunuzdaki 3 metre ölçüsü güncel mevzuata aykırıdır.</strong>
                     </p>
                 </div>
             </div>
@@ -198,10 +224,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
         // 3. Resmi Gazete ve Web Araması
         (
             <div key="mock-3" className="flex flex-col gap-4 animate-in fade-in">
-                <div className="landing-mockup-msg landing-mockup-msg-user">
+                <div className="landing-mockup-msg landing-mockup-msg-user break-words">
                     <p>Bugünkü Resmi Gazete'de Otopark Yönetmeliği ile ilgili yeni yayınlanan karar nedir?</p>
                 </div>
-                <div className="landing-mockup-msg landing-mockup-msg-ai delay-1">
+                <div className="landing-mockup-msg landing-mockup-msg-ai delay-1 break-words">
                     <div className="landing-mockup-ai-badge">
                         <Globe size={12} className="text-accent" /> CANLI VERİ TABANI ARAMASI
                     </div>
@@ -209,10 +235,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                         Bugün (27 Şubat 2026) yayımlanan Resmi Gazete verilerine ulaştım.
                     </p>
                     <div className="p-3 bg-dark-surface border border-accent/30 rounded-lg mt-3">
-                        <p className="font-bold text-accent flex items-center gap-2 mb-1">
+                        <p className="font-bold text-accent mb-1 break-words">
                             Otopark Yönetmeliğinde Değişiklik
                         </p>
-                        <p className="text-xs text-warm-200">
+                        <p className="text-xs text-warm-200 break-words">
                             Madde 1: Her daire için zorunlu otopark alanı 1'den 2'ye çıkarılan bölgelerde inşaat geçiş süresi 6 ay uzatılmıştır.
                         </p>
                     </div>
@@ -366,8 +392,35 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                                 </div>
                                 <span className="landing-mockup-title">İmar Mevzuat</span>
                             </div>
-                            <div className="landing-mockup-body" style={{ minHeight: '380px' }}>
-                                {mockupConversations[currentMockupIndex]}
+                            <div className="landing-mockup-body">
+                                {/* Invisible spacer block using the largest message to determine native container height without breaking the layout or triggering scrollbars */}
+                                <div className="landing-mockup-content invisible pointer-events-none opacity-0" aria-hidden="true">
+                                    <div className="flex flex-col gap-4">
+                                        <div className="landing-mockup-msg landing-mockup-msg-user break-words">
+                                            <p>Ekteki pdf üzerinden: Arazi_düzenleme_raporu.pdf, bu rapordaki çekme mesafeleri güncel planlı alanlar imar yönetmeliğine uygun mu?</p>
+                                        </div>
+                                        <div className="landing-mockup-msg landing-mockup-msg-ai break-words">
+                                            <div className="landing-mockup-ai-badge">
+                                                <FileText size={12} className="text-accent" /> BELGE VE MÜLGA ANALİZİ
+                                            </div>
+                                            <p>
+                                                Raporunuzu inceledim. Yan cephe çekme mesafesi raporda <strong>3 metre</strong> olarak belirtilmiş.
+                                                Ancak Planlı Alanlar İmar Yönetmeliği Madde 23'e göre (Son Güncelleme: 2024), yan bahçe mesafesi 4 kata kadar olan binalarda en az <strong>3 metre</strong>, 4 kattan sonraki her kat için <strong>0.5 metre</strong> ilave edilir.
+                                            </p>
+                                        </div>
+                                        <div className="landing-mockup-msg landing-mockup-msg-user break-words">
+                                            <p>Bina 6 katlı olarak projelendirilmiş.</p>
+                                        </div>
+                                        <div className="landing-mockup-msg landing-mockup-msg-ai break-words">
+                                            <p>
+                                                Bu durumda yan bahçe mesafesi <code className="break-all whitespace-normal">3m + (2 kat × 0.5m) = 4 metre</code> olmalıdır. <strong className="text-red-400">Raporunuzdaki 3 metre ölçüsü güncel mevzuata aykırıdır.</strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="absolute inset-0 landing-mockup-content">
+                                    {mockupConversations[currentMockupIndex]}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -391,34 +444,54 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                 </div>
             </section>
 
-            {/* Features Section */}
-            <section className="landing-features">
+            {/* Features Section (Timeline) */}
+            <section className="landing-features pb-24">
                 <div className="landing-container">
-                    <h2 className="landing-section-title">Neden İmar Mevzuat?</h2>
-                    <p className="landing-section-subtitle">
-                        Genel yapay zekalar imar sorunuza doğru cevap veremez. Biz veririz — her yanıtımız kanun maddesiyle desteklenir.
-                    </p>
-                    <div className="landing-features-list">
-                        {features.map((feature, i) => (
-                            <div
-                                key={i}
-                                className={`landing-feature-item ${expandedFeature === i ? 'expanded' : ''}`}
-                                onClick={() => setExpandedFeature(expandedFeature === i ? null : i)}
-                            >
-                                <div className="landing-feature-header">
-                                    <div className="landing-feature-icon">{feature.icon}</div>
-                                    <span className="landing-feature-title">{feature.title}</span>
-                                    <div className="landing-feature-chevron">
-                                        {expandedFeature === i ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                    <div className="text-center mb-16">
+                        <h2 className="landing-section-title">Neden İmar Mevzuat?</h2>
+                        <p className="landing-section-subtitle mx-auto">
+                            Genel yapay zekalar imar sorunuza doğru cevap veremez. Biz veririz — her yanıtımız kanun maddesiyle desteklenir.
+                        </p>
+                    </div>
+
+                    <div className="landing-timeline">
+                        <div className="timeline-line"></div>
+
+                        {features.map((feature, i) => {
+                            const isVisible = visibleItems.has(i);
+                            const isEven = i % 2 === 0;
+
+                            return (
+                                <div
+                                    key={i}
+                                    ref={(el) => (timelineRefs.current[i] = el)}
+                                    data-index={i}
+                                    className={`timeline-item ${isEven ? 'timeline-item-left' : 'timeline-item-right'} ${isVisible ? 'is-visible' : ''}`}
+                                    style={{ animationDelay: `${i * 0.15}s` }}
+                                >
+                                    <div className="timeline-content group">
+                                        <div className="timeline-dot">
+                                            <div className="timeline-dot-inner"></div>
+                                        </div>
+
+                                        <div className="timeline-card transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_10px_30px_-10px_rgba(196,80,26,0.15)] group-hover:border-accent/30 flex items-start gap-5 p-6 sm:p-8 rounded-2xl bg-dark-surface/60 border border-dark-border/60 backdrop-blur-md relative overflow-hidden">
+                                            {/* Hover Gradient Overlay */}
+                                            <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+
+                                            <div className="timeline-icon flex-shrink-0 w-12 h-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center shadow-[0_0_15px_rgba(196,80,26,0.1)] group-hover:bg-accent group-hover:text-white group-hover:shadow-[0_0_20px_rgba(196,80,26,0.4)] transition-all duration-300">
+                                                {feature.icon}
+                                            </div>
+                                            <div className="timeline-text relative z-10">
+                                                <h3 className="text-lg sm:text-xl font-bold text-warm-50 tracking-tight mb-2 group-hover:text-accent transition-colors duration-300">{feature.title}</h3>
+                                                <p className="text-warm-300 text-sm leading-relaxed group-hover:text-warm-200 transition-colors duration-300">
+                                                    {feature.desc}
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                {expandedFeature === i && (
-                                    <div className="landing-feature-body">
-                                        <p>{feature.desc}</p>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </section>
