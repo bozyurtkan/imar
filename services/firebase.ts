@@ -62,6 +62,12 @@ export const saveChatHistory = async (userId: string, messages: any[], userEmail
         if (m.references && Array.isArray(m.references) && m.references.length > 0) {
             clean.references = m.references;
         }
+        if (m.webSources && Array.isArray(m.webSources) && m.webSources.length > 0) {
+            clean.webSources = m.webSources;
+        }
+        if (m.relatedArticles && Array.isArray(m.relatedArticles) && m.relatedArticles.length > 0) {
+            clean.relatedArticles = m.relatedArticles;
+        }
         return clean;
     });
 

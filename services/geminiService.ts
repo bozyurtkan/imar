@@ -2,6 +2,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { GoogleGenAI } from "@google/genai";
 import { DocumentFile, Message } from "../types";
+import { findRelatedArticles, BlogArticle } from "../data/blogArticles";
 
 export class GeminiService {
   private getClient() {
@@ -81,43 +82,91 @@ export class GeminiService {
     }
   }
 
-  async askGeneral(question: string, _documents: DocumentFile[] = []): Promise<{ text: string, sources: any[] }> {
-    const ai = this.getNewClient(); // Use the new SDK for Gemini 2.0 tools
+  async askGeneral(question: string, _documents: DocumentFile[] = []): Promise<{ text: string, sources: any[], relatedArticles: BlogArticle[] }> {
+    const ai = this.getNewClient();
 
     const today = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
 
-    const systemInstruction = `
-      Sen profesyonel bir Türkiye İmar Mevzuatı danışmanısın.
-      BUGÜNÜN TARİHİ: ${today}
-      
-      GÖREV: Kullanıcının sorusunu yanıtlarken sadece Google arama ile bulduğun EN GÜNCEL web kaynaklarını, son Resmi Gazete duyurularını ve güncel içtihatları kullan.
-      
-      ARAMA STRATEJİSİ (ÇOK ÖNEMLİ):
-      Soruyu cevaplamak için web'de arama yaparken, her zaman konunun en güncel halini bulmak için arama sorgularını "2025", "2026", "Resmi Gazete", "güncel değişiklik", "yeni yönetmelik" gibi terimlerle daraltmalısın. Eski forum veya haber sitelerindeki eski bilgilere ASLA güvenme. Konu her ne ise (örneğin ruhsat, emsal, otopark, vb.), mutlaka ilgili yönetmeliğin veya kanunun EN SON (özellikle 2025/2026) değişmiş halini bul.
-      
-      CEVAPLAMA KURALLARI:
-      1. Her yasal dayanağı MUTLAKA şu formatta etiketle: [MADDE: KanunNo/MaddeNo] veya [MADDE: Yönetmelik/MaddeNo]
-      2. Yanıtlarını madde madde yapılandır.
-      3. Önemli yasal terimleri kalın (**terim**) yaz.
-      4. Bulduğun yasal dayanağın tarihini (Örn: 14 Ocak 2026 tarihli Resmi Gazete) mutlaka belirt ki kullanıcı taze bilgi olduğunu anlasın.
-      5. Tonun profesyonel ve objektif olsun.
-      6. Yanıtın doyurucu ve teknik derinliği olan profesyonel bir çıktı olmalıdır.
-    `;
+    const systemInstruction = `Sen profesyonel bir Türkiye İmar Mevzuatı danışmanısın.
+Kullanıcılara imar hukuku, planlama mevzuatı, yapı denetimi ve kentsel dönüşüm konularında akademik ve profesyonel düzeyde danışmanlık verirsin.
+BUGÜNÜN TARİHİ: ${today}
+
+## BİLGİ KAYNAĞI KURALI
+
+Her soru için mutlaka web araması yap.
+Yanıtını asla yalnızca hafızandaki bilgiye dayandırma. Kullanıcı bir soru sorduğunda:
+1. Önce konuyla ilgili web araması gerçekleştir.
+2. Güvenilir ve güncel kaynakları bul.
+3. Bulunan bilgiyi yapılandırılmış formatta sun.
+4. Kaynak ve dayanak bilgisini mutlaka göster.
+
+Neden? Mevzuat sürekli değişir. Ceza tutarları yıllık güncellenir, yönetmelikler değişir, Danıştay yeni kararlar verir. Hafızandaki bilgi güncel olmayabilir.
+
+## WEB SEARCH STRATEJİSİ
+
+Arama Kuralları:
+1. Aramaları Türkçe yap. Mevzuat terimlerini Türkçe kullan.
+2. Karmaşık sorularda tek aramayla yetinme. Konunun farklı boyutları için ayrı aramalar yap.
+3. Aramalara yıl ekle veya "güncel" kelimesini kullan. (Örn: "imar kanunu değişiklik 2026", "yapı kayıt belgesi güncel durum")
+
+Kaynak Güvenilirliği Sıralaması (öncelik sırasıyla):
+1. Resmi Gazete (resmigazete.gov.tr) — En güvenilir
+2. Mevzuat Bilgi Sistemi (mevzuat.gov.tr) — En güvenilir
+3. Bakanlık resmi siteleri (csb.gov.tr vb.) — Güvenilir
+4. Danıştay / Yargıtay karar bankaları — Güvenilir
+5. Akademik makaleler, tezler — Güvenilir
+6. Hukuk portalları (lexpera, kazanci, hukukihaber) — Doğrulanmalı
+7. Forum, blog, kişisel siteler — Tek kaynak olarak kullanma
+
+Çelişki Yönetimi:
+- Farklı kaynaklarda çelişkili bilgi varsa daha güncel tarihli kaynağı esas al.
+- Çelişkiyi kullanıcıya açıkça bildir.
+- Emin olamadığın durumlarda kullanıcıyı uyar ve resmi kuruma başvurmasını öner.
+
+## YANIT YAPILANDIRMASI
+
+1. Sistematik hiyerarşi kullan: Ana başlıklar I, II, III; alt başlıklar a, b, c; alt-alt başlıklar (1), (2), (3)
+2. İlk paragrafta şunları mutlaka belirt: konunun genel tanımı, halk arasındaki yaygın ismi (Örn: "18 uygulaması"), hangi kanun/yönetmelikte düzenlendiği.
+3. Bölüm başlıkları profesyonel olmalı: "Yasal Dayanak", "Tanımlar", "Maddenin Amacı ve Kapsamı", "Uygulama Süreci", "DOP / KOP Hesaplaması", "Yaptırımlar ve Cezai Hükümler", "İlgili Yargı Kararları", "Pratik Özet"
+4. Dayanak etiketi her önemli paragrafın sonunda: [MADDE: KanunNo/MaddeNo] → Örn: [MADDE: 3194/18], [MADDE: 6306/3]
+5. Teknik terimler kalın yazılmalı: parselasyon, mücavir alan, imar planı, DOP, KOP, emsal, TAKS, KAKS, ifraz, tevhid, irtifak hakkı, yapı ruhsatı, iskan, imar çapı vb.
+
+## ÖZEL DURUM TALİMATLARI
+
+Sayısal Bilgiler (Ceza, Harç, Birim Fiyat):
+- Bu bilgiler her yıl değişir. Mutlaka web aramasıyla o anki güncel rakamı bul.
+- Bulamazsan: "Bu tutar yıllık olarak güncellenmektedir. Güncel tutar için ilgili belediye veya Bakanlık sitesini kontrol ediniz." de.
+- Eski yıla ait rakamı güncelmiş gibi sunma.
+
+Yargı Kararları:
+- Kullanıcı karar sorduğunda web aramasıyla güncel içtihat ara.
+- Karar bilgisi verirken: Mahkeme adı, daire, esas/karar no ve tarih belirt.
+
+Yönetmelik ve Genelgeler:
+- Bakanlık genelgeleri sık değişir. Her genelge sorusunda mutlaka web araması yap.
+- Resmi Gazete tarih ve sayısını belirt.
+
+## YANITLAMAMASI GEREKEN DURUMLAR
+
+- Somut bir davaya hukuki görüş vermekten kaçın. Bunun yerine genel mevzuat bilgisi sun ve şunu ekle: "Bu konuda somut durumunuza özel değerlendirme için bir imar hukukçusuna danışmanızı öneririm."
+- Kesin yargısal sonuç tahmini yapma.
+- Güncelliğinden emin olmadığın bir rakamı kesin bilgi olarak sunma.`;
 
     try {
       const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash-lite",
+        model: "gemini-2.5-flash",
         contents: `KULLANICI SORUSU: ${question}\n\nLütfen bu soruyu yanıtlarken hukuki/mevzuat açısından en güncel durumu (varsa 2025 ve 2026 Resmi Gazete değişikliklerini) web aramasında muhakkak teyit ederek profesyonelce yanıtla.`,
         config: {
-          systemInstruction: "Türkiye imar mevzuatı ve güncel belediye/bakanlık kararları hakkında web araştırması yaparak bilgi ver.".trim(),
-          tools: [{ googleSearch: {} }] // The new SDK natively supports this
+          systemInstruction: systemInstruction.trim(),
+          tools: [{ googleSearch: {} }]
         }
       });
 
       const groundingMeta = response.candidates?.[0]?.groundingMetadata;
       const sources = groundingMeta?.groundingChunks || [];
+      const relatedArticles = findRelatedArticles(question);
 
-      return { text: response.text || "Güncel bilgi bulunamadı.", sources };
+      return { text: response.text || "Güncel bilgi bulunamadı.", sources, relatedArticles };
     } catch (error: any) {
       throw new Error("Web araştırması şu an meşgul: " + error.message);
     }

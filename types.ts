@@ -17,6 +17,7 @@ export interface Message {
   timestamp: Date;
   references?: string[];
   webSources?: { uri: string; title: string }[];
+  relatedArticles?: { slug: string; title: string; desc: string; url: string }[];
 }
 
 export enum FileType {
