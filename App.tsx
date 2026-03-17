@@ -879,6 +879,7 @@ const ImarApp: React.FC = () => {
       let responseText = "";
       let references: string[] | undefined;
       let webSources: { uri: string; title: string }[] | undefined;
+      let relatedArticles: { slug: string; title: string; desc: string; url: string }[] | undefined;
 
       if (isGeneralMode) {
         const res = await geminiService.askGeneral(query, documents);
@@ -887,6 +888,7 @@ const ImarApp: React.FC = () => {
         webSources = res.sources
           .filter((s: any) => s.web?.uri)
           .map((s: any) => ({ uri: s.web.uri, title: s.web.title || new URL(s.web.uri).hostname }));
+        relatedArticles = res.relatedArticles.length > 0 ? res.relatedArticles : undefined;
       } else if (isDeepThinkMode) {
         responseText = await geminiService.askDeepThink(query, documents, messages);
       } else {
@@ -899,7 +901,8 @@ const ImarApp: React.FC = () => {
         text: responseText,
         timestamp: new Date(),
         references,
-        webSources
+        webSources,
+        relatedArticles
       };
 
       setMessages(prev => [...prev, aiMsg]);
@@ -2062,6 +2065,34 @@ const ImarApp: React.FC = () => {
                             </div>
                           </div>
                         )}
+                        {msg.relatedArticles && msg.relatedArticles.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-warm-500/20">
+                            <div className="flex items-center gap-2 mb-3">
+                              <BookOpen size={12} className="text-warm-400" />
+                              <span className="text-[9px] font-black uppercase tracking-widest text-warm-400">İlgili Makalelerimiz</span>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              {msg.relatedArticles.map((article: { slug: string; title: string; desc: string; url: string }, i: number) => (
+                                <button
+                                  key={i}
+                                  onClick={() => {
+                                    window.history.replaceState({ page: 'app' }, '', '/');
+                                    window.history.pushState({}, '', article.url);
+                                    window.dispatchEvent(new PopStateEvent('popstate'));
+                                  }}
+                                  className="group flex items-start gap-3 px-4 py-3 bg-warm-500/5 border border-warm-500/20 rounded-xl text-left hover:bg-warm-500/10 hover:border-warm-500/40 transition-all duration-200"
+                                >
+                                  <BookOpen size={14} className="text-warm-400 shrink-0 mt-0.5 group-hover:text-warm-300 transition-colors" />
+                                  <div className="min-w-0">
+                                    <p className="text-[12px] font-bold text-warm-200 group-hover:text-warm-50 transition-colors leading-snug">{article.title}</p>
+                                    <p className="text-[10px] text-warm-500 mt-0.5 leading-relaxed line-clamp-2">{article.desc}</p>
+                                  </div>
+                                  <ArrowRight size={12} className="text-warm-500 shrink-0 mt-1 group-hover:translate-x-1 group-hover:text-warm-300 transition-all" />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ) : msg.text}
                   </div>
@@ -2395,7 +2426,7 @@ const AppRouter: React.FC = () => {
   }, [user, loading, currentPage]);
 
   useEffect(() => {
-    const handlePopState = () => {
+    const handlePopState = (event: PopStateEvent) => {
       const path = window.location.pathname;
       if (path.startsWith('/makale/')) {
         setCurrentArticle(path.replace('/makale/', ''));
@@ -2405,6 +2436,8 @@ const AppRouter: React.FC = () => {
       } else if (path.startsWith('/legal/')) {
         setLegalTab(path.replace('/legal/', ''));
         setCurrentPage('legal');
+      } else if (event.state?.page === 'app') {
+        setCurrentPage('app');
       } else {
         setCurrentPage('landing');
       }
