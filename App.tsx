@@ -961,8 +961,13 @@ const ImarApp: React.FC = () => {
     setMessages(prev => [...prev, userMsg]);
 
     try {
-      // Adım 1: URL içeriğini çek
-      const urlContent = await resmiGazeteService.fetchUrlContent(capturedUrl);
+      // Adım 1: URL içeriğini çek (başarısız olursa boş bırak — Gemini Google Search ile bulur)
+      let urlContent = '';
+      try {
+        urlContent = await resmiGazeteService.fetchUrlContent(capturedUrl);
+      } catch (fetchErr) {
+        console.warn('URL içeriği çekilemedi, Gemini kendi arayacak:', fetchErr);
+      }
 
       // Adım 2: İçeriği Gemini ile karşılaştır
       const compareResult = await geminiService.compareLegislation(urlContent, capturedUrl, documents);

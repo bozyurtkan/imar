@@ -232,17 +232,49 @@ KURALLAR:
 5. Madde metinlerini olduğu gibi aktar, yorumunu ayrı yaz
     `.trim();
 
+    const prompt = `KAYNAK URL: ${regulationUrl}\n\n${urlContent.trim()
+      ? `YENİ DÜZENLEME METNİ:\n${urlContent}`
+      : `NOT: Sayfa içeriği otomatik çekilemedi. Google Search aracıyla bu URL'deki resmi düzenlemeyi bul ve analiz et: ${regulationUrl}`
+    }\n\n${libraryContext ? `KÜTÜPHANE BELGELERİ:\n${libraryContext}` : 'Aktif kütüphane belgesi yok.'}`;
+
     try {
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
-        contents: `KAYNAK URL: ${regulationUrl}\n\nYENİ DÜZENLEME METNİ:\n${urlContent}\n\n${libraryContext ? `KÜTÜPHANE BELGELERİ:\n${libraryContext}` : 'Aktif kütüphane belgesi yok.'}`,
+        contents: prompt,
+        config: {
+          systemInstruction,
+          tools: [{ googleSearch: {} }],
+          thinkingConfig: { thinkingBudget: 0 }
+        }
+      });
+
+      // response.text bazen thinking modunda boş gelebilir — candidates'ten manuel çek
+      const text = response.text
+        || response.candidates?.[0]?.content?.parts
+            ?.filter((p: any) => !p.thought && p.text)
+            ?.map((p: any) => p.text)
+            ?.join('') || '';
+
+      console.log('[compareLegislation] text length:', text.length);
+      if (text) return text;
+
+      // Fallback: thinkingBudget olmadan tekrar dene — yine gemini-2.5-flash + Google Search
+      console.warn('[compareLegislation] gemini-2.5-flash boş döndü, thinkingBudget olmadan tekrar deneniyor...');
+      const response2 = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
         config: {
           systemInstruction,
           tools: [{ googleSearch: {} }]
         }
       });
+      const text2 = response2.text
+        || response2.candidates?.[0]?.content?.parts
+            ?.filter((p: any) => p.text)
+            ?.map((p: any) => p.text)
+            ?.join('') || '';
+      return text2 || "Karşılaştırma yapılamadı. Lütfen tekrar deneyin.";
 
-      return response.text || "Karşılaştırma yapılamadı.";
     } catch (error: any) {
       console.error("Comparison Error:", error);
       throw new Error("Karşılaştırma sırasında hata: " + error.message);
