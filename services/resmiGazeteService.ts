@@ -113,6 +113,29 @@ export class ResmiGazeteService {
         const json = localStorage.getItem('resmi_gazete_last_report');
         return json ? JSON.parse(json) : null;
     }
+
+    async fetchUrlContent(url: string): Promise<string> {
+        const SCRAPER_API_KEY = '4a4589871cba08cf10bf008eca4945f8';
+        const proxyUrl = `https://api.scraperapi.com?api_key=${SCRAPER_API_KEY}&url=${encodeURIComponent(url)}`;
+
+        const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(30000) });
+        if (!response.ok) throw new Error(`Sayfa alınamadı: ${response.status}`);
+
+        const html = await response.text();
+
+        // HTML etiketlerini temizle, metni çıkar
+        return html
+            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+            .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .substring(0, 60000);
+    }
 }
 
 export const resmiGazeteService = new ResmiGazeteService();

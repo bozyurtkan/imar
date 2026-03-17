@@ -172,31 +172,77 @@ Yönetmelik ve Genelgeler:
     }
   }
 
-  async compareLegislation(newRegulationUrl: string, libraryDocs: DocumentFile[]): Promise<string> {
-    const ai = this.getClient();
+  async compareLegislation(urlContent: string, regulationUrl: string, libraryDocs: DocumentFile[]): Promise<string> {
+    const ai = this.getNewClient();
 
     const libraryContext = libraryDocs
-      .filter(doc => doc.isActive)
-      .map(doc => `[MEVCUT BELGE: ${doc.name}]\n${doc.description}`)
-      .join('\n');
+      .filter(doc => doc.isActive && doc.content)
+      .map(doc => `[KÜTÜPHANE BELGESİ: ${doc.name}]\n${doc.content?.substring(0, 8000)}`)
+      .join('\n\n---\n\n');
 
     const today = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
 
-    const prompt = `
-      BUGÜNÜN TARİHİ: ${today}
-      ÖNEMLİ: Sen bir AI modelisin ve eğitim verilerin eski olabilir. Ama bugün ${today}. Kullanıcının verdiği linklerdeki tarihler (2025, 2026 vb.) geçerlidir. Tarihi sorgulamadan analiz yap.
-      SEN: Türkiye'nin en deneyimli imar hukuku uzmanısın. Mevzuat değişikliklerini analiz etmekte 20 yıllık tecrüben var. İmar hukuku konularında derinlemesine analiz yap.
-    `;
+    const systemInstruction = `
+Sen Türkiye'nin en deneyimli imar hukuku uzmanısın. Resmi Gazete mevzuat değişikliklerini analiz edip karşılaştırıyorsun.
+BUGÜNÜN TARİHİ: ${today}
+
+GÖREV:
+Sana verilen yeni düzenleme metnini analiz et. Değişen her maddenin ESKİ halini web araması ile bul, yeni haliyle karşılaştır ve etkisini açıkla.
+
+ÇIKTI FORMATI (tam olarak bu yapıyı kullan):
+
+## Düzenleme Özeti
+- **Tür:** (Yönetmelik değişikliği / Kanun / Tebliğ / Karar vb.)
+- **Dayanak:** (Hangi kanun/yönetmeliği değiştiriyor)
+- **Yayın Tarihi:** (Resmi Gazete tarih ve sayısı)
+- **Yürürlük:** (Ne zaman yürürlüğe giriyor)
+
+## Madde Madde Değişiklikler
+
+Her değişen madde için şu yapıyı kullan:
+
+### Madde [X] — [Kısa başlık]
+
+**Eski Hal:**
+> [Web araması ile bulunan eski metin. Bulunamazsa: "Yürürlükteki metin resmi kaynaklardan doğrulanmalıdır."]
+
+**Yeni Hal:**
+> [Verilen belgeden alınan yeni metin]
+
+**Ne Değişti:** [1-2 cümle özet]
+
+---
+
+## Etki Analizi
+
+**Kimler Etkileniyor:**
+- [Meslek grupları / kurumlar]
+
+**Uygulama Notları:**
+- [Dikkat edilmesi gerekenler]
+
+**Geçiş Hükümleri:**
+- [Mevcut projeler / başvurular için durum]
+
+KURALLAR:
+1. Maddelerin eski halini bulmak için mutlaka web araması yap (mevzuat.gov.tr öncelikli)
+2. Kütüphanedeki belgeler varsa onlarla da karşılaştır
+3. Profesyonel ve net bir dil kullan
+4. Emoji kullanma
+5. Madde metinlerini olduğu gibi aktar, yorumunu ayrı yaz
+    `.trim();
 
     try {
-      const model = ai.getGenerativeModel({
-        model: "gemini-2.0-flash"
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: `KAYNAK URL: ${regulationUrl}\n\nYENİ DÜZENLEME METNİ:\n${urlContent}\n\n${libraryContext ? `KÜTÜPHANE BELGELERİ:\n${libraryContext}` : 'Aktif kütüphane belgesi yok.'}`,
+        config: {
+          systemInstruction,
+          tools: [{ googleSearch: {} }]
+        }
       });
 
-      const result = await model.generateContent(`${prompt}\n\nYENİ DÜZENLEME LİNKİ: ${newRegulationUrl}\n\nKÜTÜPHANE: ${libraryContext}`);
-      const response = await result.response;
-
-      return response.text() || "Karşılaştırma yapılamadı.";
+      return response.text || "Karşılaştırma yapılamadı.";
     } catch (error: any) {
       console.error("Comparison Error:", error);
       throw new Error("Karşılaştırma sırasında hata: " + error.message);

@@ -21,6 +21,7 @@ import {
 import { DocumentFile, Message, FavoriteItem } from './types';
 import { parseFile, formatBytes } from './utils/fileParser';
 import { geminiService } from './services/geminiService';
+import { resmiGazeteService } from './services/resmiGazeteService';
 import { getMadde, getAllMaddeler, MevzuatMaddesi, getMevzuatGraph } from './data/mevzuatVeritabani';
 import { getDemoDocuments } from './data/demoMevzuat';
 
@@ -953,20 +954,24 @@ const ImarApp: React.FC = () => {
       }
     }
 
+    const capturedUrl = linkUrl;
     setShowLinkModal(false);
     setIsTyping(true);
-    const userMsg = { id: Date.now().toString(), role: 'user' as const, text: `Şu linkteki mevzuat değişikliğini analiz et: ${linkUrl}`, timestamp: new Date() };
+    const userMsg = { id: Date.now().toString(), role: 'user' as const, text: `Şu linkteki mevzuat değişikliğini analiz et ve eski haliyle karşılaştır: ${capturedUrl}`, timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
 
     try {
-      const compareResult = await geminiService.compareLegislation(linkUrl, documents);
+      // Adım 1: URL içeriğini çek
+      const urlContent = await resmiGazeteService.fetchUrlContent(capturedUrl);
+
+      // Adım 2: İçeriği Gemini ile karşılaştır
+      const compareResult = await geminiService.compareLegislation(urlContent, capturedUrl, documents);
       const aiMsg = { id: (Date.now() + 1).toString(), role: 'assistant' as const, text: compareResult, timestamp: new Date() };
       setMessages(prev => [...prev, aiMsg]);
 
       if (user) {
         const allMessages = [...messages, userMsg, aiMsg];
         await saveChatHistory(user.uid, allMessages, user.email || undefined, sessionId);
-        // Kredi düş
         const creditResult = await deductCredit(user.uid, 'link_analysis');
         if (creditResult.success) {
           setUserCredit(prev => ({ ...prev, remainingCredit: creditResult.remainingCredit }));
@@ -1060,17 +1065,14 @@ const ImarApp: React.FC = () => {
     }
   };
 
-  const renderText = (text: string) => {
-    if (!text) return null;
-    // AI bazen madde referanslarını kalın (**) içinde yazıyor — önce temizle
-    const cleanedText = text.replace(/\*\*(\[MADDE:.*?\])\*\*/g, '$1');
-    const parts = cleanedText.split(/(\[MADDE: .*?\]|\*\*.*?\*\*)/g);
+  const renderInline = (text: string, baseKey: string) => {
+    const parts = text.split(/(\[MADDE: [^\]]+\]|\*\*[^*]+\*\*)/g);
     return parts.map((part, i) => {
       if (part.startsWith('[MADDE:')) {
         const maddeId = part.replace('[MADDE:', '').replace(']', '').trim();
         return (
           <button
-            key={i}
+            key={`${baseKey}-${i}`}
             onClick={() => handleMaddeClick(maddeId)}
             className="inline-flex items-center gap-1 bg-accent/10 text-accent px-2 py-0.5 rounded-lg font-bold text-[11px] mx-0.5 border border-accent/20 hover:bg-accent/20 transition-colors cursor-pointer"
           >
@@ -1079,8 +1081,74 @@ const ImarApp: React.FC = () => {
           </button>
         );
       }
-      if (part.startsWith('**') && part.endsWith('**')) return <strong key={i} className="font-bold text-warm-50">{part.slice(2, -2)}</strong>;
-      return part;
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={`${baseKey}-${i}`} className="font-semibold text-warm-50">{part.slice(2, -2)}</strong>;
+      }
+      return <span key={`${baseKey}-${i}`}>{part}</span>;
+    });
+  };
+
+  const renderText = (text: string) => {
+    if (!text) return null;
+    const cleanedText = text.replace(/\*\*(\[MADDE:.*?\])\*\*/g, '$1');
+    const lines = cleanedText.split('\n');
+
+    return lines.map((line, idx) => {
+      const key = `line-${idx}`;
+
+      // H2: ## Başlık
+      if (line.startsWith('## ')) {
+        return (
+          <h2 key={key} className="text-[13px] lg:text-[14px] font-black text-accent mt-5 mb-2 tracking-tight">
+            {renderInline(line.slice(3), key)}
+          </h2>
+        );
+      }
+
+      // H3: ### Madde başlıkları
+      if (line.startsWith('### ')) {
+        return (
+          <h3 key={key} className="text-[12px] lg:text-[13px] font-black text-warm-100 mt-4 mb-1.5 pl-3 border-l-2 border-emerald-500/70">
+            {renderInline(line.slice(4), key)}
+          </h3>
+        );
+      }
+
+      // Blockquote: > madde metni
+      if (line.startsWith('> ')) {
+        return (
+          <div key={key} className="my-1 pl-3 border-l-2 border-warm-500/30 bg-dark-surface/50 py-1.5 pr-2 rounded-r-lg text-warm-300 italic text-[11px] lg:text-[12px]">
+            {renderInline(line.slice(2), key)}
+          </div>
+        );
+      }
+
+      // Yatay çizgi: ---
+      if (line.trim() === '---') {
+        return <hr key={key} className="my-3 border-dark-border/60" />;
+      }
+
+      // Liste: - item veya * item
+      if (/^[-*] /.test(line)) {
+        return (
+          <div key={key} className="flex items-start gap-2 my-0.5 text-warm-200">
+            <span className="text-accent/70 shrink-0 mt-0.5 text-[10px]">▪</span>
+            <span>{renderInline(line.slice(2), key)}</span>
+          </div>
+        );
+      }
+
+      // Boş satır
+      if (line.trim() === '') {
+        return <div key={key} className="h-1.5" />;
+      }
+
+      // Normal satır
+      return (
+        <div key={key} className="text-warm-200">
+          {renderInline(line, key)}
+        </div>
+      );
     });
   };
 
@@ -2024,7 +2092,7 @@ const ImarApp: React.FC = () => {
                       </button>
                     </div>
                   </div>
-                  <div className="text-[12px] lg:text-[13px] leading-relaxed whitespace-pre-wrap font-medium">
+                  <div className="text-[12px] lg:text-[13px] leading-relaxed font-medium">
                     {msg.role === 'assistant' ? (
                       <div className="space-y-4">
                         <div>{renderText(msg.text)}</div>
@@ -2094,7 +2162,7 @@ const ImarApp: React.FC = () => {
                           </div>
                         )}
                       </div>
-                    ) : msg.text}
+                    ) : <span className="whitespace-pre-wrap">{msg.text}</span>}
                   </div>
                 </div>
               </div>
