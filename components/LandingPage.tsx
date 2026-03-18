@@ -12,6 +12,7 @@ interface LandingPageProps {
     onOpenLegal?: (tab: string) => void;
     onReadArticle?: (slug: string) => void;
     onOpenBlog?: () => void;
+    onOpenAbout?: () => void;
 }
 
 const features = [
@@ -141,7 +142,7 @@ const targetAudienceData = [
 ];
 
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLegal, onReadArticle, onOpenBlog }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLegal, onReadArticle, onOpenBlog, onOpenAbout }) => {
     const [expandedFeature, setExpandedFeature] = useState<number | null>(null);
     const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
     const [currentMockupIndex, setCurrentMockupIndex] = useState(0);
@@ -310,6 +311,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                         <span className="landing-nav-title">İmar Mevzuat</span>
                     </div>
                     <div className="landing-nav-actions">
+                        <button onClick={onOpenAbout} className="landing-btn-ghost font-semibold text-warm-300 hover:text-accent mr-2">
+                            Hakkında
+                        </button>
                         <button onClick={onOpenBlog} className="landing-btn-ghost font-semibold text-warm-300 hover:text-accent mr-2">
                             Blog
                         </button>
@@ -655,7 +659,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                         </div>
                         <div className="landing-footer-col">
                             <h4>Kurumsal</h4>
-                            <a href="#">Hakkımızda</a>
+                            <a href="#" onClick={(e) => { e.preventDefault(); onOpenAbout?.(); }}>Hakkımızda</a>
                             <a href="#">İletişim</a>
                         </div>
                     </div>

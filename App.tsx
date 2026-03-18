@@ -6,6 +6,7 @@ import { LoginPage } from './components/LoginPage';
 import { LegalPage } from './components/LegalPage';
 import { ArticlePage } from './components/ArticlePage';
 import { BlogPage } from './components/BlogPage';
+import { AboutPage } from './components/AboutPage';
 import { CookieBanner } from './components/CookieBanner';
 import {
   FileText, Send, Trash2, Plus, BookOpen, Loader2, Scale,
@@ -2481,10 +2482,11 @@ const ImarApp: React.FC = () => {
 
 const AppRouter: React.FC = () => {
   const { user, loading } = useAuth();
-  const [currentPage, setCurrentPage] = useState<'landing' | 'login' | 'app' | 'legal' | 'article' | 'blog'>(() => {
+  const [currentPage, setCurrentPage] = useState<'landing' | 'login' | 'app' | 'legal' | 'article' | 'blog' | 'about'>(() => {
     const path = window.location.pathname;
     if (path.startsWith('/makale/')) return 'article';
     if (path.startsWith('/makaleler')) return 'blog';
+    if (path.startsWith('/hakkinda')) return 'about';
     return 'landing';
   });
   const [currentArticle, setCurrentArticle] = useState<string>(() => {
@@ -2514,6 +2516,8 @@ const AppRouter: React.FC = () => {
         setCurrentPage('article');
       } else if (path.startsWith('/makaleler')) {
         setCurrentPage('blog');
+      } else if (path.startsWith('/hakkinda')) {
+        setCurrentPage('about');
       } else if (path.startsWith('/legal/')) {
         setLegalTab(path.replace('/legal/', ''));
         setCurrentPage('legal');
@@ -2553,6 +2557,11 @@ const AppRouter: React.FC = () => {
     window.history.pushState({}, '', `/makaleler`);
   };
 
+  const handleOpenAbout = () => {
+    setCurrentPage('about');
+    window.history.pushState({}, '', `/hakkinda`);
+  };
+
   if (loading) {
     return (
       <div className="loading-screen">
@@ -2569,8 +2578,11 @@ const AppRouter: React.FC = () => {
 
   let pageContent;
   switch (currentPage) {
+    case 'about':
+      pageContent = <AboutPage onBack={() => { setCurrentPage('landing'); window.history.pushState({}, '', '/'); }} onGetStarted={handleGetStarted} />;
+      break;
     case 'landing':
-      pageContent = <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} onReadArticle={handleReadArticle} onOpenBlog={handleOpenBlog} />;
+      pageContent = <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} onReadArticle={handleReadArticle} onOpenBlog={handleOpenBlog} onOpenAbout={handleOpenAbout} />;
       break;
     case 'login':
       pageContent = <LoginPage onBack={() => setCurrentPage('landing')} />;
@@ -2602,7 +2614,7 @@ const AppRouter: React.FC = () => {
       pageContent = <ImarApp />;
       break;
     default:
-      pageContent = <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} onReadArticle={handleReadArticle} onOpenBlog={handleOpenBlog} />;
+      pageContent = <LandingPage onGetStarted={handleGetStarted} onOpenLegal={handleOpenLegal} onReadArticle={handleReadArticle} onOpenBlog={handleOpenBlog} onOpenAbout={handleOpenAbout} />;
       break;
   }
 
