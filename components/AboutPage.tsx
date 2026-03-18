@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Scale, BookOpen, Globe, Brain, FileText, Map, Mic, Check, X } from 'lucide-react';
 
 interface AboutPageProps {
@@ -96,8 +96,37 @@ const audiences = [
 ];
 
 export const AboutPage: React.FC<AboutPageProps> = ({ onBack, onGetStarted }) => {
+    useEffect(() => {
+        // SEO: Sayfa başlığı ve açıklaması
+        document.title = "Hakkımızda | İmar Mevzuat — AI İmar Hukuku Asistanı";
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) {
+            metaDesc.setAttribute('content', "İmar Mevzuat hakkında: Türkiye'nin ilk AI destekli imar hukuku ve mevzuat asistanı. Mimarlar, mühendisler ve hukukçular için profesyonel çözüm ortağı.");
+        }
+        window.scrollTo(0, 0);
+    }, []);
+
+    const schemaData = {
+        "@context": "https://schema.org",
+        "@type": "AboutPage",
+        "name": "İmar Mevzuat Hakkında",
+        "description": "Türkiye'nin imar ve yapı mevzuatı alanında uzmanlaşmış ilk yapay zeka destekli profesyonel danışmanlık platformu.",
+        "url": "https://imarmevzuat.com.tr/hakkinda",
+        "mainEntity": {
+            "@type": "Organization",
+            "name": "İmar Mevzuat",
+            "url": "https://imarmevzuat.com.tr/",
+            "logo": "https://imarmevzuat.com.tr/favicon.svg"
+        }
+    };
+
     return (
         <div className="landing-page min-h-screen relative overflow-hidden bg-dark-bg">
+            {/* SEO: JSON-LD Schema */}
+            <script type="application/ld+json">
+                {JSON.stringify(schemaData)}
+            </script>
+
             {/* Background glow effects — same as BlogPage */}
             <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-accent/10 blur-[120px] rounded-full pointer-events-none" />
             <div className="absolute top-[40%] right-[-10%] w-[40%] h-[60%] bg-warm-500/5 blur-[100px] rounded-full pointer-events-none" />
