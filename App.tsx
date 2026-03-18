@@ -891,7 +891,14 @@ const ImarApp: React.FC = () => {
           .map((s: any) => ({ uri: s.web.uri, title: s.web.title || new URL(s.web.uri).hostname }));
         relatedArticles = res.relatedArticles.length > 0 ? res.relatedArticles : undefined;
       } else if (isDeepThinkMode) {
-        responseText = await geminiService.askDeepThink(query, documents, messages);
+        const deepRes = await geminiService.askDeepThink(query, documents, messages);
+        responseText = deepRes.text;
+        if (deepRes.sources.length > 0) {
+          references = deepRes.sources.map((s: any) => s.web?.uri).filter(Boolean);
+          webSources = deepRes.sources
+            .filter((s: any) => s.web?.uri)
+            .map((s: any) => ({ uri: s.web.uri, title: s.web.title || new URL(s.web.uri).hostname }));
+        }
       } else {
         responseText = await geminiService.askQuestion(query, documents, messages);
       }
@@ -927,6 +934,7 @@ const ImarApp: React.FC = () => {
         }
       }
     } catch (error: any) {
+      console.error('[handleSendMessage] error:', error);
       const msg = error.message || "";
       if (msg.includes("API key") || msg.includes("not found")) {
         setHasKey(false);

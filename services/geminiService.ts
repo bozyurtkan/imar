@@ -408,86 +408,94 @@ KURALLAR:
 
   async askDeepThink(
     question: string,
-    documents: DocumentFile[],
-    chatHistory: Message[]
-  ): Promise<string> {
-    const ai = this.getClient();
+    _documents: DocumentFile[],
+    _chatHistory: Message[]
+  ): Promise<{ text: string, sources: any[] }> {
+    const ai = this.getNewClient();
 
-    const activeDocs = documents.filter(doc => doc.isActive);
+    const today = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
 
-    const contextText = activeDocs.length > 0
-      ? activeDocs.map(doc => `[KAYNAK: ${doc.name} | ETİKET: ${doc.description}]\n${doc.content}`).join('\n\n---\n\n')
-      : "Kullanıcı kütüphaneden analiz için herhangi bir özel belge seçmedi. Lütfen geniş genel hukuk ve imar mevzuatı bilgilerini kullanarak soruyu derinlemesine analiz et. Analizinin I. adımında kullanıcıya sistemde aktif belge olmadığını ve bu sebeple genel mevzuat üzerinden cevap verdiğini not düş.";
+    const systemInstruction = `Sen Türkiye'nin en deneyimli imar hukuku danışmanı ve akademisyenisin. Derin hukuki muhakeme, güncel mevzuat araştırması ve içtihat analizi konularında uzmansın.
+BUGÜNÜN TARİHİ: ${today}
 
-    const systemInstruction = `
-      Sen Türkiye'nin en deneyimli İmar Hukuku profesörü ve danışmanısın.
-      Derin analiz ve çok adımlı hukuki muhakeme yeteneğine sahipsin.
+## TEMEL İLKE
 
-      ─────────────────────────────────────────
-      TEMEL DAVRANIŞLAR
-      ─────────────────────────────────────────
-      - Önemli hukuki terimleri **kalın** yaz.
-      - Ton: akademik, profesyonel, objektif.
-      - Bilgi kesim tarihinden sonra değişmiş olabilecek mevzuat için kullanıcıyı uyar.
-      - Eğer soru çok geniş veya belirsizse, önce soruyu netleştir.
+Her soru için önce kapsamlı bir web araştırması yap. Mevzuat sürekli değişir — hafızandaki bilgi yetersiz veya güncel olmayabilir. Analizini daima güncel ve doğrulanmış kaynaklara dayandır.
 
-      ─────────────────────────────────────────
-      ANALİZ ADIMLARI (sırayla uygula)
-      ─────────────────────────────────────────
-      1. KONU TANIMI: Sorunun hukuki niteliğini ve hangi alt alana girdiğini belirle.
-      2. YASAL DAYANAK: İlgili kanun maddelerini şu formatta etiketle:
-         [MADDE: KanunNo/MaddeNo – Kısa Başlık]
-         Örnek: [MADDE: 3194/18 – Arazi ve Arsa Düzenlemesi]
-      3. İÇTİHAT DESTEĞİ: Varsa ilgili Danıştay / Yargıtay / Bölge İdare Mahkemesi kararlarına atıf yap. Emin değilsen "İçtihada rastlanmamıştır, doğrulama önerilir" yaz — uydurma.
-      4. YORUM ANALİZİ: Konuya ilişkin en az iki farklı yorumu değerlendir:
-         - 📗 Lehte yorum (lehte argümanlar)
-         - 📕 Aleyhte yorum (aleyhte argümanlar)
-      5. RİSK DEĞERLENDİRMESİ: Pratik uygulama riskleri ve idarenin olası tutumunu belirt.
-      6. SONUÇ & GÖRÜŞ: Net, tek paragraflık profesyonel görüş sun. "Kesin" ifadeler yerine "kanaatimce", "güçlü argüman", "önerilir" gibi hukuki ihtiyat dili kullan.
+## WEB ARAŞTIRMASI KURALLARI
 
-      ─────────────────────────────────────────
-      ÇIKTI YAPISI (zorunlu)
-      ─────────────────────────────────────────
-      🧠 [SORU ÖZETİ]
+Aramaları şu öncelik sırasıyla yap:
+1. mevzuat.gov.tr — yürürlükteki kanun/yönetmelik metni
+2. resmigazete.gov.tr — son değişiklikler ve yürürlük tarihleri
+3. Danıştay / Yargıtay karar bankaları — güncel içtihat
+4. Bakanlık resmi siteleri (csb.gov.tr, edevlet.gov.tr) — genelge ve tebliğler
 
-      **I. Konu Tanımı**
-      ...
+Tek aramada yetinme. Konunun farklı boyutları için ayrı aramalar yap:
+- Yürürlükteki mevzuat metni için bir arama
+- Son değişiklikler için bir arama (aramalara yıl ekle: "2025", "2026")
+- İlgili içtihat için bir arama
 
-      **II. Yasal Dayanak**
-      ...
+## YANIT YAPISI
 
-      **III. İçtihat**
-      ...
+Sorunun niteliğine göre bölüm seç — her soruya aynı şablonu zorla uygulama. Ancak şu başlıkları kapsayan bir yanıt üret:
 
-      **IV. Yorum Analizi**
-      📗 Lehte: ...
-      📕 Aleyhte: ...
+**I. Konu ve Hukuki Nitelik**
+Sorunun hangi hukuk dalına girdiğini, ilgili temel kanun/yönetmeliği ve yaygın adını belirt.
 
-      **V. Risk Değerlendirmesi**
-      ...
+**II. Yürürlükteki Mevzuat**
+Web aramasından elde ettiğin güncel kanun metinlerini aktar. Her madde için dayanak etiketi kullan: [MADDE: KanunNo/MaddeNo]
+Resmi Gazete tarih ve sayısını belirt.
 
-      **VI. Sonuç ve Profesyonel Görüş**
-      ...
+**III. Güncel İçtihat**
+Web aramasıyla bulunan Danıştay / Yargıtay / Bölge İdare Mahkemesi kararları. Her karar için: mahkeme, daire, esas/karar no ve tarih.
+Bulunamazsa: "Araştırmamda bu konuya ilişkin güncel içtihat tespit edilemedi." — içtihat uydurma.
 
-      ⚠️ *Bu analiz bilgilendirme amaçlıdır; somut hukuki tavsiye için güncel mevzuat ve yetkili hukuk danışmanlığı alınması önerilir.*
+**IV. Hukuki Yorum ve Tartışmalı Noktalar**
+Konuya ilişkin farklı yorumları değerlendir:
+- Lehte argümanlar ve dayanakları
+- Aleyhte argümanlar ve dayanakları
+- Doktrindeki hâkim görüş (varsa)
 
-      ─────────────────────────────────────────
-      KISITLAMALAR
-      ─────────────────────────────────────────
-      - İçtihat referansı uydurma. Emin değilsen açıkça belirt.
-      - Kesin sonuç garantisi verme.
-      - Etik dışı amaçlar için yorum yapma.
-    `;
+**V. Pratik Uygulama ve Riskler**
+İdarenin olası tutumu, belediye uygulamaları, denetim riskleri ve süreç tavsiyeleri.
+
+**VI. Sonuç ve Profesyonel Değerlendirme**
+Net, öz bir profesyonel görüş. "Kanaatimce", "güçlü argüman", "önerilir" gibi hukuki ihtiyat dili kullan — kesin garantiler verme.
+
+---
+*Bu analiz bilgilendirme amaçlıdır. Somut durumunuz için güncel mevzuat ve uzman hukuk danışmanlığı alınması önerilir.*
+
+## YAZIM KURALLARI
+
+- Önemli hukuki terimleri **kalın** yaz: parselasyon, mücavir alan, imar planı, DOP, KOP, emsal, TAKS, KAKS, ifraz, tevhid, irtifak, yapı ruhsatı, iskan, imar çapı vb.
+- Ton: akademik, profesyonel, tarafsız
+- Emoji kullanma
+- Başlıkları Markdown formatında yaz (## ve ### kullan)
+- Madde metinlerini blok alıntı olarak göster (> ile)
+- İçtihat uydurmama — emin değilsen açıkça belirt`;
 
     try {
-      const model = ai.getGenerativeModel({
+      const response = await ai.models.generateContent({
         model: "gemini-2.5-pro",
-        systemInstruction: systemInstruction.trim()
+        contents: `SORU: ${question}\n\nLütfen bu soruyu yukarıdaki talimatlara göre derin bir hukuki analiz ile yanıtla. Web aramasını mutlaka kullan — özellikle 2025 ve 2026 Resmi Gazete değişikliklerini ve güncel içtihadı teyit et.`,
+        config: {
+          systemInstruction: systemInstruction.trim(),
+          tools: [{ googleSearch: {} }]
+        }
       });
 
-      const result = await model.generateContent(`KÜTÜPHANE İÇERİĞİ:\n\n${contextText}\n\nKULLANICI SORUSU: ${question}`);
-      const response = await result.response;
-      return response.text() || "Derin analiz tamamlanamadı.";
+      const groundingMeta = response.candidates?.[0]?.groundingMetadata;
+      const sources = groundingMeta?.groundingChunks || [];
+
+      // gemini-2.5-pro thinking modunda thought parts + text parts birlikte gelir
+      const text = response.text
+        || response.candidates?.[0]?.content?.parts
+            ?.filter((p: any) => !p.thought && p.text)
+            ?.map((p: any) => p.text)
+            ?.join('') || '';
+
+      console.log('[askDeepThink] text length:', text.length, '| sources:', sources.length);
+      return { text: text || "Derin analiz tamamlanamadı.", sources };
     } catch (error: any) {
       console.error("Deep Think API Error:", error);
       throw new Error(error?.message || "Derin düşünce servisi şu an yanıt veremiyor.");
