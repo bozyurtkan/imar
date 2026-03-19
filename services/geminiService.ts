@@ -1,26 +1,36 @@
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { GoogleGenAI } from "@google/genai";
 import { DocumentFile, Message } from "../types";
 import { findRelatedArticles, BlogArticle } from "../data/blogArticles";
 
+interface GeminiApiParams {
+  model: string;
+  contents: string;
+  systemInstruction?: string;
+  useGoogleSearch?: boolean;
+  responseMimeType?: string;
+  thinkingConfig?: { thinkingBudget: number };
+  fallbackOnEmpty?: boolean;
+}
+
+interface GeminiApiResponse {
+  text: string;
+  groundingChunks: any[];
+}
+
 export class GeminiService {
-  private getClient() {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  private async callApi(params: GeminiApiParams): Promise<GeminiApiResponse> {
+    const response = await fetch("/api/gemini", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+    });
 
-    if (!apiKey) {
-      throw new Error("API Anahtarı bulunamadı. Lütfen Cloudflare ortam değişkenlerinde veya .env dosyasında VITE_GEMINI_API_KEY tanımlı olduğundan emin olun.");
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({ error: "Sunucu hatası" }));
+      throw new Error(err.error || "API isteği başarısız.");
     }
-    return new GoogleGenerativeAI(apiKey);
-  }
 
-  private getNewClient() {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-
-    if (!apiKey) {
-      throw new Error("API Anahtarı bulunamadı. Lütfen Cloudflare ortam değişkenlerinde veya .env dosyasında VITE_GEMINI_API_KEY tanımlı olduğundan emin olun.");
-    }
-    return new GoogleGenAI({ apiKey });
+    return response.json();
   }
 
   async askQuestion(
@@ -28,13 +38,17 @@ export class GeminiService {
     documents: DocumentFile[],
     chatHistory: Message[]
   ): Promise<string> {
-    const ai = this.getClient();
+    const activeDocs = documents.filter((doc) => doc.isActive);
 
-    const activeDocs = documents.filter(doc => doc.isActive);
-
-    const contextText = activeDocs.length > 0
-      ? activeDocs.map(doc => `[KAYNAK: ${doc.name} | ETİKET: ${doc.description}]\n${doc.content}`).join('\n\n---\n\n')
-      : "Kullanıcı kütüphaneden analiz için herhangi bir özel belge seçmedi. Lütfen geniş genel hukuk ve imar mevzuatı bilgilerini kullanarak soruyu en iyi şekilde cevapla. Cevabının başında kullanıcıya sistemde aktif belge olmadığını ve genel bilgilerinle yanıt verdiğini nazikçe belirt.";
+    const contextText =
+      activeDocs.length > 0
+        ? activeDocs
+            .map(
+              (doc) =>
+                `[KAYNAK: ${doc.name} | ETİKET: ${doc.description}]\n${doc.content}`
+            )
+            .join("\n\n---\n\n")
+        : "Kullanıcı kütüphaneden analiz için herhangi bir özel belge seçmedi. Lütfen geniş genel hukuk ve imar mevzuatı bilgilerini kullanarak soruyu en iyi şekilde cevapla. Cevabının başında kullanıcıya sistemde aktif belge olmadığını ve genel bilgilerinle yanıt verdiğini nazikçe belirt.";
 
     const systemInstruction = `
       Sen profesyonel bir Türkiye İmar Mevzuatı danışmanısın.
@@ -53,39 +67,39 @@ export class GeminiService {
     `;
 
     try {
-      const model = ai.getGenerativeModel({
+      const { text } = await this.callApi({
         model: "gemini-2.0-flash",
-        systemInstruction: systemInstruction.trim()
+        contents: `KÜTÜPHANE İÇERİĞİ:\n\n${contextText}\n\nKULLANICI SORUSU: ${question}`,
+        systemInstruction: systemInstruction.trim(),
       });
-
-      const result = await model.generateContent(`KÜTÜPHANE İÇERİĞİ:\n\n${contextText}\n\nKULLANICI SORUSU: ${question}`);
-      const response = await result.response;
-      return response.text() || "Yüklediğiniz mevzuat dökümanlarından bir yanıt üretilemedi.";
+      return text || "Yüklediğiniz mevzuat dökümanlarından bir yanıt üretilemedi.";
     } catch (error: any) {
-      console.error("Gemini API Error:", error);
       throw new Error(error?.message || "Mevzuat servisi şu an yanıt veremiyor.");
     }
   }
 
   async summarizeDocument(doc: DocumentFile): Promise<string> {
-    const ai = this.getClient();
     try {
-      const model = ai.getGenerativeModel({
+      const { text } = await this.callApi({
         model: "gemini-2.0-flash",
-        systemInstruction: "Sen bir hukuk asistanısın. Kısa ve net özetler çıkarırsın."
+        contents: `Aşağıdaki imar mevzuatı dökümanını profesyonel bir şekilde özetle:\n\n${doc.content}`,
+        systemInstruction: "Sen bir hukuk asistanısın. Kısa ve net özetler çıkarırsın.",
       });
-      const result = await model.generateContent(`Aşağıdaki imar mevzuatı dökümanını profesyonel bir şekilde özetle:\n\n${doc.content}`);
-      const response = await result.response;
-      return response.text() || "Özet çıkarılamadı.";
+      return text || "Özet çıkarılamadı.";
     } catch (e: any) {
       throw new Error(e?.message || "Özetleme hatası.");
     }
   }
 
-  async askGeneral(question: string, _documents: DocumentFile[] = []): Promise<{ text: string, sources: any[], relatedArticles: BlogArticle[] }> {
-    const ai = this.getNewClient();
-
-    const today = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+  async askGeneral(
+    question: string,
+    _documents: DocumentFile[] = []
+  ): Promise<{ text: string; sources: any[]; relatedArticles: BlogArticle[] }> {
+    const today = new Date().toLocaleDateString("tr-TR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
 
     const systemInstruction = `Sen profesyonel bir Türkiye İmar Mevzuatı danışmanısın.
 Kullanıcılara imar hukuku, planlama mevzuatı, yapı denetimi ve kentsel dönüşüm konularında akademik ve profesyonel düzeyde danışmanlık verirsin.
@@ -153,34 +167,38 @@ Yönetmelik ve Genelgeler:
 - Güncelliğinden emin olmadığın bir rakamı kesin bilgi olarak sunma.`;
 
     try {
-      const response = await ai.models.generateContent({
+      const { text, groundingChunks } = await this.callApi({
         model: "gemini-2.5-flash",
         contents: `KULLANICI SORUSU: ${question}\n\nLütfen bu soruyu yanıtlarken hukuki/mevzuat açısından en güncel durumu (varsa 2025 ve 2026 Resmi Gazete değişikliklerini) web aramasında muhakkak teyit ederek profesyonelce yanıtla.`,
-        config: {
-          systemInstruction: systemInstruction.trim(),
-          tools: [{ googleSearch: {} }]
-        }
+        systemInstruction: systemInstruction.trim(),
+        useGoogleSearch: true,
       });
 
-      const groundingMeta = response.candidates?.[0]?.groundingMetadata;
-      const sources = groundingMeta?.groundingChunks || [];
       const relatedArticles = findRelatedArticles(question);
-
-      return { text: response.text || "Güncel bilgi bulunamadı.", sources, relatedArticles };
+      return { text: text || "Güncel bilgi bulunamadı.", sources: groundingChunks, relatedArticles };
     } catch (error: any) {
       throw new Error("Web araştırması şu an meşgul: " + error.message);
     }
   }
 
-  async compareLegislation(urlContent: string, regulationUrl: string, libraryDocs: DocumentFile[]): Promise<string> {
-    const ai = this.getNewClient();
-
+  async compareLegislation(
+    urlContent: string,
+    regulationUrl: string,
+    libraryDocs: DocumentFile[]
+  ): Promise<string> {
     const libraryContext = libraryDocs
-      .filter(doc => doc.isActive && doc.content)
-      .map(doc => `[KÜTÜPHANE BELGESİ: ${doc.name}]\n${doc.content?.substring(0, 8000)}`)
-      .join('\n\n---\n\n');
+      .filter((doc) => doc.isActive && doc.content)
+      .map(
+        (doc) =>
+          `[KÜTÜPHANE BELGESİ: ${doc.name}]\n${doc.content?.substring(0, 8000)}`
+      )
+      .join("\n\n---\n\n");
 
-    const today = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+    const today = new Date().toLocaleDateString("tr-TR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
 
     const systemInstruction = `
 Sen Türkiye'nin en deneyimli imar hukuku uzmanısın. Resmi Gazete mevzuat değişikliklerini analiz edip karşılaştırıyorsun.
@@ -232,67 +250,42 @@ KURALLAR:
 5. Madde metinlerini olduğu gibi aktar, yorumunu ayrı yaz
     `.trim();
 
-    const prompt = `KAYNAK URL: ${regulationUrl}\n\n${urlContent.trim()
-      ? `YENİ DÜZENLEME METNİ:\n${urlContent}`
-      : `NOT: Sayfa içeriği otomatik çekilemedi. Google Search aracıyla bu URL'deki resmi düzenlemeyi bul ve analiz et: ${regulationUrl}`
-    }\n\n${libraryContext ? `KÜTÜPHANE BELGELERİ:\n${libraryContext}` : 'Aktif kütüphane belgesi yok.'}`;
+    const prompt = `KAYNAK URL: ${regulationUrl}\n\n${
+      urlContent.trim()
+        ? `YENİ DÜZENLEME METNİ:\n${urlContent}`
+        : `NOT: Sayfa içeriği otomatik çekilemedi. Google Search aracıyla bu URL'deki resmi düzenlemeyi bul ve analiz et: ${regulationUrl}`
+    }\n\n${libraryContext ? `KÜTÜPHANE BELGELERİ:\n${libraryContext}` : "Aktif kütüphane belgesi yok."}`;
 
     try {
-      const response = await ai.models.generateContent({
+      const { text } = await this.callApi({
         model: "gemini-2.5-flash",
         contents: prompt,
-        config: {
-          systemInstruction,
-          tools: [{ googleSearch: {} }],
-          thinkingConfig: { thinkingBudget: 0 }
-        }
+        systemInstruction,
+        useGoogleSearch: true,
+        thinkingConfig: { thinkingBudget: 0 },
+        fallbackOnEmpty: true,
       });
-
-      // response.text bazen thinking modunda boş gelebilir — candidates'ten manuel çek
-      const text = response.text
-        || response.candidates?.[0]?.content?.parts
-            ?.filter((p: any) => !p.thought && p.text)
-            ?.map((p: any) => p.text)
-            ?.join('') || '';
-
-      console.log('[compareLegislation] text length:', text.length);
-      if (text) return text;
-
-      // Fallback: thinkingBudget olmadan tekrar dene — yine gemini-2.5-flash + Google Search
-      console.warn('[compareLegislation] gemini-2.5-flash boş döndü, thinkingBudget olmadan tekrar deneniyor...');
-      const response2 = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: prompt,
-        config: {
-          systemInstruction,
-          tools: [{ googleSearch: {} }]
-        }
-      });
-      const text2 = response2.text
-        || response2.candidates?.[0]?.content?.parts
-            ?.filter((p: any) => p.text)
-            ?.map((p: any) => p.text)
-            ?.join('') || '';
-      return text2 || "Karşılaştırma yapılamadı. Lütfen tekrar deneyin.";
-
+      return text || "Karşılaştırma yapılamadı. Lütfen tekrar deneyin.";
     } catch (error: any) {
-      console.error("Comparison Error:", error);
       throw new Error("Karşılaştırma sırasında hata: " + error.message);
     }
   }
-  async filterResmiGazete(articles: { id: number, title: string, link: string }[], interests: string): Promise<number[]> {
-    const ai = this.getClient();
-    const json = JSON.stringify(articles.map(a => ({ id: a.id, metin: a.title })));
+
+  async filterResmiGazete(
+    articles: { id: number; title: string; link: string }[],
+    interests: string
+  ): Promise<number[]> {
+    const json = JSON.stringify(articles.map((a) => ({ id: a.id, metin: a.title })));
 
     const prompt = `
       GÖREV: Aşağıdaki Resmi Gazete başlıklarından hangilerinin şu ilgi alanlarıyla ilgili olduğunu belirle.
-      
+
       İLGİ ALANLARI:
       ${interests}
-      
+
       BAŞLIKLAR LİSTESİ (JSON):
       ${json}
-      
+
       KURALLAR:
       1. İlgi alanlarındaki HERHANGİ bir kelime veya kavram başlıkta geçiyorsa o başlığı dahil et.
       2. Örneğin ilgi alanında "Üniversite" yazıyorsa, başlıkta "Üniversite" geçen TÜM maddeleri seç.
@@ -303,20 +296,13 @@ KURALLAR:
     `;
 
     try {
-      // JSON mode kullanmıyoruz — bazı modellerde desteklenmiyor
-      const model = ai.getGenerativeModel({ model: "gemini-2.0-flash" });
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text().trim();
-
-      // Yanıttan JSON dizisini çıkar (markdown code block içinde gelebilir)
+      const { text } = await this.callApi({ model: "gemini-2.0-flash", contents: prompt });
       const jsonMatch = text.match(/\[.*?\]/s);
       if (!jsonMatch) {
-        console.warn("Gemini Filter: JSON dizisi bulunamadı. Yanıt:", text.substring(0, 200));
+        console.warn("Gemini Filter: JSON dizisi bulunamadı.");
         return [];
       }
       const ids = JSON.parse(jsonMatch[0]);
-      console.log("Gemini Filter IDs:", ids);
       return Array.isArray(ids) ? ids : [];
     } catch (error) {
       console.error("Gemini Filter Error:", error);
@@ -325,22 +311,21 @@ KURALLAR:
   }
 
   async analyzeResmiGazete(title: string, content: string): Promise<string> {
-    const ai = this.getClient();
     const prompt = `
       GÖREV: Şu Resmi Gazete maddesini imar ve şehirleşme profesyoneli için analiz et: "${title}"
-      
+
       İÇERİK:
       ${content.substring(0, 15000)}
-      
+
       ANALİZ FORMATI (Markdown):
       **ÖZET**: (2-3 cümle ile içeriği özetle)
-      
+
       **HUKUKİ YORUM**: (Mevzuat açısından ne anlama geliyor? Yönetmelik, tebliğ vs. hiyerarşisi nedir?)
-      
+
       **ETKİ**: (Belediyeler, mimarlar veya inşaat sektörü için somut etkisi nedir?)
-      
+
       **TAVSİYE**: (Profesyoneller ne yapmalı? Dikkat edilmesi gerekenler neler?)
-      
+
       KURALLAR:
       1. Gereksiz giriş/çıkış cümleleri kullanma.
       2. Profesyonel, net ve hukuki bir dil kullan.
@@ -348,18 +333,18 @@ KURALLAR:
     `;
 
     try {
-      const model = ai.getGenerativeModel({ model: "gemini-2.0-flash" });
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      return response.text();
+      const { text } = await this.callApi({ model: "gemini-2.0-flash", contents: prompt });
+      return text;
     } catch (error: any) {
       return "Analiz yapılamadı: " + error.message;
     }
   }
 
-  async analyzeMadde(kanunNo: string, maddeNo: string, fikraNo?: string | null): Promise<{ icerik: string, anahtarKelimeler: string[], iliskiliMaddeler: string[] }> {
-    const ai = this.getClient();
-
+  async analyzeMadde(
+    kanunNo: string,
+    maddeNo: string,
+    fikraNo?: string | null
+  ): Promise<{ icerik: string; anahtarKelimeler: string[]; iliskiliMaddeler: string[] }> {
     const fikraInstruction = fikraNo
       ? `Özellikle ${fikraNo}. fıkrasını detaylı ver, ancak maddenin tüm fıkralarını da kısaca ekle.`
       : `Tüm fıkra ve bentleriyle birlikte yaz.`;
@@ -386,22 +371,18 @@ KURALLAR:
     `;
 
     try {
-      const model = ai.getGenerativeModel({
+      const { text } = await this.callApi({
         model: "gemini-2.0-flash",
-        generationConfig: { responseMimeType: "application/json" }
+        contents: prompt,
+        responseMimeType: "application/json",
       });
-
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const data = JSON.parse(response.text());
-
+      const data = JSON.parse(text);
       return {
         icerik: data.icerik || "Madde metni bulunamadı.",
         anahtarKelimeler: Array.isArray(data.anahtarKelimeler) ? data.anahtarKelimeler : [],
-        iliskiliMaddeler: Array.isArray(data.iliskiliMaddeler) ? data.iliskiliMaddeler : []
+        iliskiliMaddeler: Array.isArray(data.iliskiliMaddeler) ? data.iliskiliMaddeler : [],
       };
     } catch (error: any) {
-      console.error("Madde Analysis Error:", error);
       throw new Error("Madde metni getirilemedi: " + error.message);
     }
   }
@@ -410,10 +391,12 @@ KURALLAR:
     question: string,
     _documents: DocumentFile[],
     _chatHistory: Message[]
-  ): Promise<{ text: string, sources: any[] }> {
-    const ai = this.getNewClient();
-
-    const today = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+  ): Promise<{ text: string; sources: any[] }> {
+    const today = new Date().toLocaleDateString("tr-TR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
 
     const systemInstruction = `Sen Türkiye'nin en deneyimli imar hukuku danışmanı ve akademisyenisin. Derin hukuki muhakeme, güncel mevzuat araştırması ve içtihat analizi konularında uzmansın.
 BUGÜNÜN TARİHİ: ${today}
@@ -475,37 +458,21 @@ Net, öz bir profesyonel görüş. "Kanaatimce", "güçlü argüman", "önerilir
 - İçtihat uydurmama — emin değilsen açıkça belirt`;
 
     try {
-      const response = await ai.models.generateContent({
+      const { text, groundingChunks } = await this.callApi({
         model: "gemini-2.5-pro",
         contents: `SORU: ${question}\n\nLütfen bu soruyu yukarıdaki talimatlara göre derin bir hukuki analiz ile yanıtla. Web aramasını mutlaka kullan — özellikle 2025 ve 2026 Resmi Gazete değişikliklerini ve güncel içtihadı teyit et.`,
-        config: {
-          systemInstruction: systemInstruction.trim(),
-          tools: [{ googleSearch: {} }]
-        }
+        systemInstruction: systemInstruction.trim(),
+        useGoogleSearch: true,
       });
-
-      const groundingMeta = response.candidates?.[0]?.groundingMetadata;
-      const sources = groundingMeta?.groundingChunks || [];
-
-      // gemini-2.5-pro thinking modunda thought parts + text parts birlikte gelir
-      const text = response.text
-        || response.candidates?.[0]?.content?.parts
-            ?.filter((p: any) => !p.thought && p.text)
-            ?.map((p: any) => p.text)
-            ?.join('') || '';
-
-      console.log('[askDeepThink] text length:', text.length, '| sources:', sources.length);
-      return { text: text || "Derin analiz tamamlanamadı.", sources };
+      return { text: text || "Derin analiz tamamlanamadı.", sources: groundingChunks };
     } catch (error: any) {
-      console.error("Deep Think API Error:", error);
       throw new Error(error?.message || "Derin düşünce servisi şu an yanıt veremiyor.");
     }
   }
 
-  async extractGraphFromText(text: string): Promise<{ nodes: any[], edges: any[] }> {
-    const ai = this.getClient();
-    // Metin çok uzunsa kırp (Token limiti önlemi)
-    const truncatedText = text.length > 30000 ? text.substring(0, 30000) + "..." : text;
+  async extractGraphFromText(text: string): Promise<{ nodes: any[]; edges: any[] }> {
+    const truncatedText =
+      text.length > 30000 ? text.substring(0, 30000) + "..." : text;
 
     const prompt = `
       Sen bir hukuk ve veri analistisin. Aşağıdaki mevzuat metninden maddeler arası ilişkileri çıkararak bir bilgi grafiği (Knowledge Graph) oluşturmalısın.
@@ -514,7 +481,7 @@ Net, öz bir profesyonel görüş. "Kanaatimce", "güçlü argüman", "önerilir
       1. Metindeki ana maddeleri (Node) tespit et. (Örn: Madde 1, Madde 5, Ek Madde 2)
       2. Bu maddelerin birbirine yaptığı atıfları (Edge) tespit et. (Örn: "5. maddeye göre..." -> Madde 5 ile ilişki)
       3. Her madde için kısa bir başlık/konu belirle.
-      
+
       ÇIKTI FORMATI (SAF JSON):
       {
         "nodes": [
@@ -538,32 +505,24 @@ Net, öz bir profesyonel görüş. "Kanaatimce", "güçlü argüman", "önerilir
     `;
 
     try {
-      const model = ai.getGenerativeModel({
+      const { text: jsonText } = await this.callApi({
         model: "gemini-2.0-flash",
-        generationConfig: { responseMimeType: "application/json" } // JSON modu zorla
+        contents: prompt,
+        responseMimeType: "application/json",
       });
-
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const jsonText = response.text();
 
       try {
         const data = JSON.parse(jsonText);
         return {
           nodes: Array.isArray(data.nodes) ? data.nodes : [],
-          edges: Array.isArray(data.edges) ? data.edges : []
+          edges: Array.isArray(data.edges) ? data.edges : [],
         };
       } catch (e) {
-        console.error("JSON Parse Error:", e, jsonText);
-        // Fallback: Basit regex ile JSON yakalamaya çalış
         const match = jsonText.match(/\{[\s\S]*\}/);
-        if (match) {
-          return JSON.parse(match[0]);
-        }
+        if (match) return JSON.parse(match[0]);
         return { nodes: [], edges: [] };
       }
     } catch (error: any) {
-      console.error("Graph Extraction Error:", error);
       throw new Error("Grafik oluşturulamadı: " + error.message);
     }
   }
