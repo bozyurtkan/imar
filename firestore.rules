@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Giriş yapmış kullanıcı kontrolü
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Admin kontrolü: admins koleksiyonunda kaydı varsa admin
+    function isAdmin() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Kendi verisi mi?
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // -------------------------------------------------------
+    // admins koleksiyonu:
+    //   - Kullanıcı sadece kendi belgesini okuyabilir (admin kontrolü için)
+    //   - Kimse client'tan yazamaz (sadece Firebase Console / Admin SDK)
+    // -------------------------------------------------------
+    match /admins/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false;
+    }
+
+    // -------------------------------------------------------
+    // users koleksiyonu:
+    //   - Kullanıcı sadece kendi verisini okur/yazar
+    //   - Admin tüm kullanıcıları okuyabilir (admin panel için)
+    //   - Admin asla başkasının verisini değiştiremez
+    // -------------------------------------------------------
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId);
+
+      // history, documents, favorites alt koleksiyonları
+      match /{subcollection}/{docId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow write: if isOwner(userId);
+      }
+
+      // Daha derin iç içe belgeler
+      match /{subcollection}/{docId}/{rest=**} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow write: if isOwner(userId);
+      }
+    }
+
+  }
+}
