@@ -1,9 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth } from '../services/firebase';
+import { auth, db } from '../services/firebase';
 import { User, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
-
-// Admin e-posta adresi
-const ADMIN_EMAIL = "burakozyurtkan@gmail.com";
+import { doc, getDoc } from 'firebase/firestore';
 
 interface AuthContextType {
     user: User | null;
@@ -27,11 +25,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
-        // Firebase: Kullanıcı durumu her değiştiğinde burası çalışır
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             setUser(currentUser);
-            // Admin kontrolü
-            setIsAdmin(currentUser?.email === ADMIN_EMAIL);
+
+            if (currentUser) {
+                // Admin kontrolü: Firestore'daki admins koleksiyonunu kontrol et
+                const adminDoc = await getDoc(doc(db, 'admins', currentUser.uid));
+                setIsAdmin(adminDoc.exists());
+            } else {
+                setIsAdmin(false);
+            }
+
             setLoading(false);
         });
 
