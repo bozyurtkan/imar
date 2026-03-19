@@ -470,39 +470,55 @@ Net, öz bir profesyonel görüş. "Kanaatimce", "güçlü argüman", "önerilir
     }
   }
 
-  async extractGraphFromText(text: string): Promise<{ nodes: any[]; edges: any[] }> {
+  async extractGraphFromText(text: string): Promise<import("../types").GraphData> {
     const truncatedText =
       text.length > 30000 ? text.substring(0, 30000) + "..." : text;
 
     const prompt = `
-      Sen bir hukuk ve veri analistisin. Aşağıdaki mevzuat metninden maddeler arası ilişkileri çıkararak bir bilgi grafiği (Knowledge Graph) oluşturmalısın.
+      Sen bir hukuk ve veri analistisin. Aşağıdaki mevzuat metninden maddeler arası ilişkileri çıkararak zenginleştirilmiş bir bilgi grafiği (Knowledge Graph) oluşturmalısın.
 
       GÖREV:
       1. Metindeki ana maddeleri (Node) tespit et. (Örn: Madde 1, Madde 5, Ek Madde 2)
-      2. Bu maddelerin birbirine yaptığı atıfları (Edge) tespit et. (Örn: "5. maddeye göre..." -> Madde 5 ile ilişki)
-      3. Her madde için kısa bir başlık/konu belirle.
+      2. Her maddenin kategorisini belirle:
+         - "procedural"   → Uygulama ve süreç maddeleri (18, 19, 36 gibi)
+         - "definitional" → Tanım ve kavram maddeleri (5 gibi)
+         - "penalty"      → Yaptırım, ceza, müeyyide maddeleri (40, 41, 42 gibi)
+         - "referral"     → Başka kanun veya yönetmeliklere atıf yapan maddeler
+         - "transitional" → Geçici ve ek maddeler
+      3. Her madde için önem skoru belirle (1: normal, 2: önemli, 3: kritik/merkezi).
+      4. Maddeler arası ilişkileri (Edge) tespit et ve tipini belirle:
+         - "references"  → "...maddesine göre" gibi doğrudan atıflar
+         - "amends"      → Değiştiren veya tadil eden hükümler
+         - "depends_on"  → Uygulanması başka maddeye bağlı olanlar
+         - "related_to"  → Aynı konuyu farklı açıdan ele alan maddeler
 
-      ÇIKTI FORMATI (SAF JSON):
+      ÇIKTI FORMATI (SAF JSON — başka hiçbir şey ekleme):
       {
         "nodes": [
-          { "id": "Md. 1", "label": "Amaç", "desc": "Kanunun amacı..." },
-          { "id": "Md. 5", "label": "Tanımlar", "desc": "Nazım plan, yapı vb. tanımlar" }
+          { "id": "Md. 1", "label": "Amaç", "desc": "Kanunun genel amacı", "category": "definitional", "importance": 1 },
+          { "id": "Md. 18", "label": "Arazi Düzenlemesi", "desc": "Parselasyon ve DOP", "category": "procedural", "importance": 3 }
         ],
         "edges": [
-          { "source": "Md. 1", "target": "Md. 5", "relation": "ilgili" },
-          { "source": "Md. 18", "target": "Md. 19", "relation": "atıf" }
+          { "source": "Md. 18", "target": "Md. 5", "relation": "tanım", "type": "references" },
+          { "source": "Md. 18", "target": "Md. 19", "relation": "atıf", "type": "references" }
         ]
       }
 
       KURALLAR:
-      1. Sadece, JSON döndür. Markdown, açıklama vb. ekleme.
-      2. En fazla 15-20 önemli maddeyi seç, grafik çok karmaşık olmasın.
-      3. ID'leri kısa tut (Örn: "Md. 1").
-      4. Eğer metin çok kısaysa veya madde yapısı yoksa, anahtar kavramları node olarak al.
+      1. Sadece JSON döndür. Markdown kod bloğu, açıklama veya başka metin ekleme.
+      2. En fazla 20 önemli maddeyi seç; grafik okunabilir kalsın.
+      3. ID'leri kısa tut: "Md. 1", "Md. 18", "Ek Md. 1", "Geç. Md. 3" gibi.
+      4. Her node'da category ve importance alanları zorunludur.
+      5. Her edge'de type alanı zorunludur; relation Türkçe kısa etiket (max 10 karakter).
+      6. Metin çok kısaysa veya madde yapısı yoksa, anahtar kavramları node olarak al
+         ve category="definitional", importance=1 ver.
 
       METİN:
       ${truncatedText}
     `;
+
+    const VALID_CATEGORIES = new Set(["procedural", "definitional", "penalty", "referral", "transitional"]);
+    const VALID_EDGE_TYPES = new Set(["references", "amends", "depends_on", "related_to"]);
 
     try {
       const { text: jsonText } = await this.callApi({
@@ -511,17 +527,34 @@ Net, öz bir profesyonel görüş. "Kanaatimce", "güçlü argüman", "önerilir
         responseMimeType: "application/json",
       });
 
+      let data: any;
       try {
-        const data = JSON.parse(jsonText);
-        return {
-          nodes: Array.isArray(data.nodes) ? data.nodes : [],
-          edges: Array.isArray(data.edges) ? data.edges : [],
-        };
-      } catch (e) {
+        data = JSON.parse(jsonText);
+      } catch {
         const match = jsonText.match(/\{[\s\S]*\}/);
-        if (match) return JSON.parse(match[0]);
-        return { nodes: [], edges: [] };
+        if (match) data = JSON.parse(match[0]);
+        else return { nodes: [], edges: [] };
       }
+
+      const nodes = (Array.isArray(data.nodes) ? data.nodes : []).map((n: any) => ({
+        id: String(n.id ?? ""),
+        label: String(n.label ?? n.id ?? ""),
+        desc: String(n.desc ?? ""),
+        category: VALID_CATEGORIES.has(n.category) ? n.category : "definitional",
+        importance: ([1, 2, 3].includes(n.importance) ? n.importance : 1) as 1 | 2 | 3,
+      }));
+
+      const nodeIds = new Set(nodes.map((n: any) => n.id));
+      const edges = (Array.isArray(data.edges) ? data.edges : [])
+        .filter((e: any) => nodeIds.has(e.source) && nodeIds.has(e.target))
+        .map((e: any) => ({
+          source: String(e.source),
+          target: String(e.target),
+          relation: String(e.relation ?? "ilgili"),
+          type: VALID_EDGE_TYPES.has(e.type) ? e.type : "related_to",
+        }));
+
+      return { nodes, edges };
     } catch (error: any) {
       throw new Error("Grafik oluşturulamadı: " + error.message);
     }

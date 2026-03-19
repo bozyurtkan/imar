@@ -1,6 +1,8 @@
 // Mevzuat veritabanı - 3194 Sayılı İmar Kanunu örnek maddeleri
 // Gerçek sistemde bu bir API'den veya veritabanından gelecek
 
+import type { GraphNodeCategory, GraphEdgeType, GraphData, GraphNode, GraphEdge } from '../types';
+
 export interface MevzuatMaddesi {
     id: string;
     kanunNo: string;
@@ -298,26 +300,68 @@ export const searchMaddeler = (query: string): MevzuatMaddesi[] => {
     );
 };
 
-// Knowledge graph için edge (ilişki) verisi
+// Knowledge graph için edge (ilişki) verisi (legacy — backward compat)
 export interface MevzuatEdge {
     source: string;
     target: string;
     type: 'references' | 'relatedTo';
 }
 
-export const getMevzuatGraph = (): { nodes: MevzuatMaddesi[], edges: MevzuatEdge[] } => {
-    const nodes = getAllMaddeler();
-    const edges: MevzuatEdge[] = [];
+// Madde başına kategori ve önem skoru
+const MADDE_META: Record<string, { category: GraphNodeCategory; importance: 1 | 2 | 3 }> = {
+    "3194/1":  { category: 'definitional',  importance: 1 },
+    "3194/2":  { category: 'definitional',  importance: 1 },
+    "3194/5":  { category: 'definitional',  importance: 2 },
+    "3194/8":  { category: 'procedural',    importance: 2 },
+    "3194/18": { category: 'procedural',    importance: 3 },
+    "3194/19": { category: 'procedural',    importance: 2 },
+    "3194/21": { category: 'procedural',    importance: 2 },
+    "3194/32": { category: 'referral',      importance: 1 },
+    "3194/42": { category: 'penalty',       importance: 2 },
+};
 
-    nodes.forEach(node => {
-        node.iliskiliMaddeler.forEach(relatedId => {
-            if (mevzuatVeritabani[relatedId]) {
-                edges.push({
-                    source: node.id,
-                    target: relatedId,
-                    type: 'relatedTo'
-                });
-            }
+// Madde çifti başına edge tipi
+const EDGE_TYPE_MAP: Record<string, GraphEdgeType> = {
+    "3194/18→3194/5":  "references",
+    "3194/18→3194/19": "references",
+    "3194/18→3194/8":  "depends_on",
+    "3194/18→3194/42": "related_to",
+    "3194/19→3194/18": "references",
+    "3194/21→3194/8":  "depends_on",
+    "3194/42→3194/18": "depends_on",
+    "3194/42→3194/32": "references",
+    "3194/2→3194/5":   "references",
+    "3194/2→3194/8":   "references",
+};
+
+export const getMevzuatGraph = (): GraphData => {
+    const maddeler = getAllMaddeler();
+    const seenEdges = new Set<string>();
+
+    const nodes: GraphNode[] = maddeler.map(m => {
+        const meta = MADDE_META[m.id] ?? { category: 'definitional' as const, importance: 1 as const };
+        return {
+            id: m.id,
+            label: `Md. ${m.maddeNo}`,
+            desc: m.baslik,
+            category: meta.category,
+            importance: meta.importance,
+        };
+    });
+
+    const edges: GraphEdge[] = [];
+    maddeler.forEach(m => {
+        m.iliskiliMaddeler.forEach(relatedId => {
+            if (!mevzuatVeritabani[relatedId]) return;
+            const key = `${m.id}→${relatedId}`;
+            if (seenEdges.has(key)) return;
+            seenEdges.add(key);
+            edges.push({
+                source: m.id,
+                target: relatedId,
+                relation: "ilgili",
+                type: EDGE_TYPE_MAP[key] ?? 'related_to',
+            });
         });
     });
 

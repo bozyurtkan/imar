@@ -2261,3 +2261,36 @@ body:has(.legal-page) #root {
     font-size: 12px;
   }
 }
+/* ===== React Flow Overrides ===== */
+.react-flow__attribution { display: none !important; }
+
+.react-flow__controls {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  gap: 4px;
+}
+.react-flow__controls-button {
+  background: var(--bg-elevated, #f0ddd0) !important;
+  border: 1px solid var(--border-color, #e0c8b8) !important;
+  border-radius: 8px !important;
+  color: var(--text-secondary, #6b4a3a) !important;
+  width: 28px;
+  height: 28px;
+  box-shadow: none !important;
+}
+.react-flow__controls-button:hover {
+  background: var(--accent-primary, #c4501a) !important;
+  color: #fff !important;
+}
+
+.react-flow__minimap {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Node glow animasyonu (selected) */
+@keyframes graph-glow {
+  0%, 100% { box-shadow: 0 0 0 3px var(--accent-primary, #c4501a)40, 0 4px 20px var(--accent-primary, #c4501a)20; }
+  50%       { box-shadow: 0 0 0 5px var(--accent-primary, #c4501a)60, 0 8px 30px var(--accent-primary, #c4501a)35; }
+}

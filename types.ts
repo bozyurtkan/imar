@@ -37,6 +37,41 @@ export interface FavoriteItem {
 }
 
 
+// ========== KNOWLEDGE GRAPH TİPLERİ ==========
+
+export type GraphNodeCategory =
+  | 'procedural'    // Uygulama maddeleri
+  | 'definitional'  // Tanım maddeleri
+  | 'penalty'       // Yaptırım/ceza maddeleri
+  | 'referral'      // Atıf maddeleri
+  | 'transitional'; // Geçiş hükümleri
+
+export type GraphEdgeType =
+  | 'references'  // Doğrudan atıf
+  | 'amends'      // Değiştirir/tadil eder
+  | 'depends_on'  // Uygulanması başka maddeye bağlı
+  | 'related_to'; // Konu ilişkisi
+
+export interface GraphNode {
+  id: string;
+  label: string;
+  desc: string;
+  category: GraphNodeCategory;
+  importance: 1 | 2 | 3;
+}
+
+export interface GraphEdge {
+  source: string;
+  target: string;
+  relation: string;
+  type: GraphEdgeType;
+}
+
+export interface GraphData {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+}
+
 // ========== KREDİ SİSTEMİ TİPLERİ ==========
 
 export interface CreditPlan {
