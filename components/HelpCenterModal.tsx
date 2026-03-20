@@ -110,7 +110,7 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({ isOpen, onClos
 
                 {/* Footer */}
                 <div className="p-4 bg-dark-surface border-t border-dark-border text-center">
-                    <p className="text-[11px] text-warm-600">Herhangi bir sorun için <a href="mailto:destek@imarmevzuat.com" className="text-accent hover:underline">destek ekibiyle</a> iletişime geçebilirsiniz.</p>
+                    <p className="text-[11px] text-warm-600">Herhangi bir sorun için <a href="mailto:bilgi@imarmevzuat.com.tr" className="text-accent hover:underline">destek ekibiyle</a> iletişime geçebilirsiniz.</p>
                 </div>
             </div>
         </div>

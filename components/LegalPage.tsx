@@ -25,7 +25,7 @@ const TeslimatContent = () => (
         <p><strong>1.2. Kullanım Hakkı Tanımlaması ve Kullanıma Hazır Olma:</strong> Aylık abonelik paketine ait kullanım hakları, ödeme başarılı olur olmaz Kullanıcı'nın Platform üzerindeki panelinde görünür hale gelir ve kullanıma hazır olur.</p>
 
         <h2>Madde 2: Aboneliğin İptali</h2>
-        <p><strong>2.1. İptal Hakkı ve Süreci:</strong> Kullanıcı (ALICI), devam eden aboneliğini herhangi bir gerekçe göstermeksizin ve ceza ödemeksizin iptal etme hakkına sahiptir. İptal işlemi, platform üzerindeki abonelik yönetimi sayfasından veya XXXXXXXXX e-posta adresine bildirimde bulunularak gerçekleştirilebilir.</p>
+        <p><strong>2.1. İptal Hakkı ve Süreci:</strong> Kullanıcı (ALICI), devam eden aboneliğini herhangi bir gerekçe göstermeksizin ve ceza ödemeksizin iptal etme hakkına sahiptir. İptal işlemi, platform üzerindeki abonelik yönetimi sayfasından veya bilgi@imarmevzuat.com.tr e-posta adresine bildirimde bulunularak gerçekleştirilebilir.</p>
         <p><strong>2.2. İptal Talebinin İşleme Alınması ve Teyidi:</strong> Fesih bildiriminin Şirket'e ulaştığı tarihten itibaren en geç 7 (yedi) gün içinde abonelik yenilemesi durdurulur ve bu durum Kullanıcı'ya kalıcı veri saklayıcısı (e-posta vb.) ile teyit edilir.</p>
         <p><strong>2.3. İptalin Yürürlüğe Girmesi:</strong> İptal işlemi, mevcut fatura döneminin sonunda yürürlüğe girer. Kullanıcı, mevcut fatura dönemi sonuna kadar hizmetten yararlanmaya devam edebilir.</p>
 
@@ -60,7 +60,7 @@ const TeslimatContent = () => (
         <h2>Madde 7: Çeşitli Hükümler</h2>
         <p><strong>7.1.</strong> İşbu belge, "Hizmet Şartları ve Kullanıcı Sözleşmesi" ve "Mesafeli Satış Sözleşmesi" ile bir bütün olup, bu belgelerde yer alan hükümlerle birlikte yorumlanır.</p>
         <p><strong>7.2.</strong> Şirket, işbu Teslimat ve İade Şartları'nı dilediği zaman tek taraflı olarak değiştirme hakkını saklı tutar. Değişiklikler, Platform'da yayınlandığı tarihten itibaren geçerli olur.</p>
-        <p><strong>7.3. İletişim:</strong> Bu şartlarla ilgili tüm sorularınız ve bildirimleriniz için XXXXXXXXX e-posta adresi üzerinden Şirket ile iletişime geçebilirsiniz.</p>
+        <p><strong>7.3. İletişim:</strong> Bu şartlarla ilgili tüm sorularınız ve bildirimleriniz için bilgi@imarmevzuat.com.tr e-posta adresi üzerinden Şirket ile iletişime geçebilirsiniz.</p>
     </div>
 );
 
@@ -76,7 +76,7 @@ const MesafeliContent = () => (
             <li>Vergi Dairesi / No: XXXXXXXXX</li>
             <li>Adres: XXXXXXXXX</li>
             <li>Telefon: XXXXXXXXX</li>
-            <li>E-posta: XXXXXXXXX</li>
+            <li>E-posta: bilgi@imarmevzuat.com.tr</li>
         </ul>
         <h3>1.2. ALICI / TÜKETİCİ</h3>
         <ul>
@@ -194,7 +194,7 @@ const HizmetContent = () => (
         <p><strong>5.3.</strong> Abonelikler, Kullanıcı tarafından iptal edilmediği sürece otomatik olarak yenilenecektir.</p>
         <p><strong>5.4.</strong> Ödeme yapılmaması durumunda Hizmet'e erişim durdurulabilir veya abonelik sonlandırılabilir.</p>
         <p><strong>5.5.</strong> Tüm ücretlere yürürlükteki vergiler dahil edilecektir.</p>
-        <p><strong>5.6.</strong> Abonelik iptalleri, Platform üzerinden veya XXXXXXXXX adresine bildirimle gerçekleştirilebilir.</p>
+        <p><strong>5.6.</strong> Abonelik iptalleri, Platform üzerinden veya bilgi@imarmevzuat.com.tr adresine bildirimle gerçekleştirilebilir.</p>
         <p><strong>5.7.</strong> Fiyat değişiklikleri en az 30 gün önceden bildirilecektir.</p>
 
         <h2>Madde 6: Hizmetin Askıya Alınması ve Sona Erdirilmesi</h2>
@@ -217,7 +217,7 @@ const HizmetContent = () => (
         <p>Taraflardan herhangi birinin kontrolü dışında gelişen ve yükümlülüklerini yerine getirmesini engelleyen olaylar "Mücbir Sebep" olarak kabul edilir. Mücbir sebebin 30 günden fazla sürmesi halinde Sözleşme feshedilebilir.</p>
 
         <h2>Madde 11-17: Genel Hükümler</h2>
-        <p><strong>Bildirimler:</strong> Tüm bildirimler yazılı olarak yapılacaktır. İletişim: XXXXXXXXX</p>
+        <p><strong>Bildirimler:</strong> Tüm bildirimler yazılı olarak yapılacaktır. İletişim: bilgi@imarmevzuat.com.tr</p>
         <p><strong>Bölünebilirlik:</strong> Herhangi bir hükmün geçersiz bulunması diğer hükümleri etkilemez.</p>
         <p><strong>Uygulanacak Hukuk:</strong> İşbu Sözleşme'nin yorumlanmasında Türk Hukuku uygulanacaktır.</p>
         <p><strong>Yetkili Mahkeme:</strong> XXXXXXXXX Mahkemeleri ve İcra Daireleri münhasıran yetkilidir.</p>
@@ -228,7 +228,7 @@ const HizmetContent = () => (
             Unvan: XXXXXXXXX<br />
             MERSİS No: XXXXXXXXX<br />
             Adres: XXXXXXXXX<br />
-            E-posta: XXXXXXXXX</p>
+            E-posta: bilgi@imarmevzuat.com.tr</p>
     </div>
 );
 
@@ -265,7 +265,7 @@ const CerezContent = () => (
         <p>Platformumuza ilk girişinizde karşınıza çıkan çerez yönetim panelinden tercihlerinizi seçebilirsiniz. Ayrıca tarayıcı ayarlarınız üzerinden de çerezleri yönetmeniz mümkündür.</p>
 
         <h2>6. Kişisel Veri Sahibi Olarak Haklarınız</h2>
-        <p>Kanun'un 11. maddesi uyarınca sahip olduğunuz haklara ilişkin taleplerinizi XXXXXXXXX e-posta adresimiz üzerinden iletebilirsiniz.</p>
+        <p>Kanun'un 11. maddesi uyarınca sahip olduğunuz haklara ilişkin taleplerinizi bilgi@imarmevzuat.com.tr e-posta adresimiz üzerinden iletebilirsiniz.</p>
     </div>
 );
 
@@ -282,7 +282,7 @@ const AydinlatmaContent = () => (
             <li>Unvan: XXXXXXXXX</li>
             <li>MERSİS No: XXXXXXXXX</li>
             <li>Adres: XXXXXXXXX</li>
-            <li>E-posta: XXXXXXXXX</li>
+            <li>E-posta: bilgi@imarmevzuat.com.tr</li>
         </ul>
 
         <h2>Madde 2: Kapsam ve Tanımlar</h2>
@@ -340,7 +340,7 @@ const AydinlatmaContent = () => (
             <li>Otomatik analiz sebebiyle aleyhine bir sonucun çıkmasına itiraz etme</li>
             <li>Kanuna aykırı işleme nedeniyle zararın giderilmesini talep etme</li>
         </ul>
-        <p>Bu haklarınızı kullanmak için XXXXXXXXX adresine başvurabilirsiniz.</p>
+        <p>Bu haklarınızı kullanmak için bilgi@imarmevzuat.com.tr adresine başvurabilirsiniz.</p>
 
         <h2>Madde 10: Politika Değişiklikleri</h2>
         <p>Şirket, işbu Politika'yı zaman zaman güncelleyebilir. Güncellemeler Platform'da yayınlandığı tarihten itibaren geçerli olur. Önemli değişiklikler ayrıca bildirilecektir.</p>
@@ -377,7 +377,7 @@ const AcikRizaContent = () => (
 
         <h2>Genel Beyan</h2>
         <p>Yukarıdaki her bir maddeyi ayrı ayrı okuduğumu, anladığımı ve her bir veri işleme faaliyeti için sisteme kayıt esnasında sağlanan onay kutuları aracılığıyla ayrı ayrı ve özgür irademle açık rıza verdiğimi beyan ve kabul ederim.</p>
-        <p>Verdiğim rızaları dilediğim zaman XXXXXXXXX adresine e-posta göndererek geri çekebileceğimi ve rızanın geri çekilmesinin ileriye dönük olarak sonuç doğuracağını biliyorum.</p>
+        <p>Verdiğim rızaları dilediğim zaman bilgi@imarmevzuat.com.tr adresine e-posta göndererek geri çekebileceğimi ve rızanın geri çekilmesinin ileriye dönük olarak sonuç doğuracağını biliyorum.</p>
 
         <h2>KVKK Madde 11 Kapsamındaki Haklarınız</h2>
         <p>Kişisel veri sahibi olarak 6698 sayılı KVKK'nın 11. maddesi uyarınca aşağıdaki haklara sahipsiniz:</p>
@@ -391,7 +391,7 @@ const AcikRizaContent = () => (
             <li>Otomatik sistemler vasıtasıyla analiz edilmesi suretiyle aleyhine bir sonucun ortaya çıkmasına itiraz etme</li>
             <li>Kanuna aykırı olarak işlenmesi sebebiyle zarara uğramanız hâlinde zararın giderilmesini talep etme</li>
         </ul>
-        <p>Bu haklarınızı kullanmak için taleplerinizi XXXXXXXXX adresine "KVKK Kapsamında Bilgi Talebi" veya benzeri bir konu başlığı ile iletebilirsiniz. Talebiniz en geç 30 gün içinde ücretsiz olarak sonuçlandırılacaktır.</p>
+        <p>Bu haklarınızı kullanmak için taleplerinizi bilgi@imarmevzuat.com.tr adresine "KVKK Kapsamında Bilgi Talebi" veya benzeri bir konu başlığı ile iletebilirsiniz. Talebiniz en geç 30 gün içinde ücretsiz olarak sonuçlandırılacaktır.</p>
     </div>
 );
 

@@ -382,7 +382,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                                 Ücretsiz Deneyin — 30 Saniyede Başlayın
                                 <ArrowRight size={18} />
                             </button>
-                            <a href="mailto:info@imarmevzuat.com.tr" className="landing-btn-outline landing-btn-lg">
+                            <a href="mailto:bilgi@imarmevzuat.com.tr" className="landing-btn-outline landing-btn-lg">
                                 <Mail size={18} />
                                 Bize Ulaşın
                             </a>
