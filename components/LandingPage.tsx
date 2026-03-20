@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { FAQSection } from './FAQSection';
 import { BlogSection } from './BlogSection';
+import { ContactModal } from './ContactModal';
 
 interface LandingPageProps {
     onGetStarted: () => void;
@@ -143,6 +144,7 @@ const targetAudienceData = [
 
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLegal, onReadArticle, onOpenBlog, onOpenAbout }) => {
+    const [isContactOpen, setIsContactOpen] = useState(false);
     const [expandedFeature, setExpandedFeature] = useState<number | null>(null);
     const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
     const [currentMockupIndex, setCurrentMockupIndex] = useState(0);
@@ -300,6 +302,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
     }, []);
 
     return (
+        <>
         <div className="landing-page">
             {/* Navigation */}
             <nav className="landing-nav">
@@ -382,10 +385,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                                 Ücretsiz Deneyin — 30 Saniyede Başlayın
                                 <ArrowRight size={18} />
                             </button>
-                            <a href="mailto:bilgi@imarmevzuat.com.tr" className="landing-btn-outline landing-btn-lg">
+                            <button onClick={() => setIsContactOpen(true)} className="landing-btn-outline landing-btn-lg">
                                 <Mail size={18} />
                                 Bize Ulaşın
-                            </a>
+                            </button>
                         </div>
                     </div>
                     <div className="landing-hero-visual">
@@ -671,5 +674,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                 </div>
             </footer>
         </div>
+        <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
+        </>
     );
 };
