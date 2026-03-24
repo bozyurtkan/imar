@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ArrowLeft, Clock, Calendar, Scale } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, Scale, Building2 } from 'lucide-react';
 
 interface ArticlePageProps {
     onBack: () => void;
@@ -7,19 +7,29 @@ interface ArticlePageProps {
 }
 
 export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
+    const isFireEscape = slug === 'mevcut-binalarda-yangin-merdiveni-esnekligi';
+    const isSantiyeM = slug === 'santiye-m-dijital-donusum';
+
     // SEO: Structured Data (Article Schema)
     useEffect(() => {
-        const isFireEscape = slug === 'mevcut-binalarda-yangin-merdiveni-esnekligi';
+        const headlines: Record<string, string> = {
+            'mevcut-binalarda-yangin-merdiveni-esnekligi': "Mevcut Binalarda Yangın Merdiveni Çıkmazı Bitiyor: Bahçe Mesafelerinde Yeni Esneklik!",
+            'santiye-m-dijital-donusum': "Şantiye-M Uygulaması ile İnşaat Sektöründe Dijital Dönüşüm: Yeni Şantiye Defteri ve Düzenlemeler",
+        };
+        const descriptions: Record<string, string> = {
+            'mevcut-binalarda-yangin-merdiveni-esnekligi': "Mevcut yapılarda yangın merdiveni zorunluluğu durumunda bahçe mesafesi ihlallerine getirilen 1.50m ve 3.00m istisnaları.",
+            'santiye-m-dijital-donusum': "Çevre, Şehircilik ve İklim Değişikliği Bakanlığı'nın kullanıma sunduğu Şantiye-M yazılımının amacı, kolaylıkları ve sektörel etkileri.",
+        };
 
         const schema = {
             "@context": "https://schema.org",
             "@type": "Article",
-            "headline": isFireEscape
-                ? "Mevcut Binalarda Yangın Merdiveni Çıkmazı Bitiyor: Bahçe Mesafelerinde Yeni Esneklik!"
-                : "Müstakil Ev Sahiplerine İmar Müjdesi: Garaj ve Rüzgarlıkta Ruhsat Süreci Bitti!",
-            "image": isFireEscape
-                ? "https://imarmevzuat.com.tr/images/yangin-merdiveni.jpg"
-                : "https://imarmevzuat.com.tr/images/planli-alanlar.jpg",
+            "headline": headlines[slug || ''] || "Müstakil Ev Sahiplerine İmar Müjdesi: Garaj ve Rüzgarlıkta Ruhsat Süreci Bitti!",
+            "image": isSantiyeM
+                ? "https://imarmevzuat.com.tr/images/santiye-m.jpg"
+                : isFireEscape
+                    ? "https://imarmevzuat.com.tr/images/yangin-merdiveni.jpg"
+                    : "https://imarmevzuat.com.tr/images/planli-alanlar.jpg",
             "author": {
                 "@type": "Organization",
                 "name": "İmar Mevzuat"
@@ -32,11 +42,9 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                     "url": "https://imarmevzuat.com.tr/favicon.svg"
                 }
             },
-            "datePublished": "2026-01-14",
-            "dateModified": "2026-03-13",
-            "description": isFireEscape
-                ? "Mevcut yapılarda yangın merdiveni zorunluluğu durumunda bahçe mesafesi ihlallerine getirilen 1.50m ve 3.00m istisnaları."
-                : "Planlı Alanlar İmar Yönetmeliği 2026 değişikliği ile müstakil konutlarda ruhsatsız garaj ve rüzgarlık yapımı dönemi başladı."
+            "datePublished": isSantiyeM ? "2026-03-24" : "2026-01-14",
+            "dateModified": isSantiyeM ? "2026-03-24" : "2026-03-13",
+            "description": descriptions[slug || ''] || "Planlı Alanlar İmar Yönetmeliği 2026 değişikliği ile müstakil konutlarda ruhsatsız garaj ve rüzgarlık yapımı dönemi başladı."
         };
 
         const script = document.createElement('script');
@@ -48,8 +56,6 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
             document.head.removeChild(script);
         };
     }, [slug]);
-
-    const isFireEscape = slug === 'mevcut-binalarda-yangin-merdiveni-esnekligi';
 
     return (
         <div className="landing-page min-h-screen relative overflow-hidden bg-dark-bg">
@@ -90,13 +96,16 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                     <div className="mb-10 text-center space-y-4">
                         <div className="flex items-center justify-center gap-4 text-xs sm:text-sm font-medium text-warm-400 mb-6">
                             <span className="bg-accent/10 text-accent px-3 py-1 rounded-full border border-accent/20 uppercase tracking-widest">
-                                Mevzuat Analizi
+                                {isSantiyeM ? 'Güncel Değişiklikler' : 'Mevzuat Analizi'}
                             </span>
-                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Calendar size={14} /> 14 Ocak 2026</span>
-                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Clock size={14} /> 8 dk okuma</span>
+                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Calendar size={14} /> {isSantiyeM ? '24 Mart 2026' : '14 Ocak 2026'}</span>
+                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Clock size={14} /> {isSantiyeM ? '5 dk okuma' : '8 dk okuma'}</span>
                         </div>
                         <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-warm-50 tracking-tight leading-[1.15]">
-                            {isFireEscape ? (
+                            {isSantiyeM ? (
+                                <>Şantiye-M Uygulaması ile İnşaat Sektöründe Dijital Dönüşüm:<br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover inline-block mt-2">Yeni Şantiye Defteri ve Düzenlemeler</span></>
+                            ) : isFireEscape ? (
                                 <>Mevcut Binalarda Yangın Merdiveni Çıkmazı Bitiyor:<br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover inline-block mt-2">Bahçe Mesafelerinde Yeni Esneklik!</span></>
                             ) : (
@@ -110,8 +119,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                     <div className="w-full aspect-[16/9] mb-12 rounded-3xl overflow-hidden shadow-2xl ring-1 ring-dark-border/50 relative group">
                         <div className="absolute inset-0 bg-accent/5 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
                         <img
-                            src={isFireEscape ? "/images/yangin-merdiveni-sema.jpg" : "/images/planli-alanlar.jpg"}
-                            alt={isFireEscape ? "Mevcut Binaya İlave Yangın Merdiveni" : "Bağımsız Bölüm Eklentileri Garaj ve Rüzgarlık"}
+                            src={isSantiyeM ? "/hero.jpg" : isFireEscape ? "/images/yangin-merdiveni-sema.jpg" : "/images/planli-alanlar.jpg"}
+                            alt={isSantiyeM ? "Şantiye-M Dijital Şantiye Yönetimi" : isFireEscape ? "Mevcut Binaya İlave Yangın Merdiveni" : "Bağımsız Bölüm Eklentileri Garaj ve Rüzgarlık"}
                             className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
                         />
                     </div>
@@ -125,7 +134,56 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                         prose-ul:marker:text-accent
                         prose-li:my-1
                     ">
-                        {isFireEscape ? (
+                        {isSantiyeM ? (
+                            <>
+                                <h3 className="text-2xl mt-12 mb-6">Giriş</h3>
+                                <p>
+                                    Planlı Alanlar İmar Yönetmeliği ve ilgili mevzuat uyarınca yapı ruhsatına tabi her türlü yapım ve yıkım işinde şantiye şefi çalıştırılması mecburidir. Geleneksel yöntemlerle kâğıt üzerinde tutulan şantiye defterleri ve manuel denetim süreçleri, günümüz veri akışı hızına uyum sağlamakta zorluk çekmekteydi.
+                                </p>
+                                <p>
+                                    Bu ihtiyaca binaen Çevre, Şehircilik ve İklim Değişikliği Bakanlığı tarafından kullanıma sunulan <strong>Şantiye-M Yazılımı</strong>; müteahhitlerin, şantiye şeflerinin ve ilgili idarelerin tüm iş süreçlerini merkezi bir yapıda e-Devlet hizmeti olarak birleştirmeyi amaçlamaktadır. 1 Ocak 2026 tarihi itibarıyla kullanımı kademeli olarak zorunlu hale gelecek olan sistem, "Mobil Şantiye Defteri" dönemini resmen başlatıyor.
+                                </p>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl mt-10 mb-6">Şantiye-M'nin Amacı ve Kolaylıkları Neler?</h3>
+                                <p>Şantiye-M uygulamasının başlıca amacı; yapı denetim süreçlerini dijitalleştirmek, faaliyetleri kayıt altına almak ve bürokratik yükü hafifletmektir. Sistem aşağıdaki avantajları sağlar:</p>
+                                <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
+                                    <li><strong className="text-accent-hover">Dijital Kayıt ve Takip:</strong> Şantiye şefleri; işin ilerleyişini, günlük faaliyet raporlarını, personel ve ekipman durumlarını dijital olarak kayıt altına alabilir.</li>
+                                    <li><strong className="text-accent-hover">e-Devlet Entegrasyonu:</strong> Tek tıkla şantiyelere dair tüm ruhsat, proje ve geçmiş deneyim bilgilerine erişim imkânı tanır. Evrak yığılması ve fiziksel arşiv zorunluluğu ortadan kalkar.</li>
+                                    <li><strong className="text-accent-hover">Modüler Yönetim:</strong> Şantiye şefinin yasal metrekare kotası ve üstlendiği iş limitleri sistem tarafından otomatik hesaplanarak limit aşımlarının baştan önüne geçilir.</li>
+                                </ul>
+
+                                <blockquote>
+                                    <strong className="text-accent flex items-center gap-2 mb-2"><Scale size={18} />Önemli Not:</strong> Mesleki Yeterlilik Kurumu (MYK) ve MEB onaylı yapı ustaları sisteme kaydedilecek; ustalık belgesi bulunmayan kişilerin şantiyelerde çalıştırılması sistem üzerinden engellenecektir.
+                                </blockquote>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl mt-10 mb-6 flex items-center gap-3">
+                                    <span className="bg-accent/20 p-2 rounded-lg text-accent"><Scale size={24} /></span> Bir İmar Uzmanı Olarak Analiz ve Uyarılarım
+                                </h3>
+                                <p>Belediyelerin iş yükünü azaltan ve şeffaflığı sağlayan bu uygulamanın sahada kusursuz yürümesi için şantiye şeflerinin ve müteahhitlerin aşağıdaki uyarılara dikkat etmesi gerekir:</p>
+
+                                <ol className="space-y-4 pl-0 mt-6 marker:font-bold marker:text-accent">
+                                    <li className="pl-4"><strong>Verilerin Zamanında Girilmesi:</strong> Günlük faaliyet raporları, işe yeni giren veya işten ayrılan personelin bilgileri (7 iş günü içinde) zamanında işlenmelidir. Aksi durumda yasal bildirim süreleri aşılarak idari para cezası verilebilir.</li>
+                                    <li className="pl-4"><strong>Yetki Belgesi Kontrolleri:</strong> Taşeron firmalarla çalışırken ekiplerin MYK belgeleri mutlaka teyit edilmeli, sisteme girişte uyumsuzluk yaratacak durumlardan kaçınılmalıdır.</li>
+                                    <li className="pl-4"><strong>Denetimlerin Elektronik İşlenmesi:</strong> Ruhsat vermeye yetkili idareler tarafından yapılan şantiye şefi denetimlerinin ve tespitlerin Bakanlık sistemine eş zamanlı düştüğü unutulmamalıdır.</li>
+                                </ol>
+
+                                <div className="bg-dark-elevated p-8 rounded-3xl border border-dark-border mt-12 mb-8 text-center shadow-xl">
+                                    <h3 className="text-xl text-warm-50 font-bold mb-4 mt-0">Sonuç Olarak</h3>
+                                    <p className="text-warm-300 mb-0">
+                                        Şantiye-M uygulaması, sektörün kağıt israfından, bürokratik gecikmelerden ve veri kaybından kurtulması adına hayati bir adımdır. Yeni sisteme hızlıca entegre olan müteahhit ve şantiye şefleri, kanuni sorumluluklarını çok daha güvenilir ve profesyonel bir yolla ispatlama şansına sahip olacaktır. Tüm sektör profesyonellerine dijital inşaat döneminde başarılar dileriz.
+                                    </p>
+                                </div>
+
+                                <div className="mt-8 mb-6 text-warm-400 text-sm">
+                                    <strong>Kaynak:</strong>{' '}
+                                    <a href="https://www.imo.org.tr/Eklenti/9135,santiyem-kullanici-kilavuzu251230181820pdf.pdf?0" target="_blank" rel="noopener noreferrer">IMO / ÇŞB Uygulama Kılavuzu</a>
+                                </div>
+                            </>
+                        ) : isFireEscape ? (
                             <>
                                 <h3 className="text-2xl mt-12 mb-6">Giriş</h3>
                                 <p>
