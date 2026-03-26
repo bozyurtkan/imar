@@ -9,10 +9,7 @@ interface BlogPageProps {
 
 export const BlogPage: React.FC<BlogPageProps> = ({ onBack, onReadArticle }) => {
     return (
-        <div className="landing-page min-h-screen relative overflow-hidden bg-dark-bg">
-            {/* Background Effects */}
-            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-accent/10 blur-[120px] rounded-full pointer-events-none" />
-            <div className="absolute top-[40%] right-[-10%] w-[40%] h-[60%] bg-warm-500/5 blur-[100px] rounded-full pointer-events-none" />
+        <div className="landing-page min-h-screen relative overflow-hidden">
 
             <nav className="landing-nav" style={{ borderBottom: '1px solid var(--dark-border)' }}>
                 <div className="landing-container landing-nav-inner">

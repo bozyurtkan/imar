@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="tr" class="theme-transition">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Şantiye-M Uygulaması ile İnşaat Sektöründe Dijital Dönüşüm | İmar Mevzuat Demo (Light Mode)</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        // Sitenin Asıl Light Mode (Açık Tema) Renkleri (index.css baz alınmıştır)
+                        dark: {
+                            primary: '#fdf6f0',    /* bg-primary */
+                            secondary: '#f9ede4',  /* bg-secondary */
+                            tertiary: '#ffffff',   /* bg-tertiary */
+                            surface: '#fff5ee',    /* bg-surface */
+                            'surface-hover': '#f5e8dd',
+                            elevated: '#f0ddd0',   /* bg-elevated */
+                            border: '#e0c8b8',     /* border-color */
+                            'border-subtle': '#ead5c6',
+                            bg: '#fdf6f0',
+                        },
+                        warm: {
+                            50: '#111111',         /* text-primary (Daha koyu başlıklar) */
+                            100: '#1a1012',
+                            200: '#2d1b12',        /* text-secondary */
+                            300: '#4a2f36',
+                            400: '#8b6b73',        /* text-muted */
+                            500: '#8b6b73',
+                            600: '#c4a998',        /* text-faint */
+                            700: '#e0c8b8',
+                            800: '#ead5c6',
+                            900: '#f5e8dd',
+                            950: '#fdf6f0',
+                        },
+                        accent: {
+                            DEFAULT: '#c4501a',    /* Light mod accent-primary */
+                            hover: '#d4652f',      /* Light mod hover */
+                            primary: '#c4501a',
+                        }
+                    },
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: theme('colors.dark.bg');
+            /* Light theme bg */
+            color: theme('colors.warm.50');
+            /* Dark text */
+            font-family: 'Inter', sans-serif;
+        }
+
+        .landing-nav {
+            background: rgba(253, 246, 240, 0.85);
+            /* Light blur bg */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid theme('colors.dark.border');
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .landing-btn-ghost {
+            background: transparent;
+            color: theme('colors.warm.300');
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .landing-btn-ghost:hover {
+            background: theme('colors.dark.surface');
+            color: theme('colors.warm.50');
+        }
+    </style>
+</head>
+
+<body class="antialiased font-sans">
+
+    <div class="landing-page min-h-screen relative overflow-hidden bg-dark-bg">
+        <!-- Navbar -->
+        <nav class="landing-nav" style="border-bottom: 1px solid theme('colors.dark.border')">
+            <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-2 cursor-pointer opacity-90 hover:opacity-100 transition-opacity">
+                    <!-- Lucide Scale Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        class="text-warm-50" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+                        <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+                        <path d="M7 21h10" />
+                        <path d="M12 3v18" />
+                        <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />
+                    </svg>
+                    <span class="font-bold text-lg tracking-tight text-warm-50">İmar Mevzuat</span>
+                </div>
+                <div>
+                    <a href="#" class="landing-btn-ghost flex items-center gap-2 text-sm font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m12 19-7-7 7-7" />
+                            <path d="M19 12H5" />
+                        </svg>
+                        <span>Geri</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-4xl mx-auto px-4 py-6 sm:py-10 relative z-10">
+            <article class="mt-4">
+                <!-- Header -->
+                <div class="mb-10 text-center space-y-4">
+                    <div
+                        class="flex items-center justify-center gap-4 text-xs sm:text-sm font-medium text-warm-400 mb-6">
+                        <span
+                            class="bg-accent/10 text-accent px-3 py-1 rounded-full border border-accent/20 uppercase tracking-widest">
+                            Güncel Değişiklikler
+                        </span>
+                        <span
+                            class="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full bg-white/50">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                                <line x1="16" x2="16" y1="2" y2="6" />
+                                <line x1="8" x2="8" y1="2" y2="6" />
+                                <line x1="3" x2="21" y1="10" y2="10" />
+                            </svg>
+                            24 Mart 2026
+                        </span>
+                        <span
+                            class="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full bg-white/50">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                            5 dk okuma
+                        </span>
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-warm-50 tracking-tight leading-[1.15]">
+                        Şantiye-M Uygulaması ile İnşaat Sektöründe Dijital Dönüşüm:<br />
+                        <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover inline-block mt-2">Yeni
+                            Şantiye Defteri ve Düzenlemeler</span>
+                    </h1>
+                </div>
+
+                <!-- Featured Image (Kullanıcının gönderdiği resim) -->
+                <div
+                    class="w-full aspect-[16/9] mb-12 rounded-3xl overflow-hidden shadow-xl ring-1 ring-dark-border/50 relative group bg-white">
+                    <div
+                        class="absolute inset-0 bg-accent/5 group-hover:bg-transparent transition-colors duration-500 z-10">
+                    </div>
+                    <!-- Kullanıcının sisteme yüklediği resmi görmek için aşağıdaki src yolunu "hero.jpg" yapıp fotoğrafı aynı klasöre hero.jpg adıyla kaydedebilirsiniz. -->
+                    <img src="./hero.jpg" alt="Şantiye-M Izometrik Mimari Görseli"
+                        class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                        onerror="this.src='https://images.unsplash.com/photo-1541888081622-63bc64aef258?q=80&w=2000&auto=format&fit=crop'" />
+                </div>
+
+                <!-- Content Body (PROSE-INVERT KALDIRILDI) -->
+                <div class="prose prose-lg max-w-none text-warm-300
+                prose-headings:text-warm-50 prose-headings:font-bold prose-headings:tracking-tight
+                prose-a:text-accent hover:prose-a:text-accent-hover prose-a:font-semibold prose-a:no-underline
+                prose-strong:text-warm-100 prose-strong:font-bold
+                prose-blockquote:bg-dark-surface/50 prose-blockquote:border-accent prose-blockquote:not-italic prose-blockquote:shadow-md prose-blockquote:rounded-r-xl prose-blockquote:py-2
+                prose-ul:marker:text-accent
+                prose-li:my-1
+            ">
+
+                    <h3 class="text-2xl mt-12 mb-6">Giriş</h3>
+                    <p>
+                        Planlı Alanlar İmar Yönetmeliği ve ilgili mevzuat uyarınca yapı ruhsatına tabi her türlü yapım
+                        ve yıkım işinde şantiye şefi çalıştırılması mecburidir. Geleneksel yöntemlerle kâğıt üzerinde
+                        tutulan şantiye defterleri ve manuel denetim süreçleri, günümüz veri akışı hızına uyum
+                        sağlamakta zorluk çekmekteydi.
+                    </p>
+                    <p>
+                        Bu ihtiyaca binaen Çevre, Şehircilik ve İklim Değişikliği Bakanlığı tarafından kullanıma sunulan
+                        <strong>Şantiye-M Yazılımı</strong>; müteahhitlerin, şantiye şeflerinin ve ilgili idarelerin tüm
+                        iş süreçlerini merkezi bir yapıda e-Devlet hizmeti olarak birleştirmeyi amaçlamaktadır. 1 Ocak
+                        2026 tarihi itibarıyla kullanımı kademeli olarak zorunlu hale gelecek olan sistem, "Mobil
+                        Şantiye Defteri" dönemini resmen başlatıyor.
+                    </p>
+
+                    <hr class="border-dark-border my-10" />
+
+                    <h3 class="text-2xl mt-10 mb-6">Şantiye-M'nin Amacı ve Kolaylıkları Neler?</h3>
+                    <p>Şantiye-M uygulamasının başlıca amacı; yapı denetim süreçlerini dijitalleştirmek, faaliyetleri
+                        kayıt altına almak ve bürokratik yükü hafifletmektir. Sistem aşağıdaki avantajları sağlar:</p>
+
+                    <ul class="space-y-3 bg-dark-secondary/50 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
+                        <li><strong class="text-accent-hover">Dijital Kayıt ve Takip:</strong> Şantiye şefleri; işin
+                            ilerleyişini, günlük faaliyet raporlarını, personel ve ekipman durumlarını dijital olarak
+                            kayıt altına alabilir.</li>
+                        <li><strong class="text-accent-hover">e-Devlet Entegrasyonu:</strong> Tek tıkla şantiyelere dair
+                            tüm ruhsat, proje ve geçmiş deneyim bilgilerine erişim imkânı tanır. Evrak yığılması ve
+                            fiziksel arşiv zorunluluğu ortadan kalkar.</li>
+                        <li><strong class="text-accent-hover">Modüler Yönetim:</strong> Şantiye şefinin yasal metrekare
+                            kotası ve üstlendiği iş limitleri sistem tarafından otomatik hesaplanarak limit aşımlarının
+                            baştan önüne geçilir.</li>
+                    </ul>
+
+                    <blockquote>
+                        <strong class="text-accent flex items-center gap-2 mb-2"><svg xmlns="http://www.w3.org/2000/svg"
+                                width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+                                <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+                                <path d="M7 21h10" />
+                                <path d="M12 3v18" />
+                                <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />
+                            </svg>Önemli Not:</strong>
+                        Mesleki Yeterlilik Kurumu (MYK) ve MEB onaylı yapı ustaları sisteme kaydedilecek; ustalık
+                        belgesi bulunmayan kişilerin şantiyelerde çalıştırılması sistem üzerinden engellenecektir.
+                    </blockquote>
+
+                    <hr class="border-dark-border my-10" />
+
+                    <h3 class="text-2xl mt-10 mb-6 flex items-center gap-3">
+                        <span class="bg-accent/10 p-2 rounded-lg text-accent"><svg xmlns="http://www.w3.org/2000/svg"
+                                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+                                <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+                                <path d="M7 21h10" />
+                                <path d="M12 3v18" />
+                                <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />
+                            </svg></span> Bir İmar Uzmanı Olarak Analiz ve Uyarılarım
+                    </h3>
+                    <p>Belediyelerin iş yükünü azaltan ve şeffaflığı sağlayan bu uygulamanın sahada kusursuz yürümesi
+                        için şantiye şeflerinin ve müteahhitlerin aşağıdaki uyarılara dikkat etmesi gerekir:</p>
+
+                    <ol class="space-y-4 pl-0 mt-6 marker:font-bold marker:text-accent">
+                        <li class="pl-4"><strong>Verilerin Zamanında Girilmesi:</strong> Günlük faaliyet raporları, işe
+                            yeni giren veya işten ayrılan personelin bilgileri (7 iş günü içinde) zamanında
+                            işlenmelidir. Aksi durumda yasal bildirim süreleri aşılarak idari para cezası verilebilir.
+                        </li>
+                        <li class="pl-4"><strong>Yetki Belgesi Kontrolleri:</strong> Taşeron firmalarla çalışırken
+                            ekiplerin MYK belgeleri mutlaka teyit edilmeli, sisteme girişte uyumsuzluk yaratacak
+                            durumlardan kaçınılmalıdır.</li>
+                        <li class="pl-4"><strong>Denetimlerin Elektronik İşlenmesi:</strong> Ruhsat vermeye yetkili
+                            idareler tarafından yapılan şantiye şefi denetimlerinin ve tespitlerin Bakanlık sistemine eş
+                            zamanlı düştüğü unutulmamalıdır.</li>
+                    </ol>
+
+                    <div
+                        class="bg-[#f0ddd0] p-8 sm:p-10 rounded-[1.5rem] border border-[#d2bba8] mt-12 mb-8 text-center shadow-sm">
+                        <h3 class="text-xl text-[#1a1012] font-bold mb-4 mt-0">Sonuç Olarak</h3>
+                        <p class="text-[#3b2418] mb-0 leading-relaxed font-medium">
+                            Şantiye-M uygulaması, sektörün kağıt israfından, bürokratik gecikmelerden ve veri kaybından
+                            kurtulması adına hayati bir adımdır. Yeni sisteme hızlıca entegre olan müteahhit ve şantiye
+                            şefleri, kanuni sorumluluklarını çok daha güvenilir ve profesyonel bir yolla ispatlama
+                            şansına sahip olacaktır. Tüm sektör profesyonellerine dijital inşaat döneminde başarılar
+                            dileriz.
+                        </p>
+                    </div>
+
+                    <div class="mt-8 mb-10 text-warm-300 text-sm">
+                        <strong>Kaynak:</strong>
+                        <a href="https://www.imo.org.tr/Eklenti/9135,santiyem-kullanici-kilavuzu251230181820pdf.pdf?0"
+                            target="_blank" rel="noopener noreferrer">IMO / ÇŞB Uygulama Kılavuzu</a>
+                    </div>
+
+                </div>
+            </article>
+        </div>
+
+        <footer class="landing-footer mt-12 relative z-10 bg-dark-secondary border-t border-dark-border">
+            <div class="max-w-6xl mx-auto px-6 py-8 text-center">
+                <p class="text-warm-400 text-sm">© 2026 İmar Mevzuat — Bu sayfa tasarım demosu ve içerik kılavuzudur.
+                </p>
+            </div>
+        </footer>
+    </div>
+
+</body>
+
+</html>
