@@ -8,6 +8,19 @@ export interface BlogArticle {
 
 export const blogArticles: BlogArticle[] = [
   {
+    slug: "santiye-m-dijital-donusum",
+    title: "Şantiye-M Uygulaması ile İnşaat Sektöründe Dijital Dönüşüm",
+    desc: "Çevre, Şehircilik ve İklim Değişikliği Bakanlığı'nın kullanıma sunduğu Şantiye-M yazılımının amacı, kolaylıkları ve sektörel etkileri.",
+    keywords: [
+      "şantiye-m", "santiye-m", "şantiye m", "santiye m", "dijital şantiye", "dijital santiye",
+      "şantiye defteri", "santiye defteri", "şantiye şefi", "santiye sefi",
+      "yapı denetim", "yapi denetim", "e-devlet", "edevlet", "dijital dönüşüm",
+      "mobil şantiye", "mobil santiye", "müteahhit", "muteahhit", "MYK belgesi",
+      "ustalık belgesi", "ruhsat", "şantiye yazılım", "santiye yazilim"
+    ],
+    url: "/makale/santiye-m-dijital-donusum"
+  },
+  {
     slug: "planli-alanlar-garaj-rüzgarlik-degisikligi",
     title: "Müstakil Ev Sahiplerine İmar Müjdesi: Garaj ve Rüzgarlıkta Ruhsat Süreci Bitti!",
     desc: "Planlı Alanlar İmar Yönetmeliği 2026 değişikliği ile müstakil konutlarda ruhsatsız garaj ve rüzgarlık yapımı dönemi başladı.",
