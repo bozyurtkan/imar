@@ -1,13 +1,15 @@
 
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
 import { OfficialGazetteModal } from './components/OfficialGazetteModal';
-import { LandingPage } from './components/LandingPage';
-import { LoginPage } from './components/LoginPage';
-import { LegalPage } from './components/LegalPage';
-import { ArticlePage } from './components/ArticlePage';
-import { BlogPage } from './components/BlogPage';
-import { AboutPage } from './components/AboutPage';
 import { CookieBanner } from './components/CookieBanner';
+
+// Sayfa bileşenleri lazy loaded — ilk yüklemede indirilmez
+const LandingPage = lazy(() => import('./components/LandingPage').then(m => ({ default: m.LandingPage })));
+const LoginPage = lazy(() => import('./components/LoginPage').then(m => ({ default: m.LoginPage })));
+const LegalPage = lazy(() => import('./components/LegalPage').then(m => ({ default: m.LegalPage })));
+const ArticlePage = lazy(() => import('./components/ArticlePage').then(m => ({ default: m.ArticlePage })));
+const BlogPage = lazy(() => import('./components/BlogPage').then(m => ({ default: m.BlogPage })));
+const AboutPage = lazy(() => import('./components/AboutPage').then(m => ({ default: m.AboutPage })));
 import {
   FileText, Send, Trash2, Plus, BookOpen, Loader2, Scale,
   ShieldCheck, Sun, Moon, CheckSquare,
@@ -2709,10 +2711,20 @@ const AppRouter: React.FC = () => {
   }
 
   return (
-    <>
+    <Suspense fallback={
+      <div className="loading-screen">
+        <div className="loading-screen-inner">
+          <div className="loading-logo">
+            <Scale size={32} className="text-white" />
+          </div>
+          <div className="loading-spinner" />
+          <p className="loading-text">Yükleniyor...</p>
+        </div>
+      </div>
+    }>
       {pageContent}
       <CookieBanner onOpenLegal={handleOpenLegal} />
-    </>
+    </Suspense>
   );
 };
 
