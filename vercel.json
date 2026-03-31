@@ -1,17 +1,4 @@
 {
-    "redirects": [
-        {
-            "source": "/(.*)",
-            "has": [
-                {
-                    "type": "host",
-                    "value": "www.imarmevzuat.com.tr"
-                }
-            ],
-            "destination": "https://imarmevzuat.com.tr/$1",
-            "permanent": true
-        }
-    ],
     "headers": [
         {
             "source": "/(.*)",
