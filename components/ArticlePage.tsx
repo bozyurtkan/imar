@@ -171,22 +171,22 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                     ">
                         {isSantiyeM ? (
                             <>
-                                <h3 className="text-2xl mt-12 mb-6">Giriş</h3>
-                                <p>
+                                <h3 className="text-2xl font-bold mt-12 mb-6">Giriş</h3>
+                                <p className="text-justify">
                                     Planlı Alanlar İmar Yönetmeliği ve ilgili mevzuat uyarınca yapı ruhsatına tabi her türlü yapım ve yıkım işinde şantiye şefi çalıştırılması mecburidir. Geleneksel yöntemlerle kâğıt üzerinde tutulan şantiye defterleri ve manuel denetim süreçleri, günümüz veri akışı hızına uyum sağlamakta zorluk çekmekteydi.
                                 </p>
-                                <p>
+                                <p className="text-justify">
                                     Bu ihtiyaca binaen Çevre, Şehircilik ve İklim Değişikliği Bakanlığı tarafından kullanıma sunulan <strong>Şantiye-M Yazılımı</strong>; müteahhitlerin, şantiye şeflerinin ve ilgili idarelerin tüm iş süreçlerini merkezi bir yapıda e-Devlet hizmeti olarak birleştirmeyi amaçlamaktadır. 1 Ocak 2026 tarihi itibarıyla kullanımı kademeli olarak zorunlu hale gelecek olan sistem, "Mobil Şantiye Defteri" dönemini resmen başlatıyor.
                                 </p>
 
                                 <hr className="border-dark-border my-10" />
 
-                                <h3 className="text-2xl mt-10 mb-6">Şantiye-M'nin Amacı ve Kolaylıkları Neler?</h3>
-                                <p>Şantiye-M uygulamasının başlıca amacı; yapı denetim süreçlerini dijitalleştirmek, faaliyetleri kayıt altına almak ve bürokratik yükü hafifletmektir. Sistem aşağıdaki avantajları sağlar:</p>
+                                <h3 className="text-2xl font-bold mt-10 mb-6">Şantiye-M'nin Amacı ve Kolaylıkları Neler?</h3>
+                                <p className="text-justify">Şantiye-M uygulamasının başlıca amacı; yapı denetim süreçlerini dijitalleştirmek, faaliyetleri kayıt altına almak ve bürokratik yükü hafifletmektir. Sistem aşağıdaki avantajları sağlar:</p>
                                 <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
-                                    <li><strong className="text-accent-hover">Dijital Kayıt ve Takip:</strong> Şantiye şefleri; işin ilerleyişini, günlük faaliyet raporlarını, personel ve ekipman durumlarını dijital olarak kayıt altına alabilir.</li>
-                                    <li><strong className="text-accent-hover">e-Devlet Entegrasyonu:</strong> Tek tıkla şantiyelere dair tüm ruhsat, proje ve geçmiş deneyim bilgilerine erişim imkânı tanır. Evrak yığılması ve fiziksel arşiv zorunluluğu ortadan kalkar.</li>
-                                    <li><strong className="text-accent-hover">Modüler Yönetim:</strong> Şantiye şefinin yasal metrekare kotası ve üstlendiği iş limitleri sistem tarafından otomatik hesaplanarak limit aşımlarının baştan önüne geçilir.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Dijital Kayıt ve Takip:</strong> Şantiye şefleri; işin ilerleyişini, günlük faaliyet raporlarını, personel ve ekipman durumlarını dijital olarak kayıt altına alabilir.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">e-Devlet Entegrasyonu:</strong> Tek tıkla şantiyelere dair tüm ruhsat, proje ve geçmiş deneyim bilgilerine erişim imkânı tanır. Evrak yığılması ve fiziksel arşiv zorunluluğu ortadan kalkar.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Modüler Yönetim:</strong> Şantiye şefinin yasal metrekare kotası ve üstlendiği iş limitleri sistem tarafından otomatik hesaplanarak limit aşımlarının baştan önüne geçilir.</li>
                                 </ul>
 
                                 <blockquote>
@@ -195,20 +195,20 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
 
                                 <hr className="border-dark-border my-10" />
 
-                                <h3 className="text-2xl mt-10 mb-6 flex items-center gap-3">
+                                <h3 className="text-2xl font-bold mt-10 mb-6 flex items-center gap-3">
                                     <span className="bg-accent/20 p-2 rounded-lg text-accent"><Scale size={24} /></span> Bir İmar Uzmanı Olarak Analiz ve Uyarılarım
                                 </h3>
-                                <p>Belediyelerin iş yükünü azaltan ve şeffaflığı sağlayan bu uygulamanın sahada kusursuz yürümesi için şantiye şeflerinin ve müteahhitlerin aşağıdaki uyarılara dikkat etmesi gerekir:</p>
+                                <p className="text-justify">Belediyelerin iş yükünü azaltan ve şeffaflığı sağlayan bu uygulamanın sahada kusursuz yürümesi için şantiye şeflerinin ve müteahhitlerin aşağıdaki uyarılara dikkat etmesi gerekir:</p>
 
                                 <ol className="space-y-4 pl-0 mt-6 marker:font-bold marker:text-accent">
-                                    <li className="pl-4"><strong>Verilerin Zamanında Girilmesi:</strong> Günlük faaliyet raporları, işe yeni giren veya işten ayrılan personelin bilgileri (7 iş günü içinde) zamanında işlenmelidir. Aksi durumda yasal bildirim süreleri aşılarak idari para cezası verilebilir.</li>
-                                    <li className="pl-4"><strong>Yetki Belgesi Kontrolleri:</strong> Taşeron firmalarla çalışırken ekiplerin MYK belgeleri mutlaka teyit edilmeli, sisteme girişte uyumsuzluk yaratacak durumlardan kaçınılmalıdır.</li>
-                                    <li className="pl-4"><strong>Denetimlerin Elektronik İşlenmesi:</strong> Ruhsat vermeye yetkili idareler tarafından yapılan şantiye şefi denetimlerinin ve tespitlerin Bakanlık sistemine eş zamanlı düştüğü unutulmamalıdır.</li>
+                                    <li className="pl-4 text-justify"><strong>Verilerin Zamanında Girilmesi:</strong> Günlük faaliyet raporları, işe yeni giren veya işten ayrılan personelin bilgileri (7 iş günü içinde) zamanında işlenmelidir. Aksi durumda yasal bildirim süreleri aşılarak idari para cezası verilebilir.</li>
+                                    <li className="pl-4 text-justify"><strong>Yetki Belgesi Kontrolleri:</strong> Taşeron firmalarla çalışırken ekiplerin MYK belgeleri mutlaka teyit edilmeli, sisteme girişte uyumsuzluk yaratacak durumlardan kaçınılmalıdır.</li>
+                                    <li className="pl-4 text-justify"><strong>Denetimlerin Elektronik İşlenmesi:</strong> Ruhsat vermeye yetkili idareler tarafından yapılan şantiye şefi denetimlerinin ve tespitlerin Bakanlık sistemine eş zamanlı düştüğü unutulmamalıdır.</li>
                                 </ol>
 
                                 <div className="bg-dark-elevated p-8 rounded-3xl border border-dark-border mt-12 mb-8 text-center shadow-xl">
                                     <h3 className="text-xl text-warm-50 font-bold mb-4 mt-0">Sonuç Olarak</h3>
-                                    <p className="text-warm-300 mb-0">
+                                    <p className="text-warm-300 mb-0 text-justify">
                                         Şantiye-M uygulaması, sektörün kağıt israfından, bürokratik gecikmelerden ve veri kaybından kurtulması adına hayati bir adımdır. Yeni sisteme hızlıca entegre olan müteahhit ve şantiye şefleri, kanuni sorumluluklarını çok daha güvenilir ve profesyonel bir yolla ispatlama şansına sahip olacaktır. Tüm sektör profesyonellerine dijital inşaat döneminde başarılar dileriz.
                                     </p>
                                 </div>
@@ -220,28 +220,27 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                             </>
                         ) : isFireEscape ? (
                             <>
-                                <h3 className="text-2xl mt-12 mb-6">Giriş</h3>
-                                <p>
+                                <h3 className="text-2xl font-bold mt-12 mb-6">Giriş</h3>
+                                <p className="text-justify">
                                     Eski binalarda yapılan tadilatlar veya mevzuat değişiklikleri nedeniyle "yangın merdiveni zorunluluğu" doğduğunda, bina sahipleri ve yöneticileri çoğu zaman teknik bir imkansızlıkla karşı karşıya kalıyordu: Bina içinde yer yok, dışarıda ise bahçe mesafeleri (çekme mesafeleri) engel teşkil ediyor. 14 Ocak 2026 tarihli Resmi Gazete'de yayımlanan yönetmelik değişikliği, bu krizi can güvenliğini önceliğe alarak çözüme kavuşturuyor.
                                 </p>
-                                <p>
+                                <p className="text-justify">
                                     Peki, mevcut binanıza dışarıdan yangın merdiveni eklemek istediğinizde bahçeye ne kadar taşabilirsiniz? Hangi şartlar aranıyor? Gelin, hem bina sakinlerinin hem de uzmanların merak ettiği detaylara imar hukuku perspektifiyle bakalım.
                                 </p>
 
                                 <hr className="border-dark-border my-10" />
 
-                                <h3 className="text-2xl mt-10 mb-6">Yangın Merdiveni Eklentisinde "Mesafe" Devrimi</h3>
-                                <p>Bugüne kadar yan ve arka bahçelerde çekme mesafelerini ihlal etmek neredeyse imkansızdı. Yeni düzenleme ile <strong>can ve mal güvenliğini teminen</strong> şu istisnalar getirilmiştir:</p>
+                                <h3 className="text-2xl font-bold mt-10 mb-6">Yangın Merdiveni Eklentisinde "Mesafe" Devrimi</h3>
+                                <p className="text-justify">Bugüne kadar yan ve arka bahçelerde çekme mesafelerini ihlal etmek neredeyse imkansızdı. Yeni düzenleme ile <strong>can ve mal güvenliğini teminen</strong> şu istisnalar getirilmiştir:</p>
                                 <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
-                                    <li><strong className="text-accent-hover">Yan ve Arka Bahçelerde:</strong> Eğer bina içinde tadilatla yangın merdiveni yapılamıyorsa; parsel sınırına <strong>en az 1.50 metre</strong> mesafe bırakmak kaydıyla yan ve arka bahçe mesafeleri içinde yangın merdiveni yapılabilir.</li>
-                                    <li><strong className="text-accent-hover">Ön Bahçelerde:</strong> Parsel sınırına (yola) <strong>en az 3.00 metre</strong> mesafe bırakılması şartıyla ön bahçe alanına da yangın merdiveni inşa edilebilir.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Yan ve Arka Bahçelerde:</strong> Eğer bina içinde tadilatla yangın merdiveni yapılamıyorsa; parsel sınırına <strong>en az 1.50 metre</strong> mesafe bırakmak kaydıyla yan ve arka bahçe mesafeleri içinde yangın merdiveni yapılabilir.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Ön Bahçelerde:</strong> Parsel sınırına (yola) <strong>en az 3.00 metre</strong> mesafe bırakılması şartıyla ön bahçe alanına da yangın merdiveni inşa edilebilir.</li>
                                 </ul>
-
 
                                 <hr className="border-dark-border my-10" />
 
-                                <h3 className="text-2xl mt-10 mb-6">Hangi Durumlarda Bu Haktan Yararlanılabilir?</h3>
-                                <p>Bu düzenleme sadece yeni yapılan binalar için değil, özellikle <strong>mevcut binalar</strong> için bir kurtarıcıdır:</p>
+                                <h3 className="text-2xl font-bold mt-10 mb-6">Hangi Durumlarda Bu Haktan Yararlanılabilir?</h3>
+                                <p className="text-justify">Bu düzenleme sadece yeni yapılan binalar için değil, özellikle <strong>mevcut binalar</strong> için bir kurtarıcıdır:</p>
                                 <ul className="space-y-2 mb-8">
                                     <li>Mevzuat değişikliği nedeniyle yangın merdiveni zorunlu hale gelmişse,</li>
                                     <li>Binadaki yükseklik, kat veya alan artışları yangın güvenliği ihtiyacını doğurmuşsa,</li>
@@ -250,38 +249,38 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
 
                                 <hr className="border-dark-border my-10" />
 
-                                <h3 className="text-2xl mt-10 mb-6 flex items-center gap-3">
+                                <h3 className="text-2xl font-bold mt-10 mb-6 flex items-center gap-3">
                                     <span className="bg-accent/20 p-2 rounded-lg text-accent"><Scale size={24} /></span> Bir İmar Uzmanı Olarak Teknik Analiz ve Uyarılarım
                                 </h3>
-                                <p>Bu esneklik mülk sahipleri için büyük bir kolaylık olsa da, ruhsat sürecinde ve uygulamada dikkat edilmesi gereken hayati noktalar vardır:</p>
+                                <p className="text-justify">Bu esneklik mülk sahipleri için büyük bir kolaylık olsa da, ruhsat sürecinde ve uygulamada dikkat edilmesi gereken hayati noktalar vardır:</p>
                                 <ol className="space-y-4 pl-0 mt-6 marker:font-bold marker:text-accent">
-                                    <li className="pl-4"><strong>Önce İç Çözüm Zorunluluğu:</strong> Belediyeye başvurduğunuzda mimari projeniz incelenir. Eğer bina içerisinde yangın merdiveni yapılabilecek bir alan varsa, bahçeye çıkmanıza izin verilmeyecektir.</li>
-                                    <li className="pl-4"><strong>Yangın Yönetmeliği Koşulları:</strong> Planlı Alanlar İmar Yönetmeliği mesafeyi esnetse de, imalatın kendisi <strong>"Binaların Yangından Korunması Hakkında Yönetmelik"</strong>teki teknik koşullara harfiyen uymak zorundadır.</li>
-                                    <li className="pl-4"><strong>Parsel Sınırı İhlali Riski:</strong> Yan bahçede 1.50 metre, ön bahçede 3.00 metre kuralı hayati önemdedir. Bu mesafelerin altına düşülmesi durumunda komşu parselin hakları ihlal edilmiş sayılır.</li>
-                                    <li className="pl-4"><strong>Tadilat Ruhsatı Şartı:</strong> Bu işlem için mutlaka ilgili belediyeden <strong>"Tadilat Ruhsatı"</strong> alınmalıdır. Kendi başınıza yaptırmanız sizi hukuki sorumluluk altına sokar.</li>
+                                    <li className="pl-4 text-justify"><strong>Önce İç Çözüm Zorunluluğu:</strong> Belediyeye başvurduğunuzda mimari projeniz incelenir. Eğer bina içerisinde yangın merdiveni yapılabilecek bir alan varsa, bahçeye çıkmanıza izin verilmeyecektir.</li>
+                                    <li className="pl-4 text-justify"><strong>Yangın Yönetmeliği Koşulları:</strong> Planlı Alanlar İmar Yönetmeliği mesafeyi esnetse de, imalatın kendisi <strong>"Binaların Yangından Korunması Hakkında Yönetmelik"</strong>teki teknik koşullara harfiyen uymak zorundadır.</li>
+                                    <li className="pl-4 text-justify"><strong>Parsel Sınırı İhlali Riski:</strong> Yan bahçede 1.50 metre, ön bahçede 3.00 metre kuralı hayati önemdedir. Bu mesafelerin altına düşülmesi durumunda komşu parselin hakları ihlal edilmiş sayılır.</li>
+                                    <li className="pl-4 text-justify"><strong>Tadilat Ruhsatı Şartı:</strong> Bu işlem için mutlaka ilgili belediyeden <strong>"Tadilat Ruhsatı"</strong> alınmalıdır. Kendi başınıza yaptırmanız sizi hukuki sorumluluk altına sokar.</li>
                                 </ol>
 
                                 <div className="bg-dark-elevated p-8 rounded-3xl border border-dark-border mt-12 mb-8 text-center shadow-xl">
                                     <h3 className="text-xl text-warm-50 font-bold mb-4 mt-0">Sonuç Olarak</h3>
-                                    <p className="text-warm-300 mb-0">
+                                    <p className="text-warm-300 mb-0 text-justify">
                                         Can güvenliği, imar çekme mesafelerinden daha önceliklidir. Bu yeni madde ile binalarımızı deprem kadar yangın riskine karşı da güçlendirmek için önemli bir hukuki zemin oluşmuştur. Binanızda böyle bir ihtiyaç varsa, uzman bir mimardan mevcut projeniz üzerinden analiz yapmasını talep edin.
                                     </p>
                                 </div>
                             </>
                         ) : (
                             <>
-                                <h3 className="text-2xl mt-12 mb-6">Giriş</h3>
-                                <p>
-                                    Evimize küçük ancak hayatımızı kolaylaştıran eklemeler yapmak istediğimizde, imar mevzuatının karmaşık yapısıyla ve uzun ruhsat süreçleriyle karşılaşırız. Ancak 14 Ocak 2026 tarihli Resmi Gazete'de yayımlanan <strong>Planlı Alanlar İmar Yönetmeliği</strong> değişikliği ile müstakil ev sahiplerine çok güzel bir haber geldi! Artık bahçenize portatif bir garaj yapmak veya kapınızın önüne kışın soğuğu kesecek bir rüzgarlık eklemek için belediyeden "yapı ruhsatı" beklemenize gerek yok.
+                                <h3 className="text-2xl font-bold mt-12 mb-6">Giriş</h3>
+                                <p className="text-justify">
+                                    Evimize küçük ancak hayatımızı kolaylaştıran eklemeler yapmak istediğimizde, imar mevzuatının karmaşık yapısıyla ve uzun ruhsat süreçleriyle karşılaşırız. Ancak 14 Ocak 2026 tarihli Resmi Gazete’de yayımlanan <strong>Planlı Alanlar İmar Yönetmeliği</strong> değişikliği ile müstakil ev sahiplerine çok güzel bir haber geldi! Artık bahçenize portatif bir garaj yapmak veya kapınızın önüne kışın soğuğu kesecek bir rüzgarlık eklemek için belediyeden "yapı ruhsatı" beklemenize gerek yok.
                                 </p>
-                                <p>
+                                <p className="text-justify">
                                     Peki, herkes bahçesine dilediği gibi garaj yapabilir mi? Hangi kurallara uymak gerekiyor? Gelin hem ev sahiplerinin rahatlıkla anlayacağı dilden hem de bir imar uzmanının dikkat edeceği teknik detaylarla bu yeniliği inceleyelim.
                                 </p>
 
                                 <hr className="border-dark-border my-10" />
 
-                                <h3 className="text-2xl mt-10 mb-6">Kimler Bu Düzenlemeden Yararlanabilir?</h3>
-                                <p>
+                                <h3 className="text-2xl font-bold mt-10 mb-6">Kimler Bu Düzenlemeden Yararlanabilir?</h3>
+                                <p className="text-justify">
                                     Bu yeni haktan faydalanabilmek için en önemli şart; bulunduğunuz parselde <strong>sadece sizin evinizin (tek bir bağımsız bölümün) yer almasıdır.</strong> Yani, apartman bahçeleri veya birden fazla konutun yer aldığı arsalar bu kapsama girmiyor.
                                 </p>
 
@@ -291,40 +290,40 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
 
                                 <hr className="border-dark-border my-10" />
 
-                                <h3 className="text-2xl mt-10 mb-6">Neler Yapabilirsiniz? Düzenlemenin Şartları Neler?</h3>
+                                <h3 className="text-2xl font-bold mt-10 mb-6">Neler Yapabilirsiniz? Düzenlemenin Şartları Neler?</h3>
 
-                                <h4 className="text-xl text-warm-100 mt-8 mb-4">1. Aracınız İçin Sökülüp Takılabilir Garaj (Otopark Örtüsü)</h4>
-                                <p>Arabanızı güneşten ve kardan korumak için bahçeye sundurma tarzı bir garaj inşa edebilirsiniz ancak şu kurallara kesinlikle uymalısınız:</p>
+                                <h4 className="text-xl font-bold text-warm-100 mt-8 mb-4">1. Aracınız İçin Sökülüp Takılabilir Garaj (Otopark Örtüsü)</h4>
+                                <p className="text-justify">Arabanızı güneşten ve kardan korumak için bahçeye sundurma tarzı bir garaj inşa edebilirsiniz ancak şu kurallara kesinlikle uymalısınız:</p>
                                 <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
-                                    <li><strong className="text-accent-hover">Büyüklüğü:</strong> Sadece sizin evinize tahsis edilen zorunlu otopark büyüklüğü kadar olabilir (Otopark Yönetmeliği uyarınca).</li>
-                                    <li><strong className="text-accent-hover">Açıklık ve Yükseklik:</strong> Yapacağınız garajın iç yüksekliği en fazla <strong>3.00 metre</strong> olmalı ve garajın en az iki tarafı tamamen açık olmalıdır. (Yani etrafını kapatıp kapalı bir kutu haline getiremezsiniz).</li>
-                                    <li><strong className="text-accent-hover">Malzemesi:</strong> En önemli husus malzemedir! Tuğla, beton gibi kalıcı bir imalat kullanmak kesinlikle yasaktır. Yangına dayanıklı, metal profillerden oluşan ve istendiğinde <strong>kolayca sökülüp takılabilen (portatif)</strong> hafif örtüler (mesh sistemler, branda, sac vb.) tercih edilmelidir.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Büyüklüğü:</strong> Sadece sizin evinize tahsis edilen zorunlu otopark büyüklüğü kadar olabilir (Otopark Yönetmeliği uyarınca).</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Açıklık ve Yükseklik:</strong> Yapacağınız garajın iç yüksekliği en fazla <strong>3.00 metre</strong> olmalı ve garajın en az iki tarafı tamamen açık olmalıdır. (Yani etrafını kapatıp kapalı bir kutu haline getiremezsiniz).</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Malzemesi:</strong> En önemli husus malzemedir! Tuğla, beton gibi kalıcı bir imalat kullanmak kesinlikle yasaktır. Yangına dayanıklı, metal profillerden oluşan ve istendiğinde <strong>kolayca sökülüp takılabilen (portatif)</strong> hafif örtüler (mesh sistemler, branda, sac vb.) tercih edilmelidir.</li>
                                 </ul>
 
-                                <h4 className="text-xl text-warm-100 mt-8 mb-4">2. Evin Girişine Rüzgarlık (Giriş Holü)</h4>
-                                <p>Kışın rüzgarın ve soğuğun doğrudan içeri girmesini engellemek, kapı önüne korunaklı bir ön alan yaratmak artık çok daha basit:</p>
+                                <h4 className="text-xl font-bold text-warm-100 mt-8 mb-4">2. Evin Girişine Rüzgarlık (Giriş Holü)</h4>
+                                <p className="text-justify">Kışın rüzgarın ve soğuğun doğrudan içeri girmesini engellemek, kapı önüne korunaklı bir ön alan yaratmak artık çok daha basit:</p>
                                 <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
-                                    <li><strong className="text-accent-hover">Büyüklüğü:</strong> Rüzgarlığın taban alanı en fazla <strong>7 metrekare</strong> olabilir. İç yüksekliği de aynı şekilde <strong>3.00 metreyi</strong> geçmemelidir.</li>
-                                    <li><strong className="text-accent-hover">Malzemesi:</strong> Bu alan da tıpkı garaj gibi hafif malzemeden, sökülebilir özellikte olmalı ve evinizin doğrudan dışarı açılan ön kapısına inşa edilmelidir (örneğin hafif profilli portatif camlama sistemleri).</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Büyüklüğü:</strong> Rüzgarlığın taban alanı en fazla <strong>7 metrekare</strong> olabilir. İç yüksekliği de aynı şekilde <strong>3.00 metreyi</strong> geçmemelidir.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Malzemesi:</strong> Bu alan da tıpkı garaj gibi hafif malzemeden, sökülebilir özellikte olmalı ve evinizin doğrudan dışarı açılan ön kapısına inşa edilmelidir (örneğin hafif profilli portatif camlama sistemleri).</li>
                                 </ul>
 
                                 <hr className="border-dark-border my-10" />
 
-                                <h3 className="text-2xl mt-10 mb-6 flex items-center gap-3">
+                                <h3 className="text-2xl font-bold mt-10 mb-6 flex items-center gap-3">
                                     <span className="bg-accent/20 p-2 rounded-lg text-accent"><Scale size={24} /></span> Bir İmar Uzmanı Olarak Analiz ve Uyarılarım
                                 </h3>
-                                <p>
+                                <p className="text-justify">
                                     Belediyelerin iş yükünü azaltan ve vatandaşa rahat bir nefes aldıran bu muafiyet, pratikte çok dikkatli uygulanmalıdır. Hem ev sahiplerinin hem de bu uygulamaları yapacak ustaların/mimarların aşağıdaki hayati uyarılara dikkat etmesi gerekir:
                                 </p>
                                 <ol className="space-y-4 pl-0 mt-6 marker:font-bold marker:text-accent">
-                                    <li className="pl-4"><strong>Taşıyıcı Sisteme Asla Zarar Vermeyin:</strong> Kuracağınız garajın veya rüzgarlığın montajı sırasında, kesinlikle evinizin taşıyıcı sistemine (kolon, kiriş, perde beton) ekstra bir yük bindirmemelisiniz. Aksi takdirde masum bir ekleme yüzünden evinizin deprem dayanımını riske atmış olursunuz.</li>
-                                    <li className="pl-4"><strong>Sınırlarınızı İhlal Etmeyin ve Yangın Güvenliğini Sağlayın:</strong> Yapılan imalatlar komşu parsele ya da yola kesinlikle taşmamalıdır. Ayrıca uygulamalar esnasında yangın tahliye senaryoları ve can güvenliği tedbirleri mutlak suretle ön planda tutulmalıdır.</li>
-                                    <li className="pl-4"><strong>Kalıcı İmalata Çevirme Hatası (Kaçak Yapı Riski):</strong> Uygulamada karşılaşılan en büyük hata; hafif konstrüksiyonla kurulan bu alanların zaman içinde tuğla veya betonla örülerek kapalı, yalıtımlı odalara dönüştürülmesidir. Denetimlerde veya bir şikayet sonucu bu durum tespit edilirse, yapınız <strong>"kaçak yapı"</strong> konumuna düşer ve İmar Kanunu’nun 32. ve 42. maddeleri gereği hukuki işlem (yıkım kararı ve oldukça ağır idari para cezaları) ile karşı karşıya kalabilirsiniz.</li>
+                                    <li className="pl-4 text-justify"><strong>Taşıyıcı Sisteme Asla Zarar Vermeyin:</strong> Kuracağınız garajın veya rüzgarlığın montajı sırasında, kesinlikle evinizin taşıyıcı sistemine (kolon, kiriş, perde beton) ekstra bir yük bindirmemelisiniz. Aksi takdirde masum bir ekleme yüzünden evinizin deprem dayanımını riske atmış olursunuz.</li>
+                                    <li className="pl-4 text-justify"><strong>Sınırlarınızı İhlal Etmeyin ve Yangın Güvenliğini Sağlayın:</strong> Yapılan imalatlar komşu parsele ya da yola kesinlikle taşmamalıdır. Ayrıca uygulamalar esnasında yangın tahliye senaryoları ve can güvenliği tedbirleri mutlak suretle ön planda tutulmalıdır.</li>
+                                    <li className="pl-4 text-justify"><strong>Kalıcı İmalata Çevirme Hatası (Kaçak Yapı Riski):</strong> Uygulamada karşılaşılan en büyük hata; hafif konstrüksiyonla kurulan bu alanların zaman içinde tuğla veya betonla örülerek kapalı, yalıtımlı odalara dönüştürülmesidir. Denetimlerde veya bir şikayet sonucu bu durum tespit edilirse, yapınız <strong>"kaçak yapı"</strong> konumuna düşer ve İmar Kanunu’nun 32. ve 42. maddeleri gereği hukuki işlem (yıkım kararı ve oldukça ağır idari para cezaları) ile karşı karşıya kalabilirsiniz.</li>
                                 </ol>
 
                                 <div className="bg-dark-elevated p-8 rounded-3xl border border-dark-border mt-12 mb-8 text-center shadow-xl">
                                     <h3 className="text-xl text-warm-50 font-bold mb-4 mt-0">Sonuç Olarak</h3>
-                                    <p className="text-warm-300 mb-0">
+                                    <p className="text-warm-300 mb-0 text-justify">
                                         Yönetmeliğe eklenen bu madde, doğru kullanıldığında müstakil ev sahipleri ve yapılaşma pratikliği açısından harika bir fırsattır. Evinizi güzelleştirirken kalıcı ve ağır inşai faaliyetlerden uzak durun, sökülebilir ve estetik malzemeleri tercih edin. Değişikliğin tüm yapı sektörüne ve mülk sahiplerine hayırlı olmasını dileriz.
                                     </p>
                                 </div>

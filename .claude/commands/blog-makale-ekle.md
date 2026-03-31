@@ -78,13 +78,20 @@ SEO image mapping'e ekle:
 
 Featured image `src` mapping'ine ekle.
 
-İçerik render bloğuna (`isSantiyeM ? ... : isFireEscape ? ... : ...`) yeni `is<SLUG_PASCAL_CASE> ? (<>...</>) :` dalını **en başa** ekle ve içeriği JSX olarak yaz:
+İçerik render bloğuna (`isSantiyeM ? ... : isFireEscape ? ... : ...`) yeni `is<SLUG_PASCAL_CASE> ? (<>...</>) :` dalını **en başa** ekle ve içeriği JSX olarak yaz.
+
+**Makale formatı — her makale bu standarda uymalı:**
+- `<h3>` başlıkları: `className="text-2xl font-bold mt-12 mb-6"` (veya `mt-10`)
+- `<h4>` alt başlıkları: `className="text-xl font-bold text-warm-100 mt-8 mb-4"`
+- `<p>` paragrafları: `className="text-justify"`
+- `<li>` liste öğeleri: `className="text-justify"` (veya `className="pl-4 text-justify"`)
+- Sonuç kutusu içindeki paragraf: `className="text-warm-300 mb-0 text-justify"`
 
 ```tsx
 {is<SLUG_PASCAL_CASE> ? (
     <>
-        <h3 className="text-2xl mt-12 mb-6">Giriş</h3>
-        <p>...</p>
+        <h3 className="text-2xl font-bold mt-12 mb-6">Giriş</h3>
+        <p className="text-justify">...</p>
         {/* Tam makale içeriği buraya */}
     </>
 ) : isSantiyeM ? (
