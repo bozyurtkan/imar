@@ -111,6 +111,7 @@ const ImarApp: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const isLinkComparisonRunning = useRef(false);
   const [isListening, setIsListening] = useState(false);
   const [isDeepThinkMode, setIsDeepThinkMode] = useState(false);
   const [showDeepThinkToast, setShowDeepThinkToast] = useState(false);
@@ -952,7 +953,8 @@ const ImarApp: React.FC = () => {
   };
 
   const handleLinkComparison = async () => {
-    if (!linkUrl.trim()) return;
+    if (!linkUrl.trim() || isLinkComparisonRunning.current) return;
+    isLinkComparisonRunning.current = true;
 
     // Kredi kontrolü
     if (user) {
@@ -1001,6 +1003,7 @@ const ImarApp: React.FC = () => {
     } finally {
       setIsTyping(false);
       setLinkUrl('');
+      isLinkComparisonRunning.current = false;
     }
   };
 
@@ -2402,6 +2405,7 @@ const ImarApp: React.FC = () => {
             </div>
 
             <button
+              type="button"
               onClick={handleLinkComparison}
               disabled={!linkUrl.trim()}
               data-tour-id="tour-compare-submit"
