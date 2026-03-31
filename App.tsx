@@ -2540,6 +2540,92 @@ const AppRouter: React.FC = () => {
     }
   };
 
+  // --- Dinamik SEO: her sayfa/makale değişiminde meta güncelle ---
+  useEffect(() => {
+    const BASE_URL = 'https://imarmevzuat.com.tr';
+
+    const SEO: Record<string, { title: string; description: string; url: string }> = {
+      landing: {
+        title: 'İmar Mevzuat — AI İmar Hukuku Asistanı | 50+ Mevzuat',
+        description: '3194 Sayılı İmar Kanunu, yönetmelikler ve Resmi Gazete kararlarına yapay zeka ile anında erişin. 50+ mevzuata madde atıflı kesin yanıtlar. Türkiye\'de tek. Ücretsiz deneyin.',
+        url: `${BASE_URL}/`,
+      },
+      blog: {
+        title: 'Makaleler — İmar Mevzuat',
+        description: 'İmar hukuku, yapı denetimi ve mevzuat değişikliklerine dair güncel makaleler. Uzman analizleri ve pratik rehberler.',
+        url: `${BASE_URL}/makaleler`,
+      },
+      about: {
+        title: 'Hakkında — İmar Mevzuat',
+        description: 'Türkiye\'nin ilk AI destekli imar mevzuatı asistanı hakkında bilgi edinin. Teknoloji, ekip ve misyonumuz.',
+        url: `${BASE_URL}/hakkinda`,
+      },
+      legal: {
+        title: 'Yasal Bilgiler — İmar Mevzuat',
+        description: 'Gizlilik politikası, kullanım koşulları ve yasal bilgiler.',
+        url: `${BASE_URL}/legal/${legalTab}`,
+      },
+      app: {
+        title: 'İmar Mevzuat — AI Asistan',
+        description: '3194 Sayılı İmar Kanunu ve 50+ mevzuata madde atıflı kesin yanıtlar veren yapay zeka asistanı.',
+        url: `${BASE_URL}/`,
+      },
+      login: {
+        title: 'Giriş — İmar Mevzuat',
+        description: 'İmar Mevzuat yapay zeka asistanına giriş yapın.',
+        url: `${BASE_URL}/`,
+      },
+    };
+
+    const ARTICLE_SEO: Record<string, { title: string; description: string }> = {
+      'planli-alanlar-garaj-ruzgarlik-degisikligi': {
+        title: 'Planlı Alanlarda Garaj ve Rüzgarlık Değişikliği — İmar Mevzuat',
+        description: 'Planlı Alanlar İmar Yönetmeliği kapsamında garaj ve rüzgarlık düzenlemelerindeki son değişiklikler ve uygulamaya etkileri.',
+      },
+      'mevcut-binalarda-yangin-merdiveni-esnekligi': {
+        title: 'Mevcut Binalarda Yangın Merdiveni Esnekliği — İmar Mevzuat',
+        description: 'Mevcut binalara yangın merdiveni eklenmesinde tanınan esneklikler, yasal dayanak ve uygulama koşulları.',
+      },
+      'santiye-m-dijital-donusum': {
+        title: 'Şantiye-M ile Dijital Dönüşüm — İmar Mevzuat',
+        description: 'İnşaat sektöründe dijital dönüşüm: Şantiye-M uygulaması ve imar süreçlerinde teknoloji kullanımı.',
+      },
+    };
+
+    let meta: { title: string; description: string; url: string };
+
+    if (currentPage === 'article') {
+      const articleMeta = ARTICLE_SEO[currentArticle];
+      meta = {
+        title: articleMeta?.title ?? 'Makale — İmar Mevzuat',
+        description: articleMeta?.description ?? 'İmar hukuku ve mevzuatına dair uzman makalesi.',
+        url: `${BASE_URL}/makale/${currentArticle}`,
+      };
+    } else {
+      meta = SEO[currentPage] ?? SEO.landing;
+    }
+
+    // title
+    document.title = meta.title;
+
+    // meta description
+    const descEl = document.querySelector('meta[name="description"]');
+    if (descEl) descEl.setAttribute('content', meta.description);
+
+    // canonical
+    const canonicalEl = document.querySelector('link[rel="canonical"]');
+    if (canonicalEl) canonicalEl.setAttribute('href', meta.url);
+
+    // Open Graph
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', meta.title);
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', meta.description);
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) ogUrl.setAttribute('content', meta.url);
+  }, [currentPage, currentArticle, legalTab]);
+  // ------------------------------------------------------------------
+
   const handleOpenLegal = (tab: string) => {
     setLegalTab(tab);
     setCurrentPage('legal');
