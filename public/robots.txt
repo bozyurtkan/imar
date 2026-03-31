@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /api/
 
 # Sitemap for İmar Mevzuat
 Sitemap: https://imarmevzuat.com.tr/sitemap.xml
