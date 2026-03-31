@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ArrowLeft, Scale } from 'lucide-react';
 import { BlogSection } from './BlogSection';
 
@@ -8,6 +8,32 @@ interface BlogPageProps {
 }
 
 export const BlogPage: React.FC<BlogPageProps> = ({ onBack, onReadArticle }) => {
+    useEffect(() => {
+        const breadcrumb = {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Ana Sayfa",
+                    "item": "https://imarmevzuat.com.tr/"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Makaleler",
+                    "item": "https://imarmevzuat.com.tr/makaleler"
+                }
+            ]
+        };
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.innerHTML = JSON.stringify(breadcrumb);
+        document.head.appendChild(script);
+        return () => { document.head.removeChild(script); };
+    }, []);
+
     return (
         <div className="landing-page min-h-screen relative overflow-hidden">
 

@@ -47,13 +47,48 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
             "description": descriptions[slug || ''] || "Planlı Alanlar İmar Yönetmeliği 2026 değişikliği ile müstakil konutlarda ruhsatsız garaj ve rüzgarlık yapımı dönemi başladı."
         };
 
+        const articleTitles: Record<string, string> = {
+            'mevcut-binalarda-yangin-merdiveni-esnekligi': "Mevcut Binalarda Yangın Merdiveni Esnekliği",
+            'santiye-m-dijital-donusum': "Şantiye-M ile Dijital Dönüşüm",
+        };
+        const breadcrumb = {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Ana Sayfa",
+                    "item": "https://imarmevzuat.com.tr/"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Makaleler",
+                    "item": "https://imarmevzuat.com.tr/makaleler"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": articleTitles[slug || ''] || "Planlı Alanlarda Garaj ve Rüzgarlık Değişikliği",
+                    "item": `https://imarmevzuat.com.tr/makale/${slug}`
+                }
+            ]
+        };
+
         const script = document.createElement('script');
         script.type = 'application/ld+json';
         script.innerHTML = JSON.stringify(schema);
         document.head.appendChild(script);
 
+        const breadcrumbScript = document.createElement('script');
+        breadcrumbScript.type = 'application/ld+json';
+        breadcrumbScript.innerHTML = JSON.stringify(breadcrumb);
+        document.head.appendChild(breadcrumbScript);
+
         return () => {
             document.head.removeChild(script);
+            document.head.removeChild(breadcrumbScript);
         };
     }, [slug]);
 
