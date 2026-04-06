@@ -8,6 +8,21 @@ export interface BlogArticle {
 
 export const blogArticles: BlogArticle[] = [
   {
+    slug: "tarim-arazisi-tad-portal-2026",
+    title: "Tarım Arazisi İzinlerinde Dijital Dönüşüm: TAD Portal ve 2026 Yönetmeliği",
+    desc: "4 Nisan 2026'da yürürlüğe giren yeni yönetmelikle tarım arazisi izinleri TAD Portal üzerinden merkezi sisteme taşındı. Marjinal arazi, çatı GES ve toprak koruma projelerine yönelik yeni kurallar.",
+    keywords: [
+      "tarım arazisi izni", "tarim arazisi izni", "TAD portal", "tad portal",
+      "tarım dışı kullanım", "tarim disi kullanim", "tarımsal yapı ruhsatı", "tarimsal yapi ruhsati",
+      "büyük ova koruma alanı", "buyuk ova koruma alani", "marjinal tarım arazisi", "marjinal tarim arazisi",
+      "toprak koruma kurulu", "çatı güneş enerjisi", "cati gunes enerjisi", "çatı GES", "cati GES",
+      "tarım arazisi yönetmelik 2026", "tarim arazisi yonetmelik 2026",
+      "arazi etüt raporu", "arazi etut raporu", "ziraat mühendisi raporu", "ziraat muhendisi raporu",
+      "tarım dışı", "tarim disi", "tarımsal yapı", "tarimsal yapi"
+    ],
+    url: "/makale/tarim-arazisi-tad-portal-2026"
+  },
+  {
     slug: "santiye-m-dijital-donusum",
     title: "Şantiye-M Uygulaması ile İnşaat Sektöründe Dijital Dönüşüm",
     desc: "Çevre, Şehircilik ve İklim Değişikliği Bakanlığı'nın kullanıma sunduğu Şantiye-M yazılımının amacı, kolaylıkları ve sektörel etkileri.",

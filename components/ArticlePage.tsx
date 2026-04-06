@@ -9,14 +9,17 @@ interface ArticlePageProps {
 export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
     const isFireEscape = slug === 'mevcut-binalarda-yangin-merdiveni-esnekligi';
     const isSantiyeM = slug === 'santiye-m-dijital-donusum';
+    const isTarimArazisi = slug === 'tarim-arazisi-tad-portal-2026';
 
     // SEO: Structured Data (Article Schema)
     useEffect(() => {
         const headlines: Record<string, string> = {
+            'tarim-arazisi-tad-portal-2026': "Tarım Arazisi İzinlerinde Dijital Dönüşüm: TAD Portal ve 2026 Yönetmeliği",
             'mevcut-binalarda-yangin-merdiveni-esnekligi': "Mevcut Binalarda Yangın Merdiveni Çıkmazı Bitiyor: Bahçe Mesafelerinde Yeni Esneklik!",
             'santiye-m-dijital-donusum': "Şantiye-M Uygulaması ile İnşaat Sektöründe Dijital Dönüşüm: Yeni Şantiye Defteri ve Düzenlemeler",
         };
         const descriptions: Record<string, string> = {
+            'tarim-arazisi-tad-portal-2026': "4 Nisan 2026'da yürürlüğe giren yeni yönetmelikle tarım arazisi izinleri TAD Portal üzerinden merkezi sisteme taşındı. Marjinal arazi, çatı GES ve toprak koruma projelerine yönelik yeni kurallar.",
             'mevcut-binalarda-yangin-merdiveni-esnekligi': "Mevcut yapılarda yangın merdiveni zorunluluğu durumunda bahçe mesafesi ihlallerine getirilen 1.50m ve 3.00m istisnaları.",
             'santiye-m-dijital-donusum': "Çevre, Şehircilik ve İklim Değişikliği Bakanlığı'nın kullanıma sunduğu Şantiye-M yazılımının amacı, kolaylıkları ve sektörel etkileri.",
         };
@@ -25,11 +28,13 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
             "@context": "https://schema.org",
             "@type": "Article",
             "headline": headlines[slug || ''] || "Müstakil Ev Sahiplerine İmar Müjdesi: Garaj ve Rüzgarlıkta Ruhsat Süreci Bitti!",
-            "image": isSantiyeM
-                ? "https://imarmevzuat.com.tr/images/santiye-m.jpg"
-                : isFireEscape
-                    ? "https://imarmevzuat.com.tr/images/yangin-merdiveni.jpg"
-                    : "https://imarmevzuat.com.tr/images/planli-alanlar.jpg",
+            "image": isTarimArazisi
+                ? "https://imarmevzuat.com.tr/images/tarim-arazisi-2026.png"
+                : isSantiyeM
+                    ? "https://imarmevzuat.com.tr/images/santiye-m.jpg"
+                    : isFireEscape
+                        ? "https://imarmevzuat.com.tr/images/yangin-merdiveni.jpg"
+                        : "https://imarmevzuat.com.tr/images/planli-alanlar.jpg",
             "author": {
                 "@type": "Organization",
                 "name": "İmar Mevzuat"
@@ -42,12 +47,13 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                     "url": "https://imarmevzuat.com.tr/favicon.svg"
                 }
             },
-            "datePublished": isSantiyeM ? "2026-03-24" : "2026-01-14",
-            "dateModified": isSantiyeM ? "2026-03-24" : "2026-03-13",
+            "datePublished": isTarimArazisi ? "2026-04-06" : isSantiyeM ? "2026-03-24" : "2026-01-14",
+            "dateModified": isTarimArazisi ? "2026-04-06" : isSantiyeM ? "2026-03-24" : "2026-03-13",
             "description": descriptions[slug || ''] || "Planlı Alanlar İmar Yönetmeliği 2026 değişikliği ile müstakil konutlarda ruhsatsız garaj ve rüzgarlık yapımı dönemi başladı."
         };
 
         const articleTitles: Record<string, string> = {
+            'tarim-arazisi-tad-portal-2026': "Tarım Arazisi TAD Portal 2026",
             'mevcut-binalarda-yangin-merdiveni-esnekligi': "Mevcut Binalarda Yangın Merdiveni Esnekliği",
             'santiye-m-dijital-donusum': "Şantiye-M ile Dijital Dönüşüm",
         };
@@ -131,13 +137,16 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                     <div className="mb-10 text-center space-y-4">
                         <div className="flex items-center justify-center gap-4 text-xs sm:text-sm font-medium text-warm-400 mb-6">
                             <span className="bg-accent/10 text-accent px-3 py-1 rounded-full border border-accent/20 uppercase tracking-widest">
-                                {isSantiyeM ? 'Güncel Değişiklikler' : 'Mevzuat Analizi'}
+                                {isTarimArazisi ? 'Güncel Değişiklikler' : isSantiyeM ? 'Güncel Değişiklikler' : 'Mevzuat Analizi'}
                             </span>
-                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Calendar size={14} /> {isSantiyeM ? '24 Mart 2026' : '14 Ocak 2026'}</span>
-                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Clock size={14} /> {isSantiyeM ? '5 dk okuma' : '8 dk okuma'}</span>
+                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Calendar size={14} /> {isTarimArazisi ? '6 Nisan 2026' : isSantiyeM ? '24 Mart 2026' : '14 Ocak 2026'}</span>
+                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Clock size={14} /> {isTarimArazisi ? '7 dk okuma' : isSantiyeM ? '5 dk okuma' : '8 dk okuma'}</span>
                         </div>
                         <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-warm-50 tracking-tight leading-[1.15]">
-                            {isSantiyeM ? (
+                            {isTarimArazisi ? (
+                                <>Tarım Arazisi İzinlerinde Dijital Dönüşüm:<br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover inline-block mt-2">TAD Portal ve 2026 Yönetmeliği</span></>
+                            ) : isSantiyeM ? (
                                 <>Şantiye-M Uygulaması ile İnşaat Sektöründe Dijital Dönüşüm:<br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover inline-block mt-2">Yeni Şantiye Defteri ve Düzenlemeler</span></>
                             ) : isFireEscape ? (
@@ -154,8 +163,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                     <div className="w-full aspect-[16/9] mb-12 rounded-3xl overflow-hidden shadow-2xl ring-1 ring-dark-border/50 relative group">
                         <div className="absolute inset-0 bg-accent/5 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
                         <img
-                            src={isSantiyeM ? "/hero.jpg" : isFireEscape ? "/images/yangin-merdiveni-sema.jpg" : "/images/planli-alanlar.jpg"}
-                            alt={isSantiyeM ? "Şantiye-M Dijital Şantiye Yönetimi" : isFireEscape ? "Mevcut Binaya İlave Yangın Merdiveni" : "Bağımsız Bölüm Eklentileri Garaj ve Rüzgarlık"}
+                            src={isTarimArazisi ? "/images/tarim-arazisi-2026.png" : isSantiyeM ? "/hero.jpg" : isFireEscape ? "/images/yangin-merdiveni-sema.jpg" : "/images/planli-alanlar.jpg"}
+                            alt={isTarimArazisi ? "Tarım Arazisi İzinleri TAD Portal 2026" : isSantiyeM ? "Şantiye-M Dijital Şantiye Yönetimi" : isFireEscape ? "Mevcut Binaya İlave Yangın Merdiveni" : "Bağımsız Bölüm Eklentileri Garaj ve Rüzgarlık"}
                             className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
                         />
                     </div>
@@ -169,7 +178,90 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                         prose-ul:marker:text-accent
                         prose-li:my-1
                     ">
-                        {isSantiyeM ? (
+                        {isTarimArazisi ? (
+                            <>
+                                <h3 className="text-2xl font-bold mt-12 mb-6">Giriş</h3>
+                                <p className="text-justify">
+                                    Türkiye'deki tarım arazilerinin korunması ve kullanımına ilişkin temel mevzuat, 4 Nisan 2026 tarihli ve 20260404-2 sayılı Resmi Gazete ile köklü bir dönüşüme uğradı. 9 Aralık 2017 tarihinden bu yana yürürlükte olan <strong>"Tarım Arazilerinin Korunması, Kullanılması ve Planlanmasına Dair Yönetmelik"</strong> tamamen yürürlükten kaldırılarak yerine tümüyle yeni bir düzenleme getirildi. Yeni yönetmelik yayım tarihinde derhal yürürlüğe girdi; geçiş süreci veya ertelenmiş hüküm bulunmuyor.
+                                </p>
+                                <p className="text-justify">
+                                    İmar mevzuatıyla kesişim noktaları son derece kritik olan bu değişiklik; arazi sahiplerini, müteahhitleri, yatırımcıları ve enerji sektörünü doğrudan ilgilendiriyor. Peki yeni yönetmelik neyi değiştiriyor, hangi süreçler dijitalleşiyor ve sahada nelere dikkat etmek gerekiyor? Gelin ayrıntılı inceleyelim.
+                                </p>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6">TAD Portal: Tarım Dışı İzinler Artık Merkezi Sistemde</h3>
+                                <p className="text-justify">Yeni yönetmeliğin getirdiği en köklü değişiklik, tarım dışı kullanım (TDK) taleplerinin artık <strong>TAD Portal</strong> adı verilen dijital platform üzerinden yürütülmesi zorunluluğudur. Kâğıt tabanlı başvuruların yol açtığı bürokratik yığılma ve takip güçlükleri bu adımla ortadan kaldırılmak hedefleniyor.</p>
+                                <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
+                                    <li className="text-justify"><strong className="text-accent-hover">Merkezi Değerlendirme:</strong> Enerji yatırımları, madencilik projeleri ve yenilenebilir enerji tesisleri dahil tüm tarım dışı kullanım talepleri TAD Portal üzerinden toplanarak değerlendiriliyor. Farklı kurumlar arasındaki koordinasyon tek platform üzerinden sağlanıyor.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Alternatif Alan Zorunluluğu:</strong> Arazi etüt raporlarında alternatif alanların neden tercih edilemeyeceği artık zorunlu olarak belgelenmek zorunda. Tarım arazisi talep eden her proje için "neden başka yer yok?" sorusunun yanıtı dosyada yer almalı.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">İki Ziraat Mühendisi Şartı:</strong> Etüt raporları en az iki ziraat mühendisi tarafından hazırlanmalı ve Ek-3 formatına uygun olmalı. Tek imzalı raporlar artık kabul görmeyecek.</li>
+                                </ul>
+
+                                <blockquote>
+                                    <strong className="text-accent flex items-center gap-2 mb-2"><Scale size={18} />Önemli Not:</strong> Eski yönetmelik kapsamında başlatılmış ancak henüz sonuçlandırılmamış başvuruların yeni sistem üzerinden mi yoksa eski prosedürle mi tamamlanacağı henüz tebliğ düzeyinde netleşmemiştir. İlgili il tarım müdürlükleriyle iletişime geçilmesi önerilir.
+                                </blockquote>
+
+                                <p className="text-justify text-sm bg-dark-surface/40 border border-dark-border rounded-xl p-4 mt-2">
+                                    TAD Portal başvuru süreci veya geçiş hükümleri hakkında net bir yanıt arıyorsanız <strong><a href="https://imarmevzuat.com.tr" className="text-accent hover:text-accent-hover" target="_blank" rel="noopener noreferrer">İmar Mevzuat AI Asistanı</a></strong>'na sorabilirsiniz. 50'den fazla güncel mevzuata madde atıflı kesin yanıtlar veriyor.
+                                </p>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6">Çatı GES Artık Tarımsal Yapı Sayılıyor</h3>
+                                <p className="text-justify">Yenilenebilir enerji sektörü ve tarımsal yapı ruhsatı için kritik bir yenilik: yeni yönetmelik, <strong>çatı güneş enerjisi santrallerini (GES) tarımsal amaçlı yapı</strong> olarak tanımladı. Bu düzenlemenin pratikte üç önemli sonucu var:</p>
+                                <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
+                                    <li className="text-justify"><strong className="text-accent-hover">Tarım Dışı Kullanım İzni Gerekmez:</strong> Mevcut tarımsal yapıların (sera, ahır, depo vb.) çatısına kurulacak güneş panelleri için ayrıca tarım dışı kullanım izni talep edilmeyecek.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Yapı Ruhsatı Boyutu:</strong> Çatı GES'in yapı ruhsatı ve statik proje gerektirip gerektirmediği, yapının niteliğine ve ilgili belediye ya da il özel idaresinin yetkisine göre değerlendirilmeye devam edecek.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Arazi GES Farkı:</strong> Bu kolaylık yalnızca mevcut yapıların çatısı için geçerli. Açık arazi üzerine kurulacak güneş santralleri (zemin GES) tarım dışı kullanım prosedürüne tabi olmaya devam ediyor.</li>
+                                </ul>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6">Büyük Ova Koruma Alanlarında Kural Değişmedi, Uygulaması Sıkılaştı</h3>
+                                <p className="text-justify">Yönetmeliğin 15. maddesi, Büyük Ova Koruma Alanları için önceki düzenlemenin temel ilkesini korudu: bu alanlarda arazi <strong>hiçbir surette amaç dışında kullanılamaz.</strong> Ancak istisnalar daha sınırlı ve denetimli hale getirildi.</p>
+                                <ul className="space-y-2 mb-8">
+                                    <li className="text-justify">Tarımsal yapılar (sera, sulama tesisi vb.) belirli koşullarda hâlâ mümkün.</li>
+                                    <li className="text-justify">Kamu yararı kararı alınmış projeler için özel değerlendirme prosedürü uygulanacak.</li>
+                                    <li className="text-justify">Hangi alanların "Büyük Ova" kapsamında olduğu Cumhurbaşkanlığı kararnamesiyle belirleniyor; güncel listeyi Tarım ve Orman Bakanlığı web sitesinden kontrol etmek gerekiyor.</li>
+                                </ul>
+
+                                <p className="text-justify text-sm bg-dark-surface/40 border border-dark-border rounded-xl p-4">
+                                    Parselin Büyük Ova kapsamında olup olmadığını ve projenize etkilerini <strong><a href="https://imarmevzuat.com.tr" className="text-accent hover:text-accent-hover" target="_blank" rel="noopener noreferrer">imarmevzuat.com.tr</a></strong> kütüphanesinden anında sorgulayabilirsiniz. Cumhurbaşkanlığı kararname listeleri dahil tüm güncel mevzuat yer almaktadır.
+                                </p>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6 flex items-center gap-3">
+                                    <span className="bg-accent/20 p-2 rounded-lg text-accent"><Scale size={24} /></span> Bir İmar Uzmanı Olarak Analiz ve Uyarılarım
+                                </h3>
+                                <p className="text-justify">Yönetmelik değişikliği teknik açıdan doğru bir yönde ilerlese de geçiş sürecinde dikkat edilmesi gereken hususlar var. Arazi sahibi, yatırımcı veya proje müellifi olarak şu noktalara özellikle dikkat edin:</p>
+                                <ol className="space-y-4 pl-0 mt-6 marker:font-bold marker:text-accent">
+                                    <li className="pl-4 text-justify"><strong>TAD Portal Hazırlığı Yapın:</strong> Yakın dönemde tarım arazisi üzerinde yapı veya tesis planlayanlar, TAD Portal'a kayıt yaptırmalı ve gerekli belgeleri önceden hazırlamalıdır. Sistem yeni olduğundan başvuru yoğunluğunun ilk aylarda gecikmelere yol açabileceğini göz önünde bulundurun.</li>
+                                    <li className="pl-4 text-justify"><strong>Etüt Raporu Maliyetleri Arttı:</strong> İki ziraat mühendisi zorunluluğu, etüt raporu hazırlama süresini ve maliyetini doğrudan etkiler. Proje bütçenizi ve takviminizi bu değişikliğe göre revize edin.</li>
+                                    <li className="pl-4 text-justify"><strong>İzinsiz Yapılarda Süre Kısadır:</strong> Yönetmeliğin 22. maddesi, izinsiz kullanımda yapının derhal durdurulmasını ve bir ay içinde izin alınmaması durumunda yıkımı öngörüyor. Süre aşıldığında ceza üç katına çıkıyor. Tarım arazisi üzerinde herhangi bir yapım işine izin belgesi tamamlanmadan başlanmamalıdır.</li>
+                                    <li className="pl-4 text-justify"><strong>Marjinal Arazi Tanımını Kontrol Edin:</strong> "2 hektardan küçük lokal marjinal tarım arazisi" tanımı, küçük parsellerin proje geliştirilebilirliğini doğrudan etkiliyor. Parselin bu kapsamda değerlendirilip değerlendirilemeyeceğini il tarım müdürlüğüyle teyit etmek uzun izin süreçlerinden kurtarabilir.</li>
+                                </ol>
+
+                                <div className="bg-dark-surface/50 border border-dark-border rounded-2xl p-5 mt-6 mb-8">
+                                    <p className="text-justify text-sm mb-0">
+                                        <strong className="text-warm-100">Projenize özel mevzuat soruları mı var?</strong> İmar Mevzuat AI Asistanı; tarım arazisi izinleri, yapı ruhsatı süreçleri ve tüm imar mevzuatına madde atıflı kesin yanıtlar veriyor. <a href="https://imarmevzuat.com.tr" className="text-accent hover:text-accent-hover font-semibold" target="_blank" rel="noopener noreferrer">imarmevzuat.com.tr</a> üzerinden ücretsiz deneyin.
+                                    </p>
+                                </div>
+
+                                <div className="bg-dark-elevated p-8 rounded-3xl border border-dark-border mt-12 mb-8 text-center shadow-xl">
+                                    <h3 className="text-xl text-warm-50 font-bold mb-4 mt-0">Sonuç Olarak</h3>
+                                    <p className="text-warm-300 mb-0 text-justify">
+                                        4 Nisan 2026 yönetmeliği, tarım arazisi izin süreçlerini dijitalleştirerek şeffaflığı artırmayı ve tarım dışı kullanım baskısını kontrol altına almayı hedefliyor. TAD Portal'ın etkin çalışması, çatı GES kolaylığı ve toprak koruma proje zorunluluğu gibi yenilikler mevzuatı daha tutarlı bir zemine taşıyor. Tarım arazisi üzerinde proje geliştiriyorsanız veya mevcut yapılarınıza ek tesis planlamak istiyorsanız, yeni yönetmeliği dikkate alarak ilgili uzmanlarla çalışmanızı ve başvurunuzu geciktirmeden TAD Portal üzerinden hazırlamanızı öneririz.
+                                    </p>
+                                </div>
+
+                                <div className="mt-8 mb-6 text-warm-400 text-sm">
+                                    <strong>Kaynak:</strong>{' '}
+                                    <a href="https://www.resmigazete.gov.tr/eskiler/2026/04/20260404-2.htm" target="_blank" rel="noopener noreferrer">Resmi Gazete — 4 Nisan 2026 / Tarım Arazilerinin Korunması, Kullanılması ve Planlanmasına Dair Yönetmelik</a>
+                                </div>
+                            </>
+                        ) : isSantiyeM ? (
                             <>
                                 <h3 className="text-2xl font-bold mt-12 mb-6">Giriş</h3>
                                 <p className="text-justify">

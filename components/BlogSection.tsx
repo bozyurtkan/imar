@@ -17,6 +17,17 @@ interface BlogPost {
 
 const blogPosts: BlogPost[] = [
     {
+        title: "Tarım Arazisi İzinlerinde Dijital Dönüşüm: TAD Portal ve 2026 Yönetmeliği",
+        category: "Güncel Değişiklikler",
+        readTime: "7 dk okuma",
+        date: "6 Nisan 2026",
+        author: "İmar Mevzuat Editörü",
+        image: "/images/tarim-arazisi-2026.png",
+        desc: "4 Nisan 2026'da yürürlüğe giren yeni yönetmelikle tarım arazisi izinleri TAD Portal üzerinden merkezi sisteme taşındı. Marjinal arazi, çatı GES ve toprak koruma projelerine yönelik yeni kurallar.",
+        icon: <FileText size={32} />,
+        slug: "tarim-arazisi-tad-portal-2026"
+    },
+    {
         title: "Şantiye-M Uygulaması ile İnşaat Sektöründe Dijital Dönüşüm",
         category: "Güncel Değişiklikler",
         readTime: "5 dk okuma",
