@@ -28,13 +28,16 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
             "@context": "https://schema.org",
             "@type": "Article",
             "headline": headlines[slug || ''] || "Müstakil Ev Sahiplerine İmar Müjdesi: Garaj ve Rüzgarlıkta Ruhsat Süreci Bitti!",
-            "image": isTarimArazisi
-                ? "https://imarmevzuat.com.tr/images/tarim-arazisi-2026.png"
-                : isSantiyeM
-                    ? "https://imarmevzuat.com.tr/images/santiye-m.jpg"
-                    : isFireEscape
-                        ? "https://imarmevzuat.com.tr/images/yangin-merdiveni.jpg"
-                        : "https://imarmevzuat.com.tr/images/planli-alanlar.jpg",
+            "image": {
+                "@type": "ImageObject",
+                "url": isTarimArazisi
+                    ? "https://imarmevzuat.com.tr/images/tarim-arazisi-2026.png"
+                    : isSantiyeM
+                        ? "https://imarmevzuat.com.tr/images/santiye-m.jpg"
+                        : isFireEscape
+                            ? "https://imarmevzuat.com.tr/images/yangin-merdiveni.jpg"
+                            : "https://imarmevzuat.com.tr/images/planli-alanlar.jpg"
+            },
             "author": {
                 "@type": "Organization",
                 "name": "İmar Mevzuat"
@@ -84,12 +87,12 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
 
         const script = document.createElement('script');
         script.type = 'application/ld+json';
-        script.innerHTML = JSON.stringify(schema);
+        script.textContent = JSON.stringify(schema);
         document.head.appendChild(script);
 
         const breadcrumbScript = document.createElement('script');
         breadcrumbScript.type = 'application/ld+json';
-        breadcrumbScript.innerHTML = JSON.stringify(breadcrumb);
+        breadcrumbScript.textContent = JSON.stringify(breadcrumb);
         document.head.appendChild(breadcrumbScript);
 
         return () => {
