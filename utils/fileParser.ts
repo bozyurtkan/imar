@@ -22,15 +22,49 @@ const parsePdf = async (file: File): Promise<string> => {
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
   let fullText = '';
-  
+
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    const strings = content.items.map((item: any) => item.str);
-    fullText += strings.join(' ') + '\n';
+    const content = await page.getTextContent({ normalizeWhitespace: true });
+
+    let pageText = '';
+    let lastEndX = -Infinity;
+    let lastY = -Infinity;
+
+    for (const item of content.items as any[]) {
+      if (!('str' in item) || !item.str) continue;
+
+      const currentX = item.transform[4];
+      const currentY = item.transform[5];
+      const itemWidth = item.width || 0;
+
+      // Yeni satır tespiti (Y koordinatı değişti)
+      if (lastY !== -Infinity && Math.abs(currentY - lastY) > 3) {
+        pageText += '\n';
+        lastEndX = -Infinity;
+      }
+
+      // Boşluk tespiti: sadece gerçek bir gap varsa boşluk ekle
+      if (lastEndX !== -Infinity && currentX > lastEndX + 2) {
+        if (!pageText.endsWith(' ') && !item.str.startsWith(' ')) {
+          pageText += ' ';
+        }
+      }
+
+      pageText += item.str;
+      lastEndX = currentX + itemWidth;
+      lastY = currentY;
+
+      if (item.hasEOL) {
+        pageText += '\n';
+        lastEndX = -Infinity;
+      }
+    }
+
+    fullText += pageText + '\n\n';
   }
-  
-  return fullText;
+
+  return fullText.trim();
 };
 
 const parseDocx = async (file: File): Promise<string> => {
