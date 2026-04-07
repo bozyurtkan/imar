@@ -2394,7 +2394,7 @@ const ImarApp: React.FC = () => {
                 ? <span className="text-warm-600">Tüm web'i tarayarak güncel mevzuat ve içtihatlarda arama yapar</span>
                 : isDeepThinkMode
                   ? <span className="text-warm-600">Belgeleriniz üzerinde çok adımlı hukuki muhakeme ve detaylı analiz yapar</span>
-                  : <span className="text-orange-400/80">⚠ Şu an yalnızca örnek kütüphane belgelerinde arama yapılıyor — <button onClick={() => setIsGeneralMode(true)} className="underline underline-offset-2 hover:text-orange-300 transition-colors">Web Aramasını Aç</button></span>}
+                  : <span className="text-orange-500">⚠ Şu an yalnızca örnek kütüphane belgelerinde arama yapılıyor — <button onClick={() => setIsGeneralMode(true)} className="underline underline-offset-2 hover:text-orange-400 transition-colors font-semibold">Web Aramasını Aç</button></span>}
           </div>
         </div>
       </main>
