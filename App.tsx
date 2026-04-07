@@ -1036,33 +1036,86 @@ const ImarApp: React.FC = () => {
 
   // Madde tıklama işleyicisi
   const handleMaddeClick = useCallback(async (maddeId: string) => {
+    const cleanedId = maddeId.replace(/MADDE:\s*/i, '').replace(/[\[\]]/g, '').trim();
+
+    // --- Kütüphane belgesi referansı mı? (.pdf / .docx içeriyorsa) ---
+    const isLibraryRef = /\.(pdf|docx|txt)/i.test(cleanedId);
+
+    if (isLibraryRef) {
+      // "Tarım Arazi.pdf MADDE 6(2)" veya "Tarım Arazi.pdf - MADDE 6(2), 7(1)" gibi formatları parse et
+      const libMatch = cleanedId.match(/^(.+?\.(pdf|docx|txt))\s*[-–]?\s*(?:MADDE\s+)?(.+)/i);
+      const fileName = libMatch ? libMatch[1].trim() : cleanedId;
+      const articleRef = libMatch ? libMatch[3].trim() : "";
+
+      // Kütüphanede eşleşen belgeyi bul
+      const doc = documents.find(d =>
+        d.name.toLowerCase().includes(fileName.toLowerCase().replace(/\.(pdf|docx|txt)$/i, '')) ||
+        fileName.toLowerCase().includes(d.name.toLowerCase().replace(/\.(pdf|docx|txt)$/i, ''))
+      );
+
+      if (doc?.content) {
+        // Belge içinde madde numarasını ara (örn: "MADDE 6" veya "Madde 6")
+        const maddeNumStr = articleRef.split(/[,\s(]/)[0].trim();
+        const searchRegex = new RegExp(`(?:MADDE|Madde)\\s+${maddeNumStr}(?:[^\\d]|$)`, 'i');
+        const idx = doc.content.search(searchRegex);
+        const startIdx = idx !== -1 ? Math.max(0, idx) : 0;
+        const excerpt = doc.content.substring(startIdx, startIdx + 2000).trim();
+
+        setSelectedMadde({
+          id: cleanedId,
+          kanunNo: doc.description || fileName,
+          kanunAdi: doc.name,
+          maddeNo: articleRef || maddeNumStr,
+          baslik: articleRef ? `Madde ${articleRef}` : fileName,
+          icerik: excerpt || "Belge içeriği bulunamadı.",
+          iliskiliMaddeler: [],
+          anahtatKelimeler: [],
+          sonGuncelleme: doc.uploadDate || new Date().toLocaleDateString('tr-TR')
+        });
+        setShowMaddeModal(true);
+        setIsLoadingMaddeAI(false);
+        return;
+      }
+
+      // Belge bulunamadı
+      setSelectedMadde({
+        id: cleanedId,
+        kanunNo: "Kütüphane",
+        kanunAdi: fileName,
+        maddeNo: articleRef,
+        baslik: `Madde ${articleRef}`,
+        icerik: `"${fileName}" belgesi kütüphanenizde aktif değil veya yüklenmemiş.`,
+        iliskiliMaddeler: [],
+        anahtatKelimeler: [],
+        sonGuncelleme: new Date().toLocaleDateString('tr-TR')
+      });
+      setShowMaddeModal(true);
+      setIsLoadingMaddeAI(false);
+      return;
+    }
+
+    // --- Standart kanun maddesi referansı ---
     let madde = getMadde(maddeId);
 
-    // ID'yi temizle
-    const cleanedId = maddeId.replace(/MADDE:\s*/i, '').replace(/[\[\]]/g, '').trim();
     const parts = cleanedId.split('/');
-    // Sadece ilk iki token al, geri kalan kütüphane referanslarını (dosya adı vb.) yoksay
     const rawKanun = parts[0]?.trim() || "3194";
     const rawMadde = (parts.length > 1 ? parts[1] : parts[0])?.trim() || "1";
-    // Madde numarasını virgül veya boşluktan sonra kes (fazla metin varsa)
     const maddeNo = rawMadde.split(/[,\s]/)[0].trim();
     const kanunNo = rawKanun.length === 4 ? rawKanun : "3194";
 
-    // Fıkra bilgisini ayıkla ("18, Fıkra 2" gibi)
     const fikraMatch = rawMadde.match(/^(.+?),\s*Fıkra\s*(\d+)/i);
     const cleanMaddeNo = fikraMatch ? fikraMatch[1].trim().split(/[,\s]/)[0] : maddeNo;
     const fikraNo = fikraMatch ? fikraMatch[2] : null;
     const displayTitle = fikraNo ? `Madde ${cleanMaddeNo}, Fıkra ${fikraNo}` : `Madde ${cleanMaddeNo}`;
 
     if (!madde) {
-      // Statik veritabanında yok → placeholder ile aç, sonra AI ile zenginleştir
       madde = {
         id: cleanedId,
         kanunNo: kanunNo,
         kanunAdi: "İmar Kanunu",
         maddeNo: cleanMaddeNo,
         baslik: displayTitle,
-        icerik: "", // Boş bırak, AI dolduracak
+        icerik: "",
         iliskiliMaddeler: [],
         anahtatKelimeler: [],
         sonGuncelleme: new Date().toLocaleDateString('tr-TR')
@@ -1072,7 +1125,6 @@ const ImarApp: React.FC = () => {
       setShowMaddeModal(true);
       setIsLoadingMaddeAI(true);
 
-      // AI ile madde içeriğini getir
       try {
         const aiContent = await geminiService.analyzeMadde(kanunNo, cleanMaddeNo, fikraNo);
         setSelectedMadde(prev => prev ? {
