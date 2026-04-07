@@ -1041,12 +1041,16 @@ const ImarApp: React.FC = () => {
     // ID'yi temizle
     const cleanedId = maddeId.replace(/MADDE:\s*/i, '').replace(/[\[\]]/g, '').trim();
     const parts = cleanedId.split('/');
-    const maddeNo = parts.length > 1 && parts[0].length !== 4 ? parts[0] : parts.length > 1 ? parts[1] : parts[0];
-    const kanunNo = parts.length > 1 && parts[0].length === 4 ? parts[0] : "3194";
+    // Sadece ilk iki token al, geri kalan kütüphane referanslarını (dosya adı vb.) yoksay
+    const rawKanun = parts[0]?.trim() || "3194";
+    const rawMadde = (parts.length > 1 ? parts[1] : parts[0])?.trim() || "1";
+    // Madde numarasını virgül veya boşluktan sonra kes (fazla metin varsa)
+    const maddeNo = rawMadde.split(/[,\s]/)[0].trim();
+    const kanunNo = rawKanun.length === 4 ? rawKanun : "3194";
 
     // Fıkra bilgisini ayıkla ("18, Fıkra 2" gibi)
-    const fikraMatch = maddeNo.match(/^(.+?),\s*Fıkra\s*(\d+)/i);
-    const cleanMaddeNo = fikraMatch ? fikraMatch[1].trim() : maddeNo;
+    const fikraMatch = rawMadde.match(/^(.+?),\s*Fıkra\s*(\d+)/i);
+    const cleanMaddeNo = fikraMatch ? fikraMatch[1].trim().split(/[,\s]/)[0] : maddeNo;
     const fikraNo = fikraMatch ? fikraMatch[2] : null;
     const displayTitle = fikraNo ? `Madde ${cleanMaddeNo}, Fıkra ${fikraNo}` : `Madde ${cleanMaddeNo}`;
 
