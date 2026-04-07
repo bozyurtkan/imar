@@ -18,6 +18,8 @@ export interface Message {
   references?: string[];
   webSources?: { uri: string; title: string }[];
   relatedArticles?: { slug: string; title: string; desc: string; url: string }[];
+  isError?: boolean;
+  retryQuery?: string;
 }
 
 export enum FileType {

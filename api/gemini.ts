@@ -1,6 +1,25 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { GoogleGenAI } from "@google/genai";
 
+async function fetchWithRetry(fn: () => Promise<any>, retries = 5, baseDelayMs = 1500) {
+  let attempt = 0;
+  while (attempt < retries) {
+    try {
+      return await fn();
+    } catch (error: any) {
+      const isRateLimit = error?.status === 429 || error?.message?.includes("429") || error?.message?.includes("Too Many Requests") || error?.message?.includes("quota") || error?.message?.includes("rate") || error?.message?.includes("overloaded");
+      if (isRateLimit && attempt < retries - 1) {
+        attempt++;
+        const waitTime = baseDelayMs * Math.pow(2, attempt - 1);
+        console.warn(`Gemini API rate limit hit (429). Retrying in ${waitTime}ms... (Attempt ${attempt}/${retries})`);
+        await new Promise(r => setTimeout(r, waitTime));
+      } else {
+        throw error;
+      }
+    }
+  }
+}
+
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -37,11 +56,11 @@ export default async function handler(req: any, res: any) {
       if (useGoogleSearch) config.tools = [{ googleSearch: {} }];
       if (thinkingConfig) config.thinkingConfig = thinkingConfig;
 
-      const response = await ai.models.generateContent({
+      const response = await fetchWithRetry(() => ai.models.generateContent({
         model,
         contents,
         config: Object.keys(config).length ? config : undefined,
-      });
+      }));
 
       const groundingMeta = response.candidates?.[0]?.groundingMetadata;
       const groundingChunks = groundingMeta?.groundingChunks || [];
@@ -59,11 +78,11 @@ export default async function handler(req: any, res: any) {
         const config2: any = { ...config };
         delete config2.thinkingConfig;
 
-        const response2 = await ai.models.generateContent({
+        const response2 = await fetchWithRetry(() => ai.models.generateContent({
           model,
           contents,
           config: Object.keys(config2).length ? config2 : undefined,
-        });
+        }));
 
         text =
           response2.text ||
@@ -88,7 +107,7 @@ export default async function handler(req: any, res: any) {
         generationConfig: Object.keys(genConfig).length ? genConfig : undefined,
       });
 
-      const result = await modelInstance.generateContent(contents);
+      const result = await fetchWithRetry(() => modelInstance.generateContent(contents));
       const response = await result.response;
       const text = response.text();
 
