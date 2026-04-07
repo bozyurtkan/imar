@@ -84,7 +84,7 @@ const ImarApp: React.FC = () => {
     const saved = localStorage.getItem('imar_theme');
     return saved === 'dark';
   });
-  const [isGeneralMode, setIsGeneralMode] = useState(false);
+  const [isGeneralMode, setIsGeneralMode] = useState(true);
   // Kredi sistemi state'leri
   const [userCredit, setUserCredit] = useState<UserCredit>({
     subscriptionPlan: 'free',
