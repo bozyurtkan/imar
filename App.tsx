@@ -858,12 +858,6 @@ const ImarApp: React.FC = () => {
     }
   };
 
-  const handleRetry = async (retryQuery: string) => {
-    // Son 2 mesajı kaldır (kullanıcı sorusu + hata mesajı) ve yeniden gönder
-    setMessages(prev => prev.slice(0, -2));
-    await handleSendMessage(undefined, retryQuery);
-  };
-
   const handleSendMessage = async (e?: React.FormEvent, overrideQuery?: string) => {
     e?.preventDefault();
     const query = (overrideQuery || inputValue).trim();
@@ -946,24 +940,14 @@ const ImarApp: React.FC = () => {
     } catch (error: any) {
       console.error('[handleSendMessage] error:', error);
       const msg = error.message || "";
-      const isRateLimit = msg.includes("429") || msg.includes("Too Many Requests") || msg.includes("quota") || msg.includes("Resource exhausted");
-      const isKeyError = msg.includes("API key") || msg.includes("not found");
-
-      if (isKeyError) setHasKey(false);
-
-      const friendlyText = isRateLimit
-        ? "Sunucular şu an çok yoğun. Birkaç saniye içinde tekrar deneyebilirsiniz."
-        : isKeyError
-        ? "API bağlantısında bir sorun oluştu. Lütfen daha sonra tekrar deneyin."
-        : "Yanıt alınırken bir hata oluştu. Lütfen tekrar deneyin.";
-
+      if (msg.includes("API key") || msg.includes("not found")) {
+        setHasKey(false);
+      }
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
         role: 'assistant',
-        text: friendlyText,
-        timestamp: new Date(),
-        isError: true,
-        retryQuery: query,
+        text: `Sistem Uyarısı: ${msg}\nLütfen sol menüdeki 'Anahtarı Bağla' butonuna tıklayarak API anahtarınızı seçin.`,
+        timestamp: new Date()
       }]);
     } finally {
       setIsTyping(false);
@@ -2105,11 +2089,11 @@ const ImarApp: React.FC = () => {
                   }`}>
                   <div className={`flex items-center justify-between gap-2 mb-2 text-[8px] font-bold uppercase tracking-widest ${msg.role === 'user' ? 'text-white/50' : 'text-warm-500'}`}>
                     <div className="flex items-center gap-2">
-                      {msg.role === 'user' ? <Zap size={10} /> : msg.isError ? <span>⚠</span> : (msg.text.startsWith('🧠') ? <Brain size={10} className="text-purple-600 dark:text-purple-400" /> : <ShieldCheck size={10} className="text-green-600 dark:text-green-400" />)}
-                      <span>{msg.role === 'user' ? 'SORU' : msg.isError ? 'BİLDİRİM' : (msg.text.startsWith('🧠') ? 'DERİN ANALİZ' : 'MEVZUAT YANITI')}</span>
+                      {msg.role === 'user' ? <Zap size={10} /> : (msg.text.startsWith('🧠') ? <Brain size={10} className="text-purple-600 dark:text-purple-400" /> : <ShieldCheck size={10} className="text-green-600 dark:text-green-400" />)}
+                      <span>{msg.role === 'user' ? 'SORU' : (msg.text.startsWith('🧠') ? 'DERİN ANALİZ' : 'MEVZUAT YANITI')}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      {msg.role === 'assistant' && !msg.isError && (
+                      {msg.role === 'assistant' && (
                         <button
                           onClick={() => handleToggleFavorite(msg)}
                           className={`p-1.5 -mr-0.5 -mt-1 rounded-lg transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100 hover:bg-dark-elevated text-warm-400 hover:text-yellow-500`}
@@ -2118,35 +2102,17 @@ const ImarApp: React.FC = () => {
                           <Star size={14} className={favorites.some(f => f.id === msg.id) ? "fill-yellow-500 text-yellow-500" : ""} />
                         </button>
                       )}
-                      {!msg.isError && (
-                        <button
-                          onClick={() => handleCopyMessage(msg.id, msg.text)}
-                          className={`p-1.5 -mr-1.5 -mt-1 rounded-lg transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100 ${msg.role === 'user' ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-dark-elevated text-warm-400 hover:text-warm-100'}`}
-                          title="Kopyala"
-                        >
-                          {copiedMessageId === msg.id ? <Check size={14} className={msg.role === 'user' ? "text-white" : "text-green-500"} /> : <Copy size={14} />}
-                        </button>
-                      )}
+                      <button
+                        onClick={() => handleCopyMessage(msg.id, msg.text)}
+                        className={`p-1.5 -mr-1.5 -mt-1 rounded-lg transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100 ${msg.role === 'user' ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-dark-elevated text-warm-400 hover:text-warm-100'}`}
+                        title="Kopyala"
+                      >
+                        {copiedMessageId === msg.id ? <Check size={14} className={msg.role === 'user' ? "text-white" : "text-green-500"} /> : <Copy size={14} />}
+                      </button>
                     </div>
                   </div>
                   <div className="text-[12px] lg:text-[13px] leading-relaxed font-medium">
-                    {msg.role === 'assistant' && msg.isError ? (
-                      <div className="flex flex-col gap-3">
-                        <div className="flex items-start gap-2 text-orange-400">
-                          <span className="text-base leading-none mt-0.5">⚠️</span>
-                          <span>{msg.text}</span>
-                        </div>
-                        {msg.retryQuery && (
-                          <button
-                            onClick={() => handleRetry(msg.retryQuery!)}
-                            disabled={isTyping}
-                            className="self-start flex items-center gap-2 px-3 py-1.5 rounded-xl bg-accent/15 border border-accent/30 text-accent text-[11px] font-bold hover:bg-accent/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <span>↺</span> Tekrar Dene
-                          </button>
-                        )}
-                      </div>
-                    ) : msg.role === 'assistant' ? (
+                    {msg.role === 'assistant' ? (
                       <div className="space-y-4">
                         <div>{renderText(msg.text)}</div>
                         {msg.webSources && msg.webSources.length > 0 ? (
