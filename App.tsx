@@ -1949,15 +1949,25 @@ const ImarApp: React.FC = () => {
                 <span className="hidden sm:inline">PDF</span>
               </button>
             )}
-            <button
-              id="tour-web-toggle"
-              data-tour-id="tour-web-toggle"
-              onClick={() => setIsGeneralMode(!isGeneralMode)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-semibold transition-all border ${isGeneralMode ? 'bg-accent/15 text-accent border-accent/30' : 'bg-dark-surface text-warm-300 border-dark-border hover:bg-dark-surface-hover hover:text-warm-50'}`}
-            >
-              <Globe size={14} />
-              <span className="hidden sm:inline">Web {isGeneralMode ? 'Açık' : 'Kapalı'}</span>
-            </button>
+            <div className="flex items-center rounded-xl border border-dark-border overflow-hidden text-[11px] font-semibold">
+              <button
+                id="tour-web-toggle"
+                data-tour-id="tour-web-toggle"
+                onClick={() => setIsGeneralMode(true)}
+                className={`flex items-center gap-1.5 px-3 py-2 transition-all ${isGeneralMode ? 'bg-accent/15 text-accent' : 'bg-dark-surface text-warm-400 hover:bg-dark-surface-hover hover:text-warm-50'}`}
+              >
+                <Globe size={14} />
+                <span className="hidden sm:inline">Web</span>
+              </button>
+              <div className="w-px h-5 bg-dark-border" />
+              <button
+                onClick={() => setIsGeneralMode(false)}
+                className={`flex items-center gap-1.5 px-3 py-2 transition-all ${!isGeneralMode ? 'bg-accent/15 text-accent' : 'bg-dark-surface text-warm-400 hover:bg-dark-surface-hover hover:text-warm-50'}`}
+              >
+                <BookOpen size={14} />
+                <span className="hidden sm:inline">Kütüphane</span>
+              </button>
+            </div>
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
               className="flex items-center gap-1.5 p-2 rounded-xl text-[11px] font-semibold transition-all bg-dark-surface text-warm-300 border border-dark-border hover:bg-dark-surface-hover hover:text-warm-50"
