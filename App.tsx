@@ -2377,14 +2377,14 @@ const ImarApp: React.FC = () => {
               </div>
             </div>
           </form>
-          <div className="mt-2 text-center text-[10px] text-warm-600 font-medium min-h-[15px] transition-all duration-300">
+          <div className="mt-2 text-center text-[10px] font-medium min-h-[15px] transition-all duration-300">
             {isGeneralMode && isDeepThinkMode
-              ? "Hem web kaynaklarını hem belgelerinizi birleştirerek derin hukuki analiz yapar"
+              ? <span className="text-warm-600">Hem web kaynaklarını hem belgelerinizi birleştirerek derin hukuki analiz yapar</span>
               : isGeneralMode
-                ? "Tüm web'i tarayarak güncel mevzuat ve içtihatlarda arama yapar"
+                ? <span className="text-warm-600">Tüm web'i tarayarak güncel mevzuat ve içtihatlarda arama yapar</span>
                 : isDeepThinkMode
-                  ? "Belgeleriniz üzerinde çok adımlı hukuki muhakeme ve detaylı analiz yapar"
-                  : "Yüklediğiniz mevzuat belgeleri üzerinden arama yapar"}
+                  ? <span className="text-warm-600">Belgeleriniz üzerinde çok adımlı hukuki muhakeme ve detaylı analiz yapar</span>
+                  : <span className="text-orange-400/80">⚠ Şu an yalnızca örnek kütüphane belgelerinde arama yapılıyor — <button onClick={() => setIsGeneralMode(true)} className="underline underline-offset-2 hover:text-orange-300 transition-colors">Web Aramasını Aç</button></span>}
           </div>
         </div>
       </main>
