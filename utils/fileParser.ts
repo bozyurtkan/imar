@@ -19,16 +19,47 @@ export const parseFile = async (file: File): Promise<string> => {
 };
 
 const parsePdf = async (file: File): Promise<string> => {
-  // Önce Gemini OCR dene (font encoding sorunlarını çözer)
-  // Dosya 4MB'dan küçükse Gemini OCR kullan
+  // 4MB altı: tüm PDF'i tek seferde Gemini'ye gönder
   if (file.size < 4 * 1024 * 1024) {
     try {
       return await parsePdfWithGemini(file);
     } catch (e) {
       console.warn("Gemini OCR başarısız, pdfjs'e düşülüyor:", e);
+      return parsePdfWithPdfjs(file);
     }
   }
-  return parsePdfWithPdfjs(file);
+
+  // 4MB üzeri: sayfa sayfa pdfjs ile çıkar, sonra Gemini ile düzelt
+  try {
+    const rawText = await parsePdfWithPdfjs(file);
+    const fixed = await fixTextWithGemini(rawText);
+    return fixed;
+  } catch (e) {
+    console.warn("Büyük PDF düzeltme başarısız, ham metin kullanılıyor:", e);
+    return parsePdfWithPdfjs(file);
+  }
+};
+
+const fixTextWithGemini = async (rawText: string): Promise<string> => {
+  // 8000 karakterlik parçalar halinde gönder
+  const CHUNK_SIZE = 8000;
+  const chunks: string[] = [];
+  for (let i = 0; i < rawText.length; i += CHUNK_SIZE) {
+    chunks.push(rawText.slice(i, i + CHUNK_SIZE));
+  }
+
+  const fixed: string[] = [];
+  for (const chunk of chunks) {
+    const response = await fetch('/api/extract-pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: chunk }),
+    });
+    if (!response.ok) throw new Error('fix API failed');
+    const { text } = await response.json();
+    fixed.push(text || chunk);
+  }
+  return fixed.join('\n');
 };
 
 const parsePdfWithGemini = async (file: File): Promise<string> => {
