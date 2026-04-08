@@ -6,7 +6,8 @@ async function fetchWithRetry(fn: () => Promise<any>, retries = 5, baseDelayMs =
     try {
       return await fn();
     } catch (error: any) {
-      const isRateLimit = error?.status === 429 || error?.message?.includes("429") || error?.message?.includes("Too Many Requests") || error?.message?.includes("quota") || error?.message?.includes("rate") || error?.message?.includes("overloaded");
+      const msg = (error?.message || "").toLowerCase();
+      const isRateLimit = error?.status === 429 || msg.includes("429") || msg.includes("too many requests") || msg.includes("quota") || msg.includes("resource_exhausted") || msg.includes("resource exhausted") || msg.includes("rate limit") || msg.includes("overloaded");
       if (isRateLimit && attempt < retries - 1) {
         attempt++;
         const waitTime = baseDelayMs * Math.pow(2, attempt - 1);
@@ -92,7 +93,8 @@ export default async function handler(req: any, res: any) {
 
     return res.status(200).json({ text, groundingChunks });
   } catch (error: any) {
-    console.error("Gemini API Error:", error);
-    return res.status(500).json({ error: error.message || "Gemini servisi yanıt vermedi." });
+    const errMsg = error?.message || error?.error?.message || String(error) || "Gemini servisi yanıt vermedi.";
+    console.error("Gemini API Error:", errMsg, error);
+    return res.status(500).json({ error: errMsg });
   }
 }

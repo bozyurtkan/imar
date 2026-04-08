@@ -944,9 +944,9 @@ const ImarApp: React.FC = () => {
       }
     } catch (error: any) {
       console.error('[handleSendMessage] error:', error);
-      const msg = error.message || "";
-      const isRateLimit = msg.includes("429") || msg.includes("Too Many Requests") || msg.includes("quota") || msg.includes("Resource exhausted");
-      const isKeyError = msg.includes("API key") || msg.includes("not found");
+      const msg = (error.message || "").toLowerCase();
+      const isRateLimit = msg.includes("429") || msg.includes("too many requests") || msg.includes("quota") || msg.includes("resource_exhausted") || msg.includes("resource exhausted") || msg.includes("rate limit") || msg.includes("overloaded");
+      const isKeyError = msg.includes("api key") || msg.includes("not found") || msg.includes("api_key") || msg.includes("permission_denied") || msg.includes("api anahtarı");
 
       if (isKeyError) setHasKey(false);
 
