@@ -69,7 +69,7 @@ export class GeminiService {
 
     try {
       const { text } = await this.callApi({
-        model: "gemini-2.5-flash-lite",
+        model: "gemini-2.0-flash",
         contents: `KÜTÜPHANE İÇERİĞİ:\n\n${contextText}\n\nKULLANICI SORUSU: ${question}`,
         systemInstruction: systemInstruction.trim(),
       });
