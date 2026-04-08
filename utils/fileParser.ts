@@ -19,6 +19,42 @@ export const parseFile = async (file: File): Promise<string> => {
 };
 
 const parsePdf = async (file: File): Promise<string> => {
+  // Önce Gemini OCR dene (font encoding sorunlarını çözer)
+  // Dosya 4MB'dan küçükse Gemini OCR kullan
+  if (file.size < 4 * 1024 * 1024) {
+    try {
+      return await parsePdfWithGemini(file);
+    } catch (e) {
+      console.warn("Gemini OCR başarısız, pdfjs'e düşülüyor:", e);
+    }
+  }
+  return parsePdfWithPdfjs(file);
+};
+
+const parsePdfWithGemini = async (file: File): Promise<string> => {
+  const base64 = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      resolve(result.split(',')[1]);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const response = await fetch('/api/extract-pdf', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data: base64 }),
+  });
+
+  if (!response.ok) throw new Error('PDF extract API failed');
+  const { text } = await response.json();
+  if (!text || text.length < 100) throw new Error('Yetersiz metin döndü');
+  return text;
+};
+
+const parsePdfWithPdfjs = async (file: File): Promise<string> => {
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
   let fullText = '';
@@ -38,13 +74,11 @@ const parsePdf = async (file: File): Promise<string> => {
       const currentY = item.transform[5];
       const itemWidth = item.width || 0;
 
-      // Yeni satır tespiti (Y koordinatı değişti)
       if (lastY !== -Infinity && Math.abs(currentY - lastY) > 3) {
         pageText += '\n';
         lastEndX = -Infinity;
       }
 
-      // Boşluk tespiti: sadece gerçek bir gap varsa boşluk ekle
       if (lastEndX !== -Infinity && currentX > lastEndX + 2) {
         if (!pageText.endsWith(' ') && !item.str.startsWith(' ')) {
           pageText += ' ';
