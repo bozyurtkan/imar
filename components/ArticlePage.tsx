@@ -10,15 +10,18 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
     const isFireEscape = slug === 'mevcut-binalarda-yangin-merdiveni-esnekligi';
     const isSantiyeM = slug === 'santiye-m-dijital-donusum';
     const isTarimArazisi = slug === 'tarim-arazisi-tad-portal-2026';
+    const isRuhsatsizBagEvi = slug === 'ruhsatsiz-bag-evi-tarim-arazisi-2026';
 
     // SEO: Structured Data (Article Schema)
     useEffect(() => {
         const headlines: Record<string, string> = {
+            'ruhsatsiz-bag-evi-tarim-arazisi-2026': "Tarım Arazisindeki Ruhsatsız Bağ Eviniz Var mı? 4 Nisan 2026 Sonrası Ne Yapmalısınız?",
             'tarim-arazisi-tad-portal-2026': "Tarım Arazisi İzinlerinde Dijital Dönüşüm: TAD Portal ve 2026 Yönetmeliği",
             'mevcut-binalarda-yangin-merdiveni-esnekligi': "Mevcut Binalarda Yangın Merdiveni Çıkmazı Bitiyor: Bahçe Mesafelerinde Yeni Esneklik!",
             'santiye-m-dijital-donusum': "Şantiye-M Uygulaması ile İnşaat Sektöründe Dijital Dönüşüm: Yeni Şantiye Defteri ve Düzenlemeler",
         };
         const descriptions: Record<string, string> = {
+            'ruhsatsiz-bag-evi-tarim-arazisi-2026': "4 Nisan 2026'da yürürlüğe giren tarım arazileri yönetmeliği, ruhsatsız bağ evi ve bungalov sahiplerini doğrudan etkiliyor. İşte adım adım yapmanız gerekenler.",
             'tarim-arazisi-tad-portal-2026': "4 Nisan 2026'da yürürlüğe giren yeni yönetmelikle tarım arazisi izinleri TAD Portal üzerinden merkezi sisteme taşındı. Marjinal arazi, çatı GES ve toprak koruma projelerine yönelik yeni kurallar.",
             'mevcut-binalarda-yangin-merdiveni-esnekligi': "Mevcut yapılarda yangın merdiveni zorunluluğu durumunda bahçe mesafesi ihlallerine getirilen 1.50m ve 3.00m istisnaları.",
             'santiye-m-dijital-donusum': "Çevre, Şehircilik ve İklim Değişikliği Bakanlığı'nın kullanıma sunduğu Şantiye-M yazılımının amacı, kolaylıkları ve sektörel etkileri.",
@@ -30,7 +33,9 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
             "headline": headlines[slug || ''] || "Müstakil Ev Sahiplerine İmar Müjdesi: Garaj ve Rüzgarlıkta Ruhsat Süreci Bitti!",
             "image": {
                 "@type": "ImageObject",
-                "url": isTarimArazisi
+                "url": isRuhsatsizBagEvi
+                    ? "https://imarmevzuat.com.tr/images/ruhsatsiz-bag-evi-tarim.jpg"
+                    : isTarimArazisi
                     ? "https://imarmevzuat.com.tr/images/tarim-arazisi-2026.png"
                     : isSantiyeM
                         ? "https://imarmevzuat.com.tr/images/santiye-m.jpg"
@@ -50,12 +55,13 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                     "url": "https://imarmevzuat.com.tr/favicon.svg"
                 }
             },
-            "datePublished": isTarimArazisi ? "2026-04-06" : isSantiyeM ? "2026-03-24" : "2026-01-14",
-            "dateModified": isTarimArazisi ? "2026-04-06" : isSantiyeM ? "2026-03-24" : "2026-03-13",
+            "datePublished": isRuhsatsizBagEvi ? "2026-04-09" : isTarimArazisi ? "2026-04-06" : isSantiyeM ? "2026-03-24" : "2026-01-14",
+            "dateModified": isRuhsatsizBagEvi ? "2026-04-09" : isTarimArazisi ? "2026-04-06" : isSantiyeM ? "2026-03-24" : "2026-03-13",
             "description": descriptions[slug || ''] || "Planlı Alanlar İmar Yönetmeliği 2026 değişikliği ile müstakil konutlarda ruhsatsız garaj ve rüzgarlık yapımı dönemi başladı."
         };
 
         const articleTitles: Record<string, string> = {
+            'ruhsatsiz-bag-evi-tarim-arazisi-2026': "Tarım Arazisinde Ruhsatsız Bağ Evi 2026",
             'tarim-arazisi-tad-portal-2026': "Tarım Arazisi TAD Portal 2026",
             'mevcut-binalarda-yangin-merdiveni-esnekligi': "Mevcut Binalarda Yangın Merdiveni Esnekliği",
             'santiye-m-dijital-donusum': "Şantiye-M ile Dijital Dönüşüm",
@@ -140,13 +146,16 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                     <div className="mb-10 text-center space-y-4">
                         <div className="flex items-center justify-center gap-4 text-xs sm:text-sm font-medium text-warm-400 mb-6">
                             <span className="bg-accent/10 text-accent px-3 py-1 rounded-full border border-accent/20 uppercase tracking-widest">
-                                {isTarimArazisi ? 'Güncel Değişiklikler' : isSantiyeM ? 'Güncel Değişiklikler' : 'Mevzuat Analizi'}
+                                {isRuhsatsizBagEvi ? 'Rehber' : isTarimArazisi ? 'Güncel Değişiklikler' : isSantiyeM ? 'Güncel Değişiklikler' : 'Mevzuat Analizi'}
                             </span>
-                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Calendar size={14} /> {isTarimArazisi ? '6 Nisan 2026' : isSantiyeM ? '24 Mart 2026' : '14 Ocak 2026'}</span>
-                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Clock size={14} /> {isTarimArazisi ? '7 dk okuma' : isSantiyeM ? '5 dk okuma' : '8 dk okuma'}</span>
+                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Calendar size={14} /> {isRuhsatsizBagEvi ? '9 Nisan 2026' : isTarimArazisi ? '6 Nisan 2026' : isSantiyeM ? '24 Mart 2026' : '14 Ocak 2026'}</span>
+                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Clock size={14} /> {isRuhsatsizBagEvi ? '7 dk okuma' : isTarimArazisi ? '7 dk okuma' : isSantiyeM ? '5 dk okuma' : '8 dk okuma'}</span>
                         </div>
                         <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-warm-50 tracking-tight leading-[1.15]">
-                            {isTarimArazisi ? (
+                            {isRuhsatsizBagEvi ? (
+                                <>Tarım Arazisindeki Ruhsatsız Bağ Eviniz Var mı?<br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover inline-block mt-2">4 Nisan 2026 Sonrası Ne Yapmalısınız?</span></>
+                            ) : isTarimArazisi ? (
                                 <>Tarım Arazisi İzinlerinde Dijital Dönüşüm:<br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover inline-block mt-2">TAD Portal ve 2026 Yönetmeliği</span></>
                             ) : isSantiyeM ? (
@@ -166,8 +175,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                     <div className="w-full aspect-[16/9] mb-12 rounded-3xl overflow-hidden shadow-2xl ring-1 ring-dark-border/50 relative group">
                         <div className="absolute inset-0 bg-accent/5 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
                         <img
-                            src={isTarimArazisi ? "/images/tarim-arazisi-2026.png" : isSantiyeM ? "/hero.jpg" : isFireEscape ? "/images/yangin-merdiveni-sema.jpg" : "/images/planli-alanlar.jpg"}
-                            alt={isTarimArazisi ? "Tarım Arazisi İzinleri TAD Portal 2026" : isSantiyeM ? "Şantiye-M Dijital Şantiye Yönetimi" : isFireEscape ? "Mevcut Binaya İlave Yangın Merdiveni" : "Bağımsız Bölüm Eklentileri Garaj ve Rüzgarlık"}
+                            src={isRuhsatsizBagEvi ? "/images/ruhsatsiz-bag-evi-tarim.jpg" : isTarimArazisi ? "/images/tarim-arazisi-2026.png" : isSantiyeM ? "/hero.jpg" : isFireEscape ? "/images/yangin-merdiveni-sema.jpg" : "/images/planli-alanlar.jpg"}
+                            alt={isRuhsatsizBagEvi ? "Tarım Arazisinde Ruhsatsız Bağ Evi 2026" : isTarimArazisi ? "Tarım Arazisi İzinleri TAD Portal 2026" : isSantiyeM ? "Şantiye-M Dijital Şantiye Yönetimi" : isFireEscape ? "Mevcut Binaya İlave Yangın Merdiveni" : "Bağımsız Bölüm Eklentileri Garaj ve Rüzgarlık"}
                             className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
                         />
                     </div>
@@ -181,7 +190,121 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                         prose-ul:marker:text-accent
                         prose-li:my-1
                     ">
-                        {isTarimArazisi ? (
+                        {isRuhsatsizBagEvi ? (
+                            <>
+                                <h3 className="text-2xl font-bold mt-12 mb-6">Neler Değişti, Neden Şimdi Harekete Geçmelisiniz?</h3>
+                                <p className="text-justify">
+                                    Türkiye'nin kırsal kesimlerinde ve meyve bahçelerinin kenarlarında yüz binlerce <strong>ruhsatsız bağ evi</strong>, <strong>bungalov</strong>, dinlenme kulübesi ve hafif yapı bulunuyor. Bu yapılar, çoğunlukla arazi sahibinin kendi toprağında kurduğu, hiç ruhsat başvurusu yapılmamış ya da yarım kalmış inşaatlardır. Bugüne kadar "görmezden gelinen" bu yapılar, <strong>4 Nisan 2026</strong> tarihinde Resmi Gazete'de yayımlanan yeni tarım arazileri yönetmeliğiyle birlikte hukuki açıdan yeni bir dönemece girdi.
+                                </p>
+                                <p className="text-justify">
+                                    Yönetmelik; tarımsal yapı izinlerini <strong>TAD Portalı</strong> üzerinden merkezi bir sisteme bağlarken, tarım arazisindeki izinsiz yapıları doğrudan hedef alan denetim ve yaptırım mekanizmalarını da güçlendirdi. Peki bu değişiklik, elinizde ruhsatsız bir bağ evi olan mal sahipleri için ne anlama geliyor? Gelin adım adım inceleyelim.
+                                </p>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6">Kimler Bu Durumda?</h3>
+                                <p className="text-justify">
+                                    Yönetmeliğin doğrudan etkilediği yapı kategorileri oldukça geniş. Tarım arazisi niteliğindeki bir taşınmaz üzerinde aşağıdaki yapılardan birine sahipseniz bu makale tam size göre:
+                                </p>
+                                <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
+                                    <li className="text-justify"><strong className="text-accent-hover">Bağ evi / köy evi:</strong> Genellikle bağ, bahçe ya da zeytinlik arazisinin köşesinde, herhangi bir yapı ruhsatı alınmadan inşa edilmiş müstakil yapılar.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Bungalov / prefabrik ev:</strong> Taşınabilir ya da sabit temelli olup herhangi bir imar iznine sahip olmayan tatil amaçlı hafif yapılar.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Ürün deposu / ahır görünümlü konut:</strong> Kâğıt üzerinde tarımsal amaçlı ruhsat alınmış ancak fiilen konut olarak kullanılan yapılar.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Kısmen ruhsatlı yapılar:</strong> Temel ya da bodrum katı için izin alınmış, ancak üst katları ruhsatsız olarak tamamlanmış inşaatlar.</li>
+                                </ul>
+
+                                <p className="text-justify text-sm bg-dark-surface/40 border border-dark-border rounded-xl p-4 mt-2">
+                                    Yapınızın hukuki durumunu hızlıca öğrenmek ister misiniz? <strong><a href="https://imarmevzuat.com.tr" className="text-accent hover:text-accent-hover" target="_blank" rel="noopener noreferrer">İmar Mevzuat AI Asistanı</a></strong>'na tapu bilgilerinizi ve yapı türünüzü yazın; hangi kategoriye girdiğinizi ve hangi seçeneklere sahip olduğunuzu madde atıflı olarak öğrenin.
+                                </p>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6">4 Nisan 2026 Yönetmeliği Ruhsatsız Yapılar Hakkında Ne Diyor?</h3>
+                                <p className="text-justify">
+                                    Yeni yönetmelik, tarım arazilerindeki yapılaşmayı <strong>5403 Sayılı Toprak Koruma ve Arazi Kullanımı Kanunu</strong>'nun ruhuyla uyumlu hâle getirmeyi amaçlıyor. Düzenlemelerin ruhsatsız yapılar açısından öne çıkan üç kritik maddesi şöyle:
+                                </p>
+
+                                <h4 className="text-xl font-bold text-warm-100 mt-8 mb-4">1. Tarımsal Yapı Tanımı Daraltıldı</h4>
+                                <p className="text-justify">
+                                    Yönetmelik öncesinde "tarımsal amaçlı yapı" kavramı geniş yorumlanıyor, bu da pek çok bağ evi sahibinin ruhsat almadan yapıyı tarımsal yapı saymasına zemin hazırlıyordu. Yeni düzenlemeyle birlikte <strong>tarımsal yapı</strong> olarak kabul edilebilecek yapıların; arazi büyüklüğüne orantılı, fiilen tarımsal faaliyete hizmet ediyor olması ve TAD Portalı üzerinden kayıt altına alınmış bulunması zorunlu kılındı. Bu kriterleri karşılamayan her yapı, hukuki anlamda ruhsatsız statüsüne düşmüş oluyor.
+                                </p>
+
+                                <h4 className="text-xl font-bold text-warm-100 mt-8 mb-4">2. Denetim Yetkisi Güçlendirildi</h4>
+                                <p className="text-justify">
+                                    İl Tarım ve Orman Müdürlüklerine tanınan denetim yetkisi, yönetmelikle birlikte genişletildi. Müdürlükler artık şikâyet beklenmeksizin re'sen denetim yapabilecek; ruhsatsız yapı tespitinde <strong>yıkım kararı</strong> ve <strong>idari para cezası</strong> uygulayabilecek. Tarım arazisinin niteliğini bozduğu değerlendirilen yapılar için süreç daha hızlı işleyecek.
+                                </p>
+
+                                <h4 className="text-xl font-bold text-warm-100 mt-8 mb-4">3. Büyük Ova Koruma Alanları Sıfır Tolerans</h4>
+                                <p className="text-justify">
+                                    Konya Ovası, Çukurova, Gediz Havzası gibi <strong>Büyük Ova Koruma Alanları</strong>nda yer alan ruhsatsız yapılar için yönetmelik hiçbir istisna tanımıyor. Bu bölgelerdeki yapılar için uzlaşma ya da ruhsatlandırma yolu fiilen kapalı; yıkım kaçınılmaz hâle geliyor.
+                                </p>
+
+                                <blockquote>
+                                    <strong className="text-accent flex items-center gap-2 mb-2"><Scale size={18} />Önemli Not:</strong> Tarım arazisindeki ruhsatsız yapılar için kentsel alanlardaki gibi <strong>Yapı Kayıt Belgesi (YKB)</strong> imkânı doğrudan geçerli değildir. YKB, 3194 Sayılı İmar Kanunu kapsamında imar planı olan alanlardaki yapılar için tanımlanmış bir af mekanizmasıdır. Tarım arazisindeki yapılar öncelikle 5403 Sayılı Kanun ve yeni yönetmelik çerçevesinde değerlendirilmektedir.
+                                </blockquote>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6">Adım Adım Ne Yapmalısınız?</h3>
+                                <p className="text-justify">
+                                    Paniğe kapılmadan önce yapınızın gerçekten hangi kategoride olduğunu tespit etmek gerekiyor. Aşağıdaki adımları sırasıyla izlemenizi öneririz:
+                                </p>
+                                <ol className="space-y-4 pl-0 mt-6 marker:font-bold marker:text-accent">
+                                    <li className="pl-4 text-justify"><strong>Arazinizin niteliğini teyit edin:</strong> Tapu senedinde ve Tapu Kadastro sistemi üzerinden arazinin "tarım arazisi" mi, "marjinal tarım arazisi" mi yoksa "mutlak tarım arazisi" mi olduğunu öğrenin. Nitelik, uygulanacak kuralı doğrudan belirler.</li>
+                                    <li className="pl-4 text-justify"><strong>Yapının fiili kullanım amacını belgeleyin:</strong> Yapı gerçekten tarımsal faaliyete hizmet ediyor mu? Bu durumu faturalar, ziraat odası kayıtları veya çiftçi belgesiyle kanıtlamak sonraki aşamalarda kritik avantaj sağlayacaktır.</li>
+                                    <li className="pl-4 text-justify"><strong>TAD Portalı'nda ön kayıt başvurusu yapın:</strong> Yapınız tarımsal amaçlı ve kriterleri karşılıyorsa ön kayıt başvurusuyla devlet denetimi başlamadan süreci lehinize yönetebilirsiniz. Başvuruda ziraat mühendisi onaylı <strong>arazi etüt raporu</strong> gerekiyor.</li>
+                                    <li className="pl-4 text-justify"><strong>İl Tarım ve Orman Müdürlüğü ile iletişime geçin:</strong> Denetim başlamadan önce müdürlüğe başvurmak, süreci idari yaptırım yerine ruhsatlandırma kanalına yönlendirebilir. Özellikle küçük ölçekli ve eski yapılarda bu adım belirleyici olabilir.</li>
+                                    <li className="pl-4 text-justify"><strong>Bir imar hukukçusundan görüş alın:</strong> Her yapının hikâyesi farklıdır. Arazinin bulunduğu bölge, yapı tarihi, kullanım amacı ve yerel yönetim uygulamaları sonucu değiştiriyor. Hukuki danışmanlık almadan yıkım kararı ya da satış gibi geri dönüşü güç adımlar atmayın.</li>
+                                </ol>
+
+                                <p className="text-justify text-sm bg-dark-surface/40 border border-dark-border rounded-xl p-4 mt-2">
+                                    TAD Portalı başvurusu için hangi belgeler gerekiyor? Ziraat mühendisi raporu nasıl alınır? <strong><a href="https://imarmevzuat.com.tr" className="text-accent hover:text-accent-hover" target="_blank" rel="noopener noreferrer">İmar Mevzuat AI Asistanı</a></strong>'nda madde madde öğrenebilirsiniz. 50'den fazla güncel mevzuata anında erişim sağlar.
+                                </p>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6 flex items-center gap-3">
+                                    <span className="bg-accent/20 p-2 rounded-lg text-accent"><Scale size={24} /></span> Bir İmar Uzmanı Olarak Analiz ve Uyarılarım
+                                </h3>
+                                <p className="text-justify">Yönetmeliğin yürürlüğe girmesinin ardından danışmanlık taleplerimizin büyük bölümünün tarım arazisindeki yapılara yönelik olduğunu görüyoruz. Kritik hataları ve pratik önerilerimi paylaşmak istiyorum:</p>
+                                <ol className="space-y-4 pl-0 mt-6 marker:font-bold marker:text-accent">
+                                    <li className="pl-4 text-justify"><strong>Satıştan önce durumu netleştirin:</strong> Ruhsatsız bir tarım yapısını bilgi vermeden satmak, alıcıya karşı hukuki sorumluluk doğurabilir. Satış vaadi sözleşmesi ya da tapuda ferağ işlemi öncesinde yapının hukuki statüsü mutlaka netleştirilmeli.</li>
+                                    <li className="pl-4 text-justify"><strong>"Kimse bakmaz" algısı artık geçerli değil:</strong> TAD Portalı'nda kayıtlı olmayan tarımsal yapılar sistem tarafından otomatik olarak işaretlenebilecek. Re'sen denetim yetkisi artık yasal zemine oturdu.</li>
+                                    <li className="pl-4 text-justify"><strong>Yıkım kararı geldikten sonra seçenekler daralıyor:</strong> İdare tarafından yıkım kararı tebliğ edildikten sonra itiraz süresi oldukça kısa. İdare mahkemelerinde yürütmeyi durdurma kararı almak mümkün olmakla birlikte bu yol hem zaman hem masraf gerektiriyor. Önceden başvurmak her zaman daha az maliyetli.</li>
+                                    <li className="pl-4 text-justify"><strong>Miras yoluyla gelen yapılarda dikkat:</strong> Mirasçılar, yapıyı kullanmıyor olsalar bile idari yaptırımın muhatabı olabilir. Birden fazla mirasçı varsa aralarında uzlaşarak ortak bir başvuru yapmaları öneriliyor.</li>
+                                </ol>
+
+                                <div className="bg-dark-surface/50 border border-dark-border rounded-2xl p-5 mt-6 mb-8">
+                                    <p className="text-justify text-sm mb-0">
+                                        <strong className="text-warm-100">Bağ evinizin durumu hakkında anında analiz almak ister misiniz?</strong> İmar Mevzuat AI Asistanı; 5403 Sayılı Kanun, yeni tarım arazileri yönetmeliği ve TAD Portalı başvuru süreçlerine madde atıflı kesin yanıtlar veriyor. <a href="https://imarmevzuat.com.tr" className="text-accent hover:text-accent-hover font-semibold" target="_blank" rel="noopener noreferrer">imarmevzuat.com.tr</a> üzerinden ücretsiz deneyin.
+                                    </p>
+                                </div>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6">Marjinal Tarım Arazisindeyseniz Şans Biraz Daha Yüksek</h3>
+                                <p className="text-justify">
+                                    Araziniz <strong>marjinal tarım arazisi</strong> statüsündeyse durum görece daha avantajlı. Yönetmelik, mutlak tarım arazilerine kıyasla marjinal arazilerde tarımsal amaçlı yapılara ve küçük ölçekli <strong>tarımsal turizm</strong> (agro-turizm) tesislerine daha geniş bir kapı bırakıyor. Bungalov ve küçük konaklama ünitelerinin bu çerçevede değerlendirilebilmesi için arazi büyüklüğü, yapı yüzdesi ve Toprak Koruma Kurulu onayı kriterleri aranıyor.
+                                </p>
+                                <p className="text-justify">
+                                    Arazinizin marjinal arazi olduğunu düşünüyorsanız, <strong>Tarım Reformu Genel Müdürlüğü</strong> ve il müdürlüğü üzerinden arazi kabiliyeti sınıfı tespiti yaptırmanız ilk adım olmalı. Bu tespit, başvuru stratejinizi köklü biçimde değiştirebilir.
+                                </p>
+
+                                <div className="bg-dark-elevated p-8 rounded-3xl border border-dark-border mt-12 mb-8 text-center shadow-xl">
+                                    <h3 className="text-xl text-warm-50 font-bold mb-4 mt-0">Sonuç Olarak</h3>
+                                    <p className="text-warm-300 mb-0 text-justify">
+                                        4 Nisan 2026 yönetmeliği, tarım arazisindeki ruhsatsız yapılar konusunda "bekle-gör" dönemini fiilen kapatıyor. Yapınızın kategorisini öğrenmek, TAD Portalı'nda kayıt sürecini başlatmak ve gerekirse bir imar hukukçusundan görüş almak; şu an için en akıllıca ve en az maliyetli yol. Denetim kapınıza dayandıktan sonra seçenekler hem azalıyor hem pahalılaşıyor. Erken davrananlar her zaman daha güçlü bir konumda oluyor.
+                                    </p>
+                                </div>
+
+                                <div className="mt-8 mb-6 text-warm-400 text-sm">
+                                    <strong>Kaynak:</strong>{' '}
+                                    <a href="https://www.resmigazete.gov.tr" target="_blank" rel="noopener noreferrer">Resmî Gazete — 4 Nisan 2026 Tarım Arazileri Yönetmeliği</a>
+                                    {' · '}
+                                    <a href="https://mevzuat.gov.tr" target="_blank" rel="noopener noreferrer">5403 Sayılı Toprak Koruma ve Arazi Kullanımı Kanunu</a>
+                                </div>
+                            </>
+                        ) : isTarimArazisi ? (
                             <>
                                 <h3 className="text-2xl font-bold mt-12 mb-6">Giriş</h3>
                                 <p className="text-justify">

@@ -17,6 +17,17 @@ interface BlogPost {
 
 const blogPosts: BlogPost[] = [
     {
+        title: "Tarım Arazisindeki Ruhsatsız Bağ Eviniz Var mı? 4 Nisan 2026 Sonrası Ne Yapmalısınız?",
+        category: "Rehber",
+        readTime: "7 dk okuma",
+        date: "9 Nisan 2026",
+        author: "İmar Mevzuat Editörü",
+        image: "/images/ruhsatsiz-bag-evi-tarim.jpg",
+        desc: "4 Nisan 2026'da yürürlüğe giren tarım arazileri yönetmeliği, ruhsatsız bağ evi ve bungalov sahiplerini doğrudan etkiliyor. İşte adım adım yapmanız gerekenler.",
+        icon: <FileText size={32} />,
+        slug: "ruhsatsiz-bag-evi-tarim-arazisi-2026"
+    },
+    {
         title: "Tarım Arazisi İzinlerinde Dijital Dönüşüm: TAD Portal ve 2026 Yönetmeliği",
         category: "Güncel Değişiklikler",
         readTime: "7 dk okuma",

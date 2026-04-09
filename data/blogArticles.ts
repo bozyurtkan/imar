@@ -8,6 +8,22 @@ export interface BlogArticle {
 
 export const blogArticles: BlogArticle[] = [
   {
+    slug: "ruhsatsiz-bag-evi-tarim-arazisi-2026",
+    title: "Tarım Arazisindeki Ruhsatsız Bağ Eviniz Var mı? 4 Nisan 2026 Sonrası Ne Yapmalısınız?",
+    desc: "4 Nisan 2026'da yürürlüğe giren tarım arazileri yönetmeliği, ruhsatsız bağ evi ve bungalov sahiplerini doğrudan etkiliyor. İşte adım adım yapmanız gerekenler.",
+    keywords: [
+      "ruhsatsız bağ evi", "ruhsatsiz bag evi", "tarım arazisi yapı", "tarim arazisi yapi",
+      "bağ evi ruhsat", "bag evi ruhsat", "bungalov tarım", "bungalov tarim",
+      "tarımsal yapı izni", "tarimsal yapi izni", "TAD portal", "tad portal",
+      "yapı kayıt belgesi", "yapi kayit belgesi", "5403 sayılı kanun", "5403 sayili kanun",
+      "yıkım kararı", "yikim karari", "tarım arazisi 2026", "tarim arazisi 2026",
+      "bag evi yikim", "bağ evi yıkım", "ruhsatsız yapı tarım", "ruhsatsiz yapi tarim",
+      "marjinal tarım arazisi", "marjinal tarim arazisi", "tarımsal turizm", "tarimsal turizm",
+      "tarım arazisi ruhsatsız", "tarim arazisi ruhsatsiz"
+    ],
+    url: "/makale/ruhsatsiz-bag-evi-tarim-arazisi-2026"
+  },
+  {
     slug: "tarim-arazisi-tad-portal-2026",
     title: "Tarım Arazisi İzinlerinde Dijital Dönüşüm: TAD Portal ve 2026 Yönetmeliği",
     desc: "4 Nisan 2026'da yürürlüğe giren yeni yönetmelikle tarım arazisi izinleri TAD Portal üzerinden merkezi sisteme taşındı. Marjinal arazi, çatı GES ve toprak koruma projelerine yönelik yeni kurallar.",
