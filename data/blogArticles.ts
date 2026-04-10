@@ -8,6 +8,29 @@ export interface BlogArticle {
 
 export const blogArticles: BlogArticle[] = [
   {
+    slug: "chatgpt-imar-sorusu-tehlikeli",
+    title: "ChatGPT'ye İmar Sorusu Sormak Neden Tehlikeli?",
+    desc: "Genel yapay zeka modelleri imar hukukunda madde hatası, güncellik sorunu ve halüsinasyon riski taşır. İmarmevzuat.ai bu farkı nasıl kapatıyor?",
+    keywords: [
+      "imar sorusu yapay zeka", "imar sorusu yapay zeka",
+      "chatgpt imar hatası", "chatgpt imar hatasi",
+      "chatgpt mevzuat güvenilir mi", "chatgpt mevzuat guvenilir mi",
+      "yapay zeka imar hukuku", "yapay zeka imar hukuku",
+      "imar mevzuatı", "imar mevzuati",
+      "halüsinasyon yapay zeka", "halusinasyon yapay zeka",
+      "imarmevzuat ai", "imarmevzuat.ai",
+      "3194 sayılı kanun", "3194 sayili kanun",
+      "imar kanunu madde", "imar kanunu madde",
+      "yapay zeka hukuk", "yapay zeka hukuk",
+      "legaltech türkiye", "legaltech turkiye",
+      "mevzuat güncelleme", "mevzuat guncelleme",
+      "imar araştırma", "imar arastirma",
+      "chatgpt imar", "gemini imar",
+      "yapay zeka mevzuat", "madde hatası imar"
+    ],
+    url: "/makale/chatgpt-imar-sorusu-tehlikeli"
+  },
+  {
     slug: "ruhsatsiz-bag-evi-tarim-arazisi-2026",
     title: "Tarım Arazisindeki Ruhsatsız Bağ Eviniz Var mı? 4 Nisan 2026 Sonrası Ne Yapmalısınız?",
     desc: "4 Nisan 2026'da yürürlüğe giren tarım arazileri yönetmeliği, ruhsatsız bağ evi ve bungalov sahiplerini doğrudan etkiliyor. İşte adım adım yapmanız gerekenler.",

@@ -11,16 +11,19 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
     const isSantiyeM = slug === 'santiye-m-dijital-donusum';
     const isTarimArazisi = slug === 'tarim-arazisi-tad-portal-2026';
     const isRuhsatsizBagEvi = slug === 'ruhsatsiz-bag-evi-tarim-arazisi-2026';
+    const isChatgptImarSorusuTehlikeli = slug === 'chatgpt-imar-sorusu-tehlikeli';
 
     // SEO: Structured Data (Article Schema)
     useEffect(() => {
         const headlines: Record<string, string> = {
+            'chatgpt-imar-sorusu-tehlikeli': "ChatGPT'ye İmar Sorusu Sormak Neden Tehlikeli?",
             'ruhsatsiz-bag-evi-tarim-arazisi-2026': "Tarım Arazisindeki Ruhsatsız Bağ Eviniz Var mı? 4 Nisan 2026 Sonrası Ne Yapmalısınız?",
             'tarim-arazisi-tad-portal-2026': "Tarım Arazisi İzinlerinde Dijital Dönüşüm: TAD Portal ve 2026 Yönetmeliği",
             'mevcut-binalarda-yangin-merdiveni-esnekligi': "Mevcut Binalarda Yangın Merdiveni Çıkmazı Bitiyor: Bahçe Mesafelerinde Yeni Esneklik!",
             'santiye-m-dijital-donusum': "Şantiye-M Uygulaması ile İnşaat Sektöründe Dijital Dönüşüm: Yeni Şantiye Defteri ve Düzenlemeler",
         };
         const descriptions: Record<string, string> = {
+            'chatgpt-imar-sorusu-tehlikeli': "Genel yapay zeka modelleri imar hukukunda madde hatası, güncellik sorunu ve halüsinasyon riski taşır. İmarmevzuat.ai bu farkı nasıl kapatıyor?",
             'ruhsatsiz-bag-evi-tarim-arazisi-2026': "4 Nisan 2026'da yürürlüğe giren tarım arazileri yönetmeliği, ruhsatsız bağ evi ve bungalov sahiplerini doğrudan etkiliyor. İşte adım adım yapmanız gerekenler.",
             'tarim-arazisi-tad-portal-2026': "4 Nisan 2026'da yürürlüğe giren yeni yönetmelikle tarım arazisi izinleri TAD Portal üzerinden merkezi sisteme taşındı. Marjinal arazi, çatı GES ve toprak koruma projelerine yönelik yeni kurallar.",
             'mevcut-binalarda-yangin-merdiveni-esnekligi': "Mevcut yapılarda yangın merdiveni zorunluluğu durumunda bahçe mesafesi ihlallerine getirilen 1.50m ve 3.00m istisnaları.",
@@ -33,7 +36,9 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
             "headline": headlines[slug || ''] || "Müstakil Ev Sahiplerine İmar Müjdesi: Garaj ve Rüzgarlıkta Ruhsat Süreci Bitti!",
             "image": {
                 "@type": "ImageObject",
-                "url": isRuhsatsizBagEvi
+                "url": isChatgptImarSorusuTehlikeli
+                    ? "https://imarmevzuat.com.tr/images/chatgpt.jpg"
+                    : isRuhsatsizBagEvi
                     ? "https://imarmevzuat.com.tr/images/ruhsatsiz-bag-evi-tarim.jpg"
                     : isTarimArazisi
                     ? "https://imarmevzuat.com.tr/images/tarim-arazisi-2026.png"
@@ -55,12 +60,13 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                     "url": "https://imarmevzuat.com.tr/favicon.svg"
                 }
             },
-            "datePublished": isRuhsatsizBagEvi ? "2026-04-09" : isTarimArazisi ? "2026-04-06" : isSantiyeM ? "2026-03-24" : "2026-01-14",
-            "dateModified": isRuhsatsizBagEvi ? "2026-04-09" : isTarimArazisi ? "2026-04-06" : isSantiyeM ? "2026-03-24" : "2026-03-13",
+            "datePublished": isChatgptImarSorusuTehlikeli ? "2026-04-10" : isRuhsatsizBagEvi ? "2026-04-09" : isTarimArazisi ? "2026-04-06" : isSantiyeM ? "2026-03-24" : "2026-01-14",
+            "dateModified": isChatgptImarSorusuTehlikeli ? "2026-04-10" : isRuhsatsizBagEvi ? "2026-04-09" : isTarimArazisi ? "2026-04-06" : isSantiyeM ? "2026-03-24" : "2026-03-13",
             "description": descriptions[slug || ''] || "Planlı Alanlar İmar Yönetmeliği 2026 değişikliği ile müstakil konutlarda ruhsatsız garaj ve rüzgarlık yapımı dönemi başladı."
         };
 
         const articleTitles: Record<string, string> = {
+            'chatgpt-imar-sorusu-tehlikeli': "ChatGPT ve İmar Sorusu Tehlikesi",
             'ruhsatsiz-bag-evi-tarim-arazisi-2026': "Tarım Arazisinde Ruhsatsız Bağ Evi 2026",
             'tarim-arazisi-tad-portal-2026': "Tarım Arazisi TAD Portal 2026",
             'mevcut-binalarda-yangin-merdiveni-esnekligi': "Mevcut Binalarda Yangın Merdiveni Esnekliği",
@@ -146,13 +152,16 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                     <div className="mb-10 text-center space-y-4">
                         <div className="flex items-center justify-center gap-4 text-xs sm:text-sm font-medium text-warm-400 mb-6">
                             <span className="bg-accent/10 text-accent px-3 py-1 rounded-full border border-accent/20 uppercase tracking-widest">
-                                {isRuhsatsizBagEvi ? 'Rehber' : isTarimArazisi ? 'Güncel Değişiklikler' : isSantiyeM ? 'Güncel Değişiklikler' : 'Mevzuat Analizi'}
+                                {isChatgptImarSorusuTehlikeli ? 'Rehber' : isRuhsatsizBagEvi ? 'Rehber' : isTarimArazisi ? 'Güncel Değişiklikler' : isSantiyeM ? 'Güncel Değişiklikler' : 'Mevzuat Analizi'}
                             </span>
-                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Calendar size={14} /> {isRuhsatsizBagEvi ? '9 Nisan 2026' : isTarimArazisi ? '6 Nisan 2026' : isSantiyeM ? '24 Mart 2026' : '14 Ocak 2026'}</span>
-                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Clock size={14} /> {isRuhsatsizBagEvi ? '7 dk okuma' : isTarimArazisi ? '7 dk okuma' : isSantiyeM ? '5 dk okuma' : '8 dk okuma'}</span>
+                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Calendar size={14} /> {isChatgptImarSorusuTehlikeli ? '10 Nisan 2026' : isRuhsatsizBagEvi ? '9 Nisan 2026' : isTarimArazisi ? '6 Nisan 2026' : isSantiyeM ? '24 Mart 2026' : '14 Ocak 2026'}</span>
+                            <span className="flex items-center gap-1.5 border border-dark-border px-3 py-1 rounded-full"><Clock size={14} /> {isChatgptImarSorusuTehlikeli ? '6 dk okuma' : isRuhsatsizBagEvi ? '7 dk okuma' : isTarimArazisi ? '7 dk okuma' : isSantiyeM ? '5 dk okuma' : '8 dk okuma'}</span>
                         </div>
                         <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-warm-50 tracking-tight leading-[1.15]">
-                            {isRuhsatsizBagEvi ? (
+                            {isChatgptImarSorusuTehlikeli ? (
+                                <>ChatGPT'ye İmar Sorusu Sormak<br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover inline-block mt-2">Neden Tehlikeli?</span></>
+                            ) : isRuhsatsizBagEvi ? (
                                 <>Tarım Arazisindeki Ruhsatsız Bağ Eviniz Var mı?<br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover inline-block mt-2">4 Nisan 2026 Sonrası Ne Yapmalısınız?</span></>
                             ) : isTarimArazisi ? (
@@ -175,8 +184,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                     <div className="w-full aspect-[16/9] mb-12 rounded-3xl overflow-hidden shadow-2xl ring-1 ring-dark-border/50 relative group">
                         <div className="absolute inset-0 bg-accent/5 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
                         <img
-                            src={isRuhsatsizBagEvi ? "/images/ruhsatsiz-bag-evi-tarim.jpg" : isTarimArazisi ? "/images/tarim-arazisi-2026.png" : isSantiyeM ? "/hero.jpg" : isFireEscape ? "/images/yangin-merdiveni-sema.jpg" : "/images/planli-alanlar.jpg"}
-                            alt={isRuhsatsizBagEvi ? "Tarım Arazisinde Ruhsatsız Bağ Evi 2026" : isTarimArazisi ? "Tarım Arazisi İzinleri TAD Portal 2026" : isSantiyeM ? "Şantiye-M Dijital Şantiye Yönetimi" : isFireEscape ? "Mevcut Binaya İlave Yangın Merdiveni" : "Bağımsız Bölüm Eklentileri Garaj ve Rüzgarlık"}
+                            src={isChatgptImarSorusuTehlikeli ? "/images/chatgpt.jpg" : isRuhsatsizBagEvi ? "/images/ruhsatsiz-bag-evi-tarim.jpg" : isTarimArazisi ? "/images/tarim-arazisi-2026.png" : isSantiyeM ? "/hero.jpg" : isFireEscape ? "/images/yangin-merdiveni-sema.jpg" : "/images/planli-alanlar.jpg"}
+                            alt={isChatgptImarSorusuTehlikeli ? "ChatGPT İmar Sorusu Tehlikesi" : isRuhsatsizBagEvi ? "Tarım Arazisinde Ruhsatsız Bağ Evi 2026" : isTarimArazisi ? "Tarım Arazisi İzinleri TAD Portal 2026" : isSantiyeM ? "Şantiye-M Dijital Şantiye Yönetimi" : isFireEscape ? "Mevcut Binaya İlave Yangın Merdiveni" : "Bağımsız Bölüm Eklentileri Garaj ve Rüzgarlık"}
                             className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
                         />
                     </div>
@@ -190,7 +199,166 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                         prose-ul:marker:text-accent
                         prose-li:my-1
                     ">
-                        {isRuhsatsizBagEvi ? (
+                        {isChatgptImarSorusuTehlikeli ? (
+                            <>
+                                <h3 className="text-2xl font-bold mt-12 mb-6">Yapay Zekaya İmar Sorusu Sordunuz. Emin misiniz?</h3>
+                                <p className="text-justify">
+                                    Türkiye'de her yıl 500.000'i aşkın yapı ruhsatı başvurusu yapılıyor. Her başvurunun arkasında onlarca mevzuat sorusu var: çekme mesafesi, emsal, TAKS/KAKS, DOP oranı, ruhsat gereklilikleri... Bu sorulara yanıt bulmak için giderek daha fazla profesyonel ChatGPT'ye veya Gemini'ye başvuruyor. Hızlı, ücretsiz, Türkçe yanıt veriyor — kulağa mantıklı geliyor.
+                                </p>
+                                <p className="text-justify">
+                                    Ama imar hukukunda bu tercih ciddi risk taşıyor. Genel yapay zeka modellerinin neden yetersiz kaldığını ve bu sorunu çözmek için tasarlanmış özel bir platformun nasıl farklılaştığını, somut örneklerle birlikte inceleyelim.
+                                </p>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6">Sorun 1: Halüsinasyon — Uydurulmuş Madde Numaraları</h3>
+                                <p className="text-justify">
+                                    Genel YZ modelleri "halüsinasyon" adı verilen bir soruna sahiptir: var olmayan bilgiyi gerçekmiş gibi sunar. İmar hukukunda bu özellikle tehlikelidir. Model size "3194 Sayılı Kanun Madde 42/A" diyebilir — bu madde hiç var olmayabilir ya da tamamen farklı bir konuyu düzenliyor olabilir.
+                                </p>
+                                <blockquote>
+                                    <strong className="text-accent flex items-center gap-2 mb-2"><Scale size={18} />Gerçek Senaryo:</strong> Bir mimar, ChatGPT'den tevhit işleminde DOP oranını sordu. Model belirli bir yüzde verdi ve madde numarası sundu. Mimar bu bilgiyle belediyeye başvurdu. Belediye itiraz etti: verilen madde 2021'de değiştirilmişti, yeni oran farklıydı. <strong className="text-accent-hover">Sonuç: proje revizyonu, haftalarca gecikme.</strong>
+                                </blockquote>
+                                <h4 className="text-xl font-bold text-warm-100 mt-8 mb-4">İmarmevzuat.ai Yaklaşımı</h4>
+                                <p className="text-justify">
+                                    Her yanıt gerçek kanun maddesine atıfla gelir. <strong className="text-accent-hover">"3194 Sayılı Kanun Madde 18'e göre..."</strong> formatında, kaynağı doğrulanabilir. Platform bilmediğini bilir — emin olmadığı durumlarda sizi uyarır.
+                                </p>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6">Sorun 2: Güncellik — Değişen Mevzuatı Bilmiyorlar</h3>
+                                <p className="text-justify">
+                                    ChatGPT ve Gemini'nin eğitim verisi belirli bir tarihte kesilir. 2024 veya 2025'te yürürlüğe giren bir yönetmelik değişikliğini bilmiyorlar. Türkiye'de imar mevzuatı ise sık değişiyor:
+                                </p>
+                                <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
+                                    <li className="text-justify"><strong className="text-accent-hover">Planlı Alanlar İmar Yönetmeliği</strong> defalarca güncellendi.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Deprem yönetmeliği</strong> ile imar yönetmeliği kesişim noktaları revize edildi.</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Bakanlık genelgeleri</strong> mevcut uygulamaları anlık değiştirebiliyor.</li>
+                                </ul>
+                                <p className="text-justify">
+                                    Pratik sonuç açık: genel model size 2022'deki çekme mesafesi kuralını verebilir — 2024'teki değişikliği bilmeden.
+                                </p>
+                                <h4 className="text-xl font-bold text-warm-100 mt-8 mb-4">İmarmevzuat.ai Yaklaşımı</h4>
+                                <p className="text-justify">
+                                    Her gün Resmi Gazete otomatik olarak taranır. İmar mevzuatını etkileyen yayınlar sisteme entegre edilir. Web araması entegrasyonu ile <strong className="text-accent-hover">mevzuat.gov.tr, Danıştay karar bankası ve Bakanlık duyuruları</strong> eş zamanlı sorgulanır.
+                                </p>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6">Sorun 3: Mülga Hükümler — Yürürlükten Kalkmış Kurallar</h3>
+                                <p className="text-justify">
+                                    Genel modeller, bir maddenin hâlâ yürürlükte olup olmadığını güvenilir biçimde ayırt edemez. İmar hukukunda mülga (yürürlükten kalkmış) madde sunmak ciddi sonuçlar doğurabilir:
+                                </p>
+                                <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
+                                    <li className="text-justify">Yanlış hesaplama ile proje hazırlanması ve belediye reddi</li>
+                                    <li className="text-justify">Geçersiz hukuki dayanak ile idareye başvuru</li>
+                                    <li className="text-justify">Avukatlık süreçlerinde hatalı içtihat kullanımı, mahkeme kaybı</li>
+                                </ul>
+                                <p className="text-justify">
+                                    Platform yalnızca güncel, yürürlükteki hükümleri sunar. Mülga maddeler işaretlenir. <strong className="text-accent-hover">Eski-yeni metin karşılaştırması</strong> özelliği ile bir maddenin ne zaman, nasıl değiştiği renk kodlu olarak gösterilir.
+                                </p>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6">Sorun 4: Çok Kanunlu Vakalar — Bağlamı Kaçırıyorlar</h3>
+                                <p className="text-justify">
+                                    Basit bir imar sorusu bile birden fazla mevzuatı kesiştirebilir. Genel modeller bu çapraz bağlantıları çoğu zaman kaçırır ya da tek boyutlu yanıt verir:
+                                </p>
+                                <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
+                                    <li className="text-justify">3194 Sayılı İmar Kanunu</li>
+                                    <li className="text-justify">Planlı Alanlar İmar Yönetmeliği</li>
+                                    <li className="text-justify">Yapı Denetimi Hakkında Kanun</li>
+                                    <li className="text-justify">Deprem Yönetmeliği</li>
+                                    <li className="text-justify">Belediye sınırlarına göre değişen imar planı hükümleri</li>
+                                </ul>
+                                <h4 className="text-xl font-bold text-warm-100 mt-8 mb-4">İmarmevzuat.ai — Derin Düşünme Modu</h4>
+                                <p className="text-justify">
+                                    Karmaşık vakalar 6 adımda incelenir — bir avukatın vakaya bakarken attığı adımların otomatikleştirilmiş hali:
+                                </p>
+                                <ol className="space-y-4 pl-0 mt-6 marker:font-bold marker:text-accent">
+                                    <li className="pl-4 text-justify"><strong>Konu tanımı</strong></li>
+                                    <li className="pl-4 text-justify"><strong>Yasal dayanak</strong> (çoklu mevzuat kontrolü)</li>
+                                    <li className="pl-4 text-justify"><strong>Güncel içtihat</strong> araştırması</li>
+                                    <li className="pl-4 text-justify"><strong>Lehte / aleyhte</strong> yorumlar</li>
+                                    <li className="pl-4 text-justify"><strong>Risk değerlendirmesi</strong></li>
+                                    <li className="pl-4 text-justify"><strong>Profesyonel sonuç</strong> raporu</li>
+                                </ol>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6">Sorun 5: Veri Gizliliği — Müvekkil Bilgisi Nereye Gidiyor?</h3>
+                                <p className="text-justify">
+                                    ChatGPT'ye bir parsel numarası, müvekkil ismi veya dava detayı girdiğinizde bu bilgi OpenAI sunucularına gidiyor. Varsayılan ayarlarda bu veri model eğitiminde kullanılabiliyor. Hukuk büroları, mimarlık ofisleri ve kamu kurumları için bu ciddi bir uyumluluk sorunudur.
+                                </p>
+                                <p className="text-justify">
+                                    <strong className="text-accent-hover">İmarmevzuat.ai'de:</strong> Sorgular hiçbir zaman AI eğitiminde kullanılmaz. Veriler gizli kalır. Bu bir politika taahhüdüdür — hizmet şartlarında yazılıdır.
+                                </p>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6 flex items-center gap-3">
+                                    <span className="bg-accent/20 p-2 rounded-lg text-accent"><Scale size={24} /></span> Karşılaştırma: İmarmevzuat.ai vs ChatGPT / Gemini
+                                </h3>
+                                <div className="overflow-x-auto rounded-2xl border border-dark-border mt-4 mb-8">
+                                    <table className="w-full text-sm">
+                                        <thead className="bg-dark-elevated">
+                                            <tr>
+                                                <th className="text-left p-4 font-bold text-warm-100 border-b border-dark-border">Kriter</th>
+                                                <th className="text-left p-4 font-bold text-green-400 border-b border-dark-border">İmarmevzuat.ai</th>
+                                                <th className="text-left p-4 font-bold text-amber-400 border-b border-dark-border">ChatGPT / Gemini</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">İmar bilgisi derinliği</td><td className="p-4 text-green-300">Yalnızca imar hukuku ve mevzuatına özel</td><td className="p-4 text-warm-400">Genel, yüzeysel imar bilgisi</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Yanıt doğruluğu</td><td className="p-4 text-green-300">Madde atıflı, halüsinasyon riski minimize</td><td className="p-4 text-warm-400">Madde hatası ve halüsinasyon riski yüksek</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Güncellik</td><td className="p-4 text-green-300">Günlük Resmi Gazete takibi, canlı veri</td><td className="p-4 text-warm-400">Eğitim verisi kesilmiş, eski kararlar</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Mülga madde riski</td><td className="p-4 text-green-300">Minimize edilmiş, yürürlük kontrolü var</td><td className="p-4 text-warm-400">Yüksek — eski hüküm sunabilir</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Karmaşık vaka analizi</td><td className="p-4 text-green-300">Derin Düşünme Modu, çapraz mevzuat</td><td className="p-4 text-warm-400">Tek boyutlu, bağlam kaçırır</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Belge analizi</td><td className="p-4 text-green-300">PDF/Word yükle, madde madde sorgula</td><td className="p-4 text-warm-400">Sınırlı bağlam penceresi</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Mevzuat karşılaştırması</td><td className="p-4 text-green-300">Renk kodlu otomatik fark gösterimi</td><td className="p-4 text-warm-400">Manuel, kısmi</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Canlı web entegrasyonu</td><td className="p-4 text-green-300">Danıştay, Bakanlık, Resmi Gazete</td><td className="p-4 text-warm-400">İmar kaynakları filtrelemede sorunlu</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Görsel mevzuat haritası</td><td className="p-4 text-green-300">İnteraktif Knowledge Graph</td><td className="p-4 text-warm-400">Yok</td></tr>
+                                            <tr><td className="p-4 font-semibold text-warm-200">Veri gizliliği</td><td className="p-4 text-green-300">Sorgular eğitimde kullanılmaz</td><td className="p-4 text-warm-400">Varsayılan ayarlar değişkendir</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6">"Ama ChatGPT Ücretsiz" — Gerçek Maliyet Hesabı</h3>
+                                <p className="text-justify">
+                                    Genel modeller ücretsiz görünür. Ama hata maliyeti ücretsiz değildir.
+                                </p>
+                                <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-8">
+                                    <li className="text-justify"><strong className="text-accent-hover">Mimar senaryosu:</strong> Yanlış emsal bilgisiyle hazırlanan proje → Belediye reddi → Revizyon süreci → ~10.000₺ maliyet</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Avukat senaryosu:</strong> Mülga maddeyle hazırlanan itiraz dilekçesi → Mahkeme reddi → Müvekkil güven kaybı</li>
+                                </ul>
+
+                                <hr className="border-dark-border my-10" />
+
+                                <h3 className="text-2xl font-bold mt-10 mb-6 flex items-center gap-3">
+                                    <span className="bg-accent/20 p-2 rounded-lg text-accent"><Scale size={24} /></span> Hangi Durumda Genel YZ Kullanılabilir?
+                                </h3>
+                                <p className="text-justify">
+                                    Dürüst olmak gerekir: genel modeller bazı senaryolarda işe yarar. Aşağıdaki sınırı net çizmek önemli:
+                                </p>
+                                <ul className="space-y-3 bg-dark-surface/30 p-6 rounded-2xl border border-dark-border mt-4 mb-4">
+                                    <li className="text-justify"><strong className="text-accent-hover">Uygun:</strong> Genel bir imar kavramını öğrenmek, terim tanımına bakmak, mevzuat dışı konularda yardım almak</li>
+                                    <li className="text-justify"><strong className="text-accent-hover">Riskli:</strong> Spesifik madde numarasına ihtiyaç, güncel yönetmelik hükmü, hukuki dayanak oluşturma, müvekkil bilgisi paylaşma</li>
+                                </ul>
+
+                                <div className="bg-dark-elevated p-8 rounded-3xl border border-dark-border mt-12 mb-8 text-center shadow-xl">
+                                    <h3 className="text-xl text-warm-50 font-bold mb-4 mt-0">Sonuç Olarak</h3>
+                                    <p className="text-warm-300 mb-0 text-justify">
+                                        Genel yapay zeka modelleri güçlü araçlardır — ama imar hukuku için tasarlanmamıştır. İmar mevzuatı, günlük değişen hükümler, karmaşık çapraz atıflar ve hata toleransı sıfır olan pratik sonuçlarla birlikte özel bir uzmanlık gerektirir. İmarmevzuat.ai bu boşluğu kapatmak için inşa edildi: Türkiye'nin ilk ve tek yapay zeka destekli imar hukuku platformu — madde atıflı, güncel, halüsinasyon-minimal. Ücretsiz planla başlayın, farkı kendiniz görün.
+                                    </p>
+                                </div>
+
+                                <div className="mt-8 mb-6 text-warm-400 text-sm">
+                                    <strong>Kaynak:</strong>{' '}
+                                    <a href="https://mevzuat.gov.tr" target="_blank" rel="noopener noreferrer">T.C. Çevre, Şehircilik ve İklim Değişikliği Bakanlığı — mevzuat.gov.tr</a>
+                                </div>
+                            </>
+                        ) : isRuhsatsizBagEvi ? (
                             <>
                                 <h3 className="text-2xl font-bold mt-12 mb-6">Neler Değişti, Neden Şimdi Harekete Geçmelisiniz?</h3>
                                 <p className="text-justify">

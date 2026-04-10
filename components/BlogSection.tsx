@@ -17,6 +17,17 @@ interface BlogPost {
 
 const blogPosts: BlogPost[] = [
     {
+        title: "ChatGPT'ye İmar Sorusu Sormak Neden Tehlikeli?",
+        category: "Rehber",
+        readTime: "6 dk okuma",
+        date: "10 Nisan 2026",
+        author: "İmar Mevzuat Editörü",
+        image: "/images/chatgpt.jpg",
+        desc: "Genel yapay zeka modelleri imar hukukunda madde hatası, güncellik sorunu ve halüsinasyon riski taşır. İmarmevzuat.ai bu farkı nasıl kapatıyor?",
+        icon: <FileText size={32} />,
+        slug: "chatgpt-imar-sorusu-tehlikeli"
+    },
+    {
         title: "Tarım Arazisindeki Ruhsatsız Bağ Eviniz Var mı? 4 Nisan 2026 Sonrası Ne Yapmalısınız?",
         category: "Rehber",
         readTime: "7 dk okuma",
