@@ -218,7 +218,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                                 <blockquote>
                                     <strong className="text-accent flex items-center gap-2 mb-2"><Scale size={18} />Gerçek Senaryo:</strong> Bir mimar, ChatGPT'den tevhit işleminde DOP oranını sordu. Model belirli bir yüzde verdi ve madde numarası sundu. Mimar bu bilgiyle belediyeye başvurdu. Belediye itiraz etti: verilen madde 2021'de değiştirilmişti, yeni oran farklıydı. <strong className="text-accent-hover">Sonuç: proje revizyonu, haftalarca gecikme.</strong>
                                 </blockquote>
-                                <h4 className="text-xl font-bold text-warm-100 mt-8 mb-4">İmarmevzuat.ai Yaklaşımı</h4>
+                                <h4 className="text-xl font-bold text-warm-100 mt-8 mb-4">imarmevzuat.com.tr Yaklaşımı</h4>
                                 <p className="text-justify">
                                     Her yanıt gerçek kanun maddesine atıfla gelir. <strong className="text-accent-hover">"3194 Sayılı Kanun Madde 18'e göre..."</strong> formatında, kaynağı doğrulanabilir. Platform bilmediğini bilir — emin olmadığı durumlarda sizi uyarır.
                                 </p>
@@ -237,7 +237,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                                 <p className="text-justify">
                                     Pratik sonuç açık: genel model size 2022'deki çekme mesafesi kuralını verebilir — 2024'teki değişikliği bilmeden.
                                 </p>
-                                <h4 className="text-xl font-bold text-warm-100 mt-8 mb-4">İmarmevzuat.ai Yaklaşımı</h4>
+                                <h4 className="text-xl font-bold text-warm-100 mt-8 mb-4">imarmevzuat.com.tr Yaklaşımı</h4>
                                 <p className="text-justify">
                                     Her gün Resmi Gazete otomatik olarak taranır. İmar mevzuatını etkileyen yayınlar sisteme entegre edilir. Web araması entegrasyonu ile <strong className="text-accent-hover">mevzuat.gov.tr, Danıştay karar bankası ve Bakanlık duyuruları</strong> eş zamanlı sorgulanır.
                                 </p>
@@ -270,7 +270,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                                     <li className="text-justify">Deprem Yönetmeliği</li>
                                     <li className="text-justify">Belediye sınırlarına göre değişen imar planı hükümleri</li>
                                 </ul>
-                                <h4 className="text-xl font-bold text-warm-100 mt-8 mb-4">İmarmevzuat.ai — Derin Düşünme Modu</h4>
+                                <h4 className="text-xl font-bold text-warm-100 mt-8 mb-4">imarmevzuat.com.tr — Derin Düşünme Modu</h4>
                                 <p className="text-justify">
                                     Karmaşık vakalar 6 adımda incelenir — bir avukatın vakaya bakarken attığı adımların otomatikleştirilmiş hali:
                                 </p>
@@ -290,34 +290,34 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                                     ChatGPT'ye bir parsel numarası, müvekkil ismi veya dava detayı girdiğinizde bu bilgi OpenAI sunucularına gidiyor. Varsayılan ayarlarda bu veri model eğitiminde kullanılabiliyor. Hukuk büroları, mimarlık ofisleri ve kamu kurumları için bu ciddi bir uyumluluk sorunudur.
                                 </p>
                                 <p className="text-justify">
-                                    <strong className="text-accent-hover">İmarmevzuat.ai'de:</strong> Sorgular hiçbir zaman AI eğitiminde kullanılmaz. Veriler gizli kalır. Bu bir politika taahhüdüdür — hizmet şartlarında yazılıdır.
+                                    <strong className="text-accent-hover">imarmevzuat.com.tr'de:</strong> Sorgular hiçbir zaman AI eğitiminde kullanılmaz. Veriler gizli kalır. Bu bir politika taahhüdüdür — hizmet şartlarında yazılıdır.
                                 </p>
 
                                 <hr className="border-dark-border my-10" />
 
                                 <h3 className="text-2xl font-bold mt-10 mb-6 flex items-center gap-3">
-                                    <span className="bg-accent/20 p-2 rounded-lg text-accent"><Scale size={24} /></span> Karşılaştırma: İmarmevzuat.ai vs ChatGPT / Gemini
+                                    <span className="bg-accent/20 p-2 rounded-lg text-accent"><Scale size={24} /></span> Karşılaştırma: imarmevzuat.com.tr vs ChatGPT / Gemini
                                 </h3>
                                 <div className="overflow-x-auto rounded-2xl border border-dark-border mt-4 mb-8">
                                     <table className="w-full text-sm">
                                         <thead className="bg-dark-elevated">
                                             <tr>
-                                                <th className="text-left p-4 font-bold text-warm-100 border-b border-dark-border">Kriter</th>
-                                                <th className="text-left p-4 font-bold text-green-400 border-b border-dark-border">İmarmevzuat.ai</th>
-                                                <th className="text-left p-4 font-bold text-amber-400 border-b border-dark-border">ChatGPT / Gemini</th>
+                                                <th className="text-left p-4 font-bold border-b border-dark-border" style={{ color: 'var(--text-primary)' }}>Kriter</th>
+                                                <th className="text-left p-4 font-bold border-b border-dark-border" style={{ color: '#15803d' }}>imarmevzuat.com.tr</th>
+                                                <th className="text-left p-4 font-bold border-b border-dark-border" style={{ color: '#b45309' }}>ChatGPT / Gemini</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">İmar bilgisi derinliği</td><td className="p-4 text-green-300">Yalnızca imar hukuku ve mevzuatına özel</td><td className="p-4 text-warm-400">Genel, yüzeysel imar bilgisi</td></tr>
-                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Yanıt doğruluğu</td><td className="p-4 text-green-300">Madde atıflı, halüsinasyon riski minimize</td><td className="p-4 text-warm-400">Madde hatası ve halüsinasyon riski yüksek</td></tr>
-                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Güncellik</td><td className="p-4 text-green-300">Günlük Resmi Gazete takibi, canlı veri</td><td className="p-4 text-warm-400">Eğitim verisi kesilmiş, eski kararlar</td></tr>
-                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Mülga madde riski</td><td className="p-4 text-green-300">Minimize edilmiş, yürürlük kontrolü var</td><td className="p-4 text-warm-400">Yüksek — eski hüküm sunabilir</td></tr>
-                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Karmaşık vaka analizi</td><td className="p-4 text-green-300">Derin Düşünme Modu, çapraz mevzuat</td><td className="p-4 text-warm-400">Tek boyutlu, bağlam kaçırır</td></tr>
-                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Belge analizi</td><td className="p-4 text-green-300">PDF/Word yükle, madde madde sorgula</td><td className="p-4 text-warm-400">Sınırlı bağlam penceresi</td></tr>
-                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Mevzuat karşılaştırması</td><td className="p-4 text-green-300">Renk kodlu otomatik fark gösterimi</td><td className="p-4 text-warm-400">Manuel, kısmi</td></tr>
-                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Canlı web entegrasyonu</td><td className="p-4 text-green-300">Danıştay, Bakanlık, Resmi Gazete</td><td className="p-4 text-warm-400">İmar kaynakları filtrelemede sorunlu</td></tr>
-                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold text-warm-200">Görsel mevzuat haritası</td><td className="p-4 text-green-300">İnteraktif Knowledge Graph</td><td className="p-4 text-warm-400">Yok</td></tr>
-                                            <tr><td className="p-4 font-semibold text-warm-200">Veri gizliliği</td><td className="p-4 text-green-300">Sorgular eğitimde kullanılmaz</td><td className="p-4 text-warm-400">Varsayılan ayarlar değişkendir</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold" style={{ color: 'var(--text-primary)' }}>İmar bilgisi derinliği</td><td className="p-4" style={{ color: '#16a34a' }}>Yalnızca imar hukuku ve mevzuatına özel</td><td className="p-4" style={{ color: 'var(--text-secondary)' }}>Genel, yüzeysel imar bilgisi</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold" style={{ color: 'var(--text-primary)' }}>Yanıt doğruluğu</td><td className="p-4" style={{ color: '#16a34a' }}>Madde atıflı, halüsinasyon riski minimize</td><td className="p-4" style={{ color: 'var(--text-secondary)' }}>Madde hatası ve halüsinasyon riski yüksek</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold" style={{ color: 'var(--text-primary)' }}>Güncellik</td><td className="p-4" style={{ color: '#16a34a' }}>Günlük Resmi Gazete takibi, canlı veri</td><td className="p-4" style={{ color: 'var(--text-secondary)' }}>Eğitim verisi kesilmiş, eski kararlar</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold" style={{ color: 'var(--text-primary)' }}>Mülga madde riski</td><td className="p-4" style={{ color: '#16a34a' }}>Minimize edilmiş, yürürlük kontrolü var</td><td className="p-4" style={{ color: 'var(--text-secondary)' }}>Yüksek — eski hüküm sunabilir</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold" style={{ color: 'var(--text-primary)' }}>Karmaşık vaka analizi</td><td className="p-4" style={{ color: '#16a34a' }}>Derin Düşünme Modu, çapraz mevzuat</td><td className="p-4" style={{ color: 'var(--text-secondary)' }}>Tek boyutlu, bağlam kaçırır</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold" style={{ color: 'var(--text-primary)' }}>Belge analizi</td><td className="p-4" style={{ color: '#16a34a' }}>PDF/Word yükle, madde madde sorgula</td><td className="p-4" style={{ color: 'var(--text-secondary)' }}>Sınırlı bağlam penceresi</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold" style={{ color: 'var(--text-primary)' }}>Mevzuat karşılaştırması</td><td className="p-4" style={{ color: '#16a34a' }}>Renk kodlu otomatik fark gösterimi</td><td className="p-4" style={{ color: 'var(--text-secondary)' }}>Manuel, kısmi</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold" style={{ color: 'var(--text-primary)' }}>Canlı web entegrasyonu</td><td className="p-4" style={{ color: '#16a34a' }}>Danıştay, Bakanlık, Resmi Gazete</td><td className="p-4" style={{ color: 'var(--text-secondary)' }}>İmar kaynakları filtrelemede sorunlu</td></tr>
+                                            <tr className="border-b border-dark-border/50"><td className="p-4 font-semibold" style={{ color: 'var(--text-primary)' }}>Görsel mevzuat haritası</td><td className="p-4" style={{ color: '#16a34a' }}>İnteraktif Knowledge Graph</td><td className="p-4" style={{ color: 'var(--text-secondary)' }}>Yok</td></tr>
+                                            <tr><td className="p-4 font-semibold" style={{ color: 'var(--text-primary)' }}>Veri gizliliği</td><td className="p-4" style={{ color: '#16a34a' }}>Sorgular eğitimde kullanılmaz</td><td className="p-4" style={{ color: 'var(--text-secondary)' }}>Varsayılan ayarlar değişkendir</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -349,7 +349,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({ onBack, slug }) => {
                                 <div className="bg-dark-elevated p-8 rounded-3xl border border-dark-border mt-12 mb-8 text-center shadow-xl">
                                     <h3 className="text-xl text-warm-50 font-bold mb-4 mt-0">Sonuç Olarak</h3>
                                     <p className="text-warm-300 mb-0 text-justify">
-                                        Genel yapay zeka modelleri güçlü araçlardır — ama imar hukuku için tasarlanmamıştır. İmar mevzuatı, günlük değişen hükümler, karmaşık çapraz atıflar ve hata toleransı sıfır olan pratik sonuçlarla birlikte özel bir uzmanlık gerektirir. İmarmevzuat.ai bu boşluğu kapatmak için inşa edildi: Türkiye'nin ilk ve tek yapay zeka destekli imar hukuku platformu — madde atıflı, güncel, halüsinasyon-minimal. Ücretsiz planla başlayın, farkı kendiniz görün.
+                                        Genel yapay zeka modelleri güçlü araçlardır — ama imar hukuku için tasarlanmamıştır. İmar mevzuatı, günlük değişen hükümler, karmaşık çapraz atıflar ve hata toleransı sıfır olan pratik sonuçlarla birlikte özel bir uzmanlık gerektirir. imarmevzuat.com.tr bu boşluğu kapatmak için inşa edildi: Türkiye'nin ilk ve tek yapay zeka destekli imar hukuku platformu — madde atıflı, güncel, halüsinasyon-minimal. Ücretsiz planla başlayın, farkı kendiniz görün.
                                     </p>
                                 </div>
 
