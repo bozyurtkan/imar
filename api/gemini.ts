@@ -60,16 +60,27 @@ export default async function handler(req: any, res: any) {
       config: Object.keys(config).length ? config : undefined,
     }));
 
-    const groundingMeta = response.candidates?.[0]?.groundingMetadata;
+    const candidate = response.candidates?.[0];
+    const finishReason = candidate?.finishReason;
+
+    if (finishReason && finishReason !== "STOP" && finishReason !== "MAX_TOKENS") {
+      console.warn(`Gemini finishReason: ${finishReason}`, JSON.stringify(candidate?.safetyRatings));
+    }
+
+    const groundingMeta = candidate?.groundingMetadata;
     const groundingChunks = groundingMeta?.groundingChunks || [];
 
     let text =
       response.text ||
-      response.candidates?.[0]?.content?.parts
+      candidate?.content?.parts
         ?.filter((p: any) => !p.thought && p.text)
         ?.map((p: any) => p.text)
         ?.join("") ||
       "";
+
+    if (!text && finishReason) {
+      console.warn(`Gemini boş yanıt döndü. Model: ${model}, finishReason: ${finishReason}, useGoogleSearch: ${useGoogleSearch}`);
+    }
 
     // compareLegislation gibi durumlarda thinkingBudget olmadan tekrar dene
     if (!text && fallbackOnEmpty) {

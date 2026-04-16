@@ -64,6 +64,11 @@
       "@type": "Offer",
       "price": "0",
       "priceCurrency": "TRY"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "ratingCount": "50"
     }
   }
   </script>
@@ -101,110 +106,75 @@
     }
   }
   </script>
-  <!-- Structured Data: FAQ -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "İmar izni nasıl alınır?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "İmar izni (yapı ruhsatı) almak için ilgili belediyeye veya il özel idaresine başvurulur. Başvuruda tapu, mimari proje, zemin etüdü ve aplikasyon krokisi gibi belgeler sunulur. 3194 Sayılı İmar Kanunu'nun 21. maddesi gereğince yapı ruhsatı alınmadan inşaata başlanamaz."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "3194 Sayılı İmar Kanunu nedir?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "3194 Sayılı İmar Kanunu, Türkiye'de arazi kullanımı, yapılaşma koşulları, imar planları ve yapı denetimini düzenleyen temel kanundur. 1985 yılında yürürlüğe giren kanun; belediyeler, il özel idareleri ve Çevre, Şehircilik ve İklim Değişikliği Bakanlığı'nın görev ve yetkilerini belirler."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Yapı ruhsatı için hangi belgeler gereklidir?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yapı ruhsatı başvurusunda genel olarak şu belgeler istenir: tapu senedi veya tapu kaydı, onaylı mimari proje, statik proje, mekanik ve elektrik projeleri, zemin etüdü raporu, aplikasyon krokisi ve mal sahibinin vekaletnamesi. Belediyeye göre ek belgeler talep edilebilir."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "İmar planı değişikliği nasıl yapılır?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "İmar planı değişikliği talebi, ilgili belediye meclis veya il özel idaresine dilekçe ve plan değişikliği dosyasıyla yapılır. Plan değişiklikleri 3194 Sayılı Kanun'un 8. maddesi ve Mekânsal Planlar Yapım Yönetmeliği çerçevesinde değerlendirilir. Onaylanan değişiklikler askıya çıkarılarak itiraz süreci tamamlanır."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "TAKS ve KAKS ne demektir?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "TAKS (Taban Alanı Kat Sayısı), yapının oturduğu alanın parsele oranını ifade eder; örneğin 0.30 TAKS, parsel alanının %30'una yapı yapılabileceği anlamına gelir. KAKS (Kat Alanı Kat Sayısı) veya Emsal ise toplam inşaat alanının parsele oranıdır; 1.50 KAKS, parsel alanının 1.5 katı kadar inşaat yapılabileceğini gösterir."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Kaçak yapı cezası nedir?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Ruhsatsız veya ruhsat ve eklerine aykırı yapılar için 3194 Sayılı İmar Kanunu'nun 42. maddesi uyarınca para cezası uygulanır ve yapının yıkımına karar verilebilir. Ceza miktarı yapının niteliğine, aykırılığın türüne ve alanına göre değişir. Ayrıca yapı mühürlenerek inşaat durdurulur."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Tarım arazisine kaç m2 bağ evi yapılabilir?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "3194 Sayılı İmar Kanunu ve Tarım Arazileri Yönetmeliği uyarınca; tarımsal amaçlı yapılar için %5 imar izni bulunmakta olup, maksimum 250 m2 sınırı mevcuttur. Ancak bu durum arazinin büyüklüğü ve niteliğine (mutlak, marjinal vb.) göre değişiklik gösterebilir."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Planlı Alanlar İmar Yönetmeliği neler içerir?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Planlı Alanlar İmar Yönetmeliği; belediye sınırları ve mücavir alanlarda uygulanacak yapılaşma koşullarını, kat yüksekliklerini, çekme mesafelerini, otopark standartlarını ve yapı türlerine göre teknik şartları düzenler. 2017 yılında yürürlüğe giren yönetmelik, daha önce yürürlükte olan çeşitli yönetmeliklerin yerini almıştır."
-        }
-      }
-    ]
-  }
-  </script>
-  <!-- Structured Data: BreadcrumbList -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [{
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Ana Sayfa",
-      "item": "https://imarmevzuat.com.tr/"
-    },{
-      "@type": "ListItem",
-      "position": 2,
-      "name": "Mevzuat Analizleri",
-      "item": "https://imarmevzuat.com.tr/makale"
-    },{
-      "@type": "ListItem",
-      "position": 3,
-      "name": "Hakkımızda",
-      "item": "https://imarmevzuat.com.tr/hakkinda"
-    }]
-  }
-  </script>
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
 
-  <link rel="stylesheet" href="/index.css">
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            dark: {
+              primary: 'var(--bg-primary)',
+              secondary: 'var(--bg-secondary)',
+              tertiary: 'var(--bg-tertiary)',
+              surface: 'var(--bg-surface)',
+              'surface-hover': 'var(--bg-surface-hover)',
+              elevated: 'var(--bg-elevated)',
+              border: 'var(--border-color)',
+              'border-subtle': 'var(--border-subtle)',
+            },
+            warm: {
+              50: 'var(--text-primary)',
+              100: 'var(--text-primary)',
+              200: 'var(--text-secondary)',
+              300: 'var(--text-secondary)',
+              400: 'var(--text-muted)',
+              500: 'var(--text-muted)',
+              600: 'var(--text-faint)',
+              700: 'var(--border-color)',
+              800: 'var(--border-subtle)',
+              900: 'var(--bg-surface-hover)',
+              950: 'var(--bg-primary)',
+            },
+            accent: {
+              DEFAULT: 'var(--accent-primary)',
+              hover: 'var(--accent-primary-hover)',
+              dark: 'var(--accent-gradient-end)',
+            }
+          },
+        },
+      },
+    }
+  </script>
 
+
+
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "@google/generative-ai": "https://esm.sh/@google/generative-ai@^0.21.0"
+  }
+}
+  </script>
+  <script type="module" crossorigin src="/assets/index-NiJG3Slu.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-B--z-fyW.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-icons-BpmU_ul8.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-firebase-iNCRG3oh.js">
+  <link rel="stylesheet" crossorigin href="/assets/index-BK9xqvQr.css">
 </head>
 
 <body>
@@ -212,7 +182,6 @@
   <!-- pdf.js and mammoth.js for file parsing -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js" defer></script>
-  <script type="module" src="/index.tsx"></script>
   <noscript>
     <div style="padding:3rem;text-align:center;font-family:Inter,sans-serif;max-width:600px;margin:auto;">
       <h1 style="font-size:1.5rem;margin-bottom:1rem;">⚖️ İmar Mevzuat — AI Destekli İmar Hukuku Asistanı</h1>

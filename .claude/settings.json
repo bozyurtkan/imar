@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/burak/.claude/**)",
+      "Bash(ls \"d:/Projeler/İmar/i̇marmevzuat.ai---profesyonel-mevzuat-asistanı \\(18\\)/.claude/\")",
+      "Bash(npx firebase:*)",
+      "Bash(npx vercel:*)",
+      "Bash(ls -la '/d/Projeler/İmar/i̇marmevzuat.ai---profesyonel-mevzuat-asistanı \\(18\\)/dist/')",
+      "Bash(npx claude-code-templates@latest --skill business-marketing/seo-optimizer)",
+      "Read(//c/Users/burak/OneDrive/Desktop/**)",
+      "Bash(find \"d:/Projeler/İmar/i̇marmevzuat.ai---profesyonel-mevzuat-asistanı \\(18\\)\" -name \"*.tsx\" -o -name \"*.ts\")",
+      "Bash(xargs grep:*)",
+      "Bash(npm list:*)",
+      "Edit(/.claude/skills/blogger/**)"
+    ],
+    "additionalDirectories": [
+      "d:\\Projeler\\İmar\\i̇marmevzuat.ai---profesyonel-mevzuat-asistanı (18)\\.claude"
+    ]
+  }
+}

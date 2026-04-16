@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ChatGPT'ye İmar Sorusu Sormak Neden Tehlikeli? — İmarmevzuat.ai</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #fdf6f0;
+    --surface: #fff5ee;
+    --elevated:#f0ddd0;
+    --border:  #e0c8b8;
+    --tx1:     #2d1b12;
+    --tx2:     #6b4a3a;
+    --txm:     #9a7b6a;
+    --acc:     #c4501a;
+    --acch:    #d4652f;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--tx2);
+    line-height: 1.75;
+    font-size: 16px;
+  }
+
+  /* Demo ribbon */
+  .demo-ribbon {
+    background: linear-gradient(90deg, #7c3aed, #a855f7);
+    color: #fff;
+    text-align: center;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+  }
+
+  /* Navbar */
+  nav {
+    background: rgba(253,246,240,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 40px;
+    z-index: 100;
+    padding: 0 24px;
+  }
+  .nav-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .nav-logo-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #c4501a, #a8400f);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 16px;
+  }
+  .nav-logo-text {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--tx1);
+  }
+  .nav-links {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--tx2);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--acc); }
+  .nav-cta {
+    background: var(--acc);
+    color: #fff !important;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600 !important;
+  }
+  .nav-cta:hover { background: var(--acch); color: #fff !important; }
+
+  /* Article wrapper */
+  .article-wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 56px 24px 80px;
+  }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    font-size: 12px;
+    color: var(--txm);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .breadcrumb a { color: var(--txm); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--acc); }
+  .breadcrumb span { opacity: 0.5; }
+
+  /* Badge */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 99px;
+    background: rgba(196,80,26,0.08);
+    color: var(--acc);
+    border: 1px solid rgba(196,80,26,0.2);
+    margin-bottom: 20px;
+  }
+
+  /* Title */
+  .article-title {
+    font-size: clamp(26px, 5vw, 40px);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #c4501a, #d4652f);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Meta */
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--txm);
+    margin-bottom: 40px;
+    align-items: center;
+  }
+  .article-meta span { display: flex; align-items: center; gap: 5px; }
+
+  /* Featured image placeholder */
+  .feat-img {
+    aspect-ratio: 16/9;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #f9ede4, #f0ddd0);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #c4a998;
+    margin-bottom: 48px;
+  }
+  .feat-img svg { opacity: 0.4; }
+  .feat-img .img-label { font-weight: 500; color: var(--txm); font-size: 14px; }
+  .feat-img .img-sub { font-size: 12px; color: #c4a998; }
+
+  /* Content */
+  h3 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--tx1);
+    margin-top: 48px;
+    margin-bottom: 20px;
+    line-height: 1.3;
+  }
+  h3.flex-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  h3.flex-head .h-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(196,80,26,0.1);
+    color: var(--acc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  h4 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #4a2f22;
+    margin-top: 28px;
+    margin-bottom: 14px;
+  }
+  p { text-align: justify; color: var(--tx2); margin-bottom: 16px; }
+  p:last-child { margin-bottom: 0; }
+  strong { color: var(--acch); font-weight: 600; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  /* Card list */
+  .card-list {
+    background: rgba(255,245,238,0.7);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin: 16px 0 28px;
+  }
+  .card-list ul, .card-list ol {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .card-list li {
+    text-align: justify;
+    color: var(--tx2);
+    display: flex;
+    gap: 10px;
+  }
+  .card-list li::before {
+    content: "→";
+    color: var(--acc);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .card-list.numbered li { counter-increment: step; }
+  .card-list.numbered ol { counter-reset: step; }
+  .card-list.numbered li::before {
+    content: counter(step);
+    background: var(--acc);
+    color: #fff;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* Blockquote */
+  blockquote {
+    border-left: 3px solid var(--acc);
+    background: rgba(196,80,26,0.05);
+    border-radius: 0 12px 12px 0;
+    padding: 16px 20px;
+    margin: 24px 0;
+    color: var(--tx2);
+  }
+  blockquote .bq-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    color: var(--acc);
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  /* Comparison table */
+  .comp-table-wrap {
+    overflow-x: auto;
+    margin: 24px 0 32px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  thead tr {
+    background: var(--elevated);
+  }
+  thead th {
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 700;
+    color: var(--tx1);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  thead th:first-child { width: 28%; }
+  thead th.col-green { color: #15803d; }
+  thead th.col-red { color: #b91c1c; }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,245,238,0.6); }
+  td {
+    padding: 13px 16px;
+    color: var(--tx2);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  td:first-child { font-weight: 600; color: var(--tx1); font-size: 13px; }
+  td.td-good { color: #15803d; font-size: 13px; }
+  td.td-bad { color: #b45309; font-size: 13px; }
+
+  /* Two-column check list */
+  .check-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0 28px;
+  }
+  @media (max-width: 560px) { .check-grid { grid-template-columns: 1fr; } }
+  .check-col {
+    background: rgba(255,245,238,0.7);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+  .check-col h5 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .check-col.yes h5 { color: #15803d; }
+  .check-col.no h5 { color: #b45309; }
+  .check-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .check-col li { font-size: 13px; color: var(--tx2); display: flex; gap: 8px; align-items: flex-start; }
+  .check-col.yes li::before { content: "✓"; color: #15803d; font-weight: 800; }
+  .check-col.no li::before { content: "✗"; color: #b45309; font-weight: 800; }
+
+  /* Cost box */
+  .cost-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0 28px;
+  }
+  @media (max-width: 560px) { .cost-grid { grid-template-columns: 1fr; } }
+  .cost-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+  }
+  .cost-card h5 { font-size: 13px; font-weight: 700; color: var(--tx1); margin-bottom: 10px; }
+  .cost-card p { font-size: 13px; margin: 0; line-height: 1.6; }
+  .cost-card .cost-result {
+    display: inline-block;
+    margin-top: 10px;
+    background: rgba(196,80,26,0.08);
+    color: var(--acc);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  /* Promo inline */
+  .promo-inline {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: rgba(196,80,26,0.04);
+    border: 1px solid rgba(196,80,26,0.18);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin: 24px 0;
+  }
+  .promo-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(196,80,26,0.1);
+    color: var(--acc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .promo-inline p {
+    font-size: 14px;
+    color: var(--tx2);
+    margin: 0;
+    text-align: left;
+    line-height: 1.6;
+  }
+  .promo-inline a { color: var(--acc); font-weight: 600; text-decoration: none; }
+  .promo-inline a:hover { text-decoration: underline; }
+
+  /* Promo CTA */
+  .promo-cta {
+    background: linear-gradient(135deg, rgba(196,80,26,0.07), rgba(212,101,47,0.04));
+    border: 1px solid rgba(196,80,26,0.2);
+    border-radius: 20px;
+    padding: 28px 32px;
+    margin: 32px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .promo-cta-body { flex: 1; min-width: 200px; }
+  .promo-cta-body h4 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--tx1);
+    margin: 0 0 8px;
+  }
+  .promo-cta-body p { font-size: 14px; color: var(--tx2); margin: 0; text-align: left; }
+  .promo-cta-btn {
+    display: inline-block;
+    background: var(--acc);
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .promo-cta-btn:hover { background: var(--acch); }
+
+  /* Result box */
+  .result-box {
+    background: var(--elevated);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 36px 40px;
+    margin: 48px 0 32px;
+    text-align: center;
+  }
+  .result-box h3 {
+    font-size: 20px;
+    color: var(--tx1);
+    margin: 0 0 14px;
+  }
+  .result-box p {
+    color: var(--txm);
+    font-size: 15px;
+    text-align: center;
+    margin: 0;
+    line-height: 1.7;
+  }
+
+  /* Tags */
+  .tags { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+    color: var(--txm);
+    background: var(--surface);
+  }
+
+  /* Source */
+  .source-note {
+    margin-top: 28px;
+    font-size: 12px;
+    color: var(--txm);
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--txm);
+    font-size: 13px;
+  }
+  footer .foot-logo {
+    font-weight: 800;
+    font-size: 16px;
+    background: linear-gradient(90deg, #c4501a, #d4652f);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .promo-cta { flex-direction: column; }
+    .result-box { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Demo Ribbon -->
+<div class="demo-ribbon">
+  DEMO — Onaylandıktan sonra <code>/blog-makale-ekle</code> ile siteye eklenecek
+</div>
+
+<!-- Navbar -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3l1.5 4.5H18l-3.75 2.7 1.5 4.5L12 12.3l-3.75 2.4 1.5-4.5L6 7.5h4.5L12 3z"/><path d="M3 20h18"/><path d="M12 3v17"/></svg>
+      </div>
+      <span class="nav-logo-text">İmar Mevzuat</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#">Blog</a></li>
+      <li><a href="#">Hakkında</a></li>
+      <li><a href="#" class="nav-cta">Ücretsiz Dene</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Article -->
+<article class="article-wrap">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a href="#">Ana Sayfa</a>
+    <span>/</span>
+    <a href="#">Blog</a>
+    <span>/</span>
+    <span style="color: var(--tx2);">Rehber</span>
+  </div>
+
+  <!-- Badge -->
+  <div class="badge">Rehber</div>
+
+  <!-- Title -->
+  <h1 class="article-title">ChatGPT'ye İmar Sorusu Sormak Neden Tehlikeli?</h1>
+
+  <!-- Meta -->
+  <div class="article-meta">
+    <span>
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      İmar Mevzuat Editörü
+    </span>
+    <span>
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      10 Nisan 2026
+    </span>
+    <span>
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      6 dk okuma
+    </span>
+  </div>
+
+  <!-- Featured Image -->
+  <div class="feat-img" style="padding: 28px 32px; gap: 14px; align-items: center; justify-content: center; flex-direction: column;">
+    <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24" style="opacity:0.35">
+      <rect x="3" y="3" width="18" height="18" rx="3"/>
+      <path d="M3 9h18M9 21V9"/>
+      <circle cx="16" cy="16" r="3"/>
+      <path d="m21 21-2-2"/>
+    </svg>
+    <span class="img-label">Görsel: /images/chatgpt-imar-kiyasi.jpg</span>
+    <div style="max-width:620px;background:rgba(255,255,255,0.65);border:1px solid #e0c8b8;border-radius:12px;padding:14px 18px;width:100%">
+      <div style="font-size:11px;font-weight:700;color:#c4501a;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px">Midjourney Prompt</div>
+      <p style="font-size:12px;color:#6b4a3a;line-height:1.65;margin:0;text-align:left">Isometric view of a professional architect's desk with zoning plan documents and a laptop screen split showing two AI chat interfaces side by side, one showing correct legal article references and one showing error warnings, floating holographic blue digital screens displaying architectural regulations and law book pages, small human figures reviewing documents, cyber-futuristic concept, clean minimalist color scheme, dominant white and light gray tones with bright orange and blue accents, soft studio lighting with subtle volumetric god rays, ultra detailed, cinematic architectural visualization, isometric perspective, highly intricate, octane render, unreal engine 5 quality, 8k resolution</p>
+      <div style="font-size:11px;color:#9a7b6a;margin-top:8px">aspect_ratio: 16:9 · stylize: 650 · quality: ultra · v6</div>
+    </div>
+  </div>
+
+  <!-- ─── GİRİŞ ─── -->
+  <h3>Yapay Zekaya İmar Sorusu Sordunuz. Emin misiniz?</h3>
+  <p class="text-justify">
+    Türkiye'de her yıl 500.000'i aşkın yapı ruhsatı başvurusu yapılıyor. Her başvurunun arkasında onlarca mevzuat sorusu var: çekme mesafesi, emsal, TAKS/KAKS, DOP oranı, ruhsat gereklilikleri... Bu sorulara yanıt bulmak için giderek daha fazla profesyonel ChatGPT'ye veya Gemini'ye başvuruyor. Hızlı, ücretsiz, Türkçe yanıt veriyor — kulağa mantıklı geliyor.
+  </p>
+  <p class="text-justify">
+    Ama imar hukukunda bu tercih ciddi risk taşıyor. Genel yapay zeka modellerinin neden yetersiz kaldığını ve bu sorunu çözmek için tasarlanmış özel bir platformun nasıl farklılaştığını, somut örneklerle birlikte inceleyelim.
+  </p>
+
+  <hr />
+
+  <!-- ─── SORUN 1 ─── -->
+  <h3>Sorun 1: Halüsinasyon — Uydurulmuş Madde Numaraları</h3>
+  <p class="text-justify">
+    Genel YZ modelleri "halüsinasyon" adı verilen bir soruna sahiptir: var olmayan bilgiyi gerçekmiş gibi sunar. İmar hukukunda bu özellikle tehlikelidir. Model size "3194 Sayılı Kanun Madde 42/A" diyebilir — bu madde hiç var olmayabilir ya da tamamen farklı bir konuyu düzenliyor olabilir.
+  </p>
+
+  <blockquote>
+    <div class="bq-label">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Gerçek Senaryo
+    </div>
+    Bir mimar, ChatGPT'den tevhit işleminde DOP oranını sordu. Model belirli bir yüzde verdi ve madde numarası sundu. Mimar bu bilgiyle belediyeye başvurdu. Belediye itiraz etti: verilen madde 2021'de değiştirilmişti, yeni oran farklıydı. <strong>Sonuç: proje revizyonu, haftalarca gecikme.</strong>
+  </blockquote>
+
+  <h4>İmarmevzuat.ai Yaklaşımı</h4>
+  <p class="text-justify">
+    Her yanıt gerçek kanun maddesine atıfla gelir. <strong>"3194 Sayılı Kanun Madde 18'e göre..."</strong> formatında, kaynağı doğrulanabilir. Platform bilmediğini bilir — emin olmadığı durumlarda sizi uyarır.
+  </p>
+
+  <div class="promo-inline">
+    <div class="promo-icon">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </div>
+    <p><strong>Tevhit veya DOP hesabına ihtiyaç duyuyorsanız</strong> — <a href="https://imarmevzuat.com.tr" target="_blank">İmar Mevzuat AI Asistanı</a>'na sorabilirsiniz. Her yanıt gerçek madde numarasıyla, güncel mevzuata dayalı olarak geliyor.</p>
+  </div>
+
+  <hr />
+
+  <!-- ─── SORUN 2 ─── -->
+  <h3>Sorun 2: Güncellik — Değişen Mevzuatı Bilmiyorlar</h3>
+  <p class="text-justify">
+    ChatGPT ve Gemini'nin eğitim verisi belirli bir tarihte kesilir. 2024 veya 2025'te yürürlüğe giren bir yönetmelik değişikliğini bilmiyorlar. Türkiye'de imar mevzuatı ise sık değişiyor:
+  </p>
+
+  <div class="card-list">
+    <ul>
+      <li>Planlı Alanlar İmar Yönetmeliği defalarca güncellendi</li>
+      <li>Deprem yönetmeliği ile imar yönetmeliği kesişim noktaları revize edildi</li>
+      <li>Bakanlık genelgeleri mevcut uygulamaları anlık değiştirebiliyor</li>
+    </ul>
+  </div>
+
+  <p class="text-justify">
+    Pratik sonuç açık: genel model size 2022'deki çekme mesafesi kuralını verebilir — 2024'teki değişikliği bilmeden.
+  </p>
+
+  <h4>İmarmevzuat.ai Yaklaşımı</h4>
+  <p class="text-justify">
+    Her gün Resmi Gazete otomatik olarak taranır. İmar mevzuatını etkileyen yayınlar sisteme entegre edilir. Web araması entegrasyonu ile <strong>mevzuat.gov.tr, Danıştay karar bankası ve Bakanlık duyuruları</strong> eş zamanlı sorgulanır.
+  </p>
+
+  <hr />
+
+  <!-- ─── SORUN 3 ─── -->
+  <h3>Sorun 3: Mülga Hükümler — Yürürlükten Kalkmış Kurallar</h3>
+  <p class="text-justify">
+    Genel modeller, bir maddenin hâlâ yürürlükte olup olmadığını güvenilir biçimde ayırt edemez. İmar hukukunda mülga (yürürlükten kalkmış) madde sunmak ciddi sonuçlar doğurabilir:
+  </p>
+
+  <div class="card-list">
+    <ul>
+      <li>Yanlış hesaplama ile proje hazırlanması ve belediye reddi</li>
+      <li>Geçersiz hukuki dayanak ile idareye başvuru</li>
+      <li>Avukatlık süreçlerinde hatalı içtihat kullanımı, mahkeme kaybı</li>
+    </ul>
+  </div>
+
+  <p class="text-justify">
+    Platform yalnızca güncel, yürürlükteki hükümleri sunar. Mülga maddeler işaretlenir. <strong>Eski-yeni metin karşılaştırması</strong> özelliği ile bir maddenin ne zaman, nasıl değiştiği renk kodlu olarak gösterilir.
+  </p>
+
+  <hr />
+
+  <!-- ─── SORUN 4 ─── -->
+  <h3>Sorun 4: Çok Kanunlu Vakalar — Bağlamı Kaçırıyorlar</h3>
+  <p class="text-justify">
+    Basit bir imar sorusu bile birden fazla mevzuatı kesiştirebilir. Genel modeller bu çapraz bağlantıları çoğu zaman kaçırır ya da tek boyutlu yanıt verir:
+  </p>
+
+  <div class="card-list">
+    <ul>
+      <li>3194 Sayılı İmar Kanunu</li>
+      <li>Planlı Alanlar İmar Yönetmeliği</li>
+      <li>Yapı Denetimi Hakkında Kanun</li>
+      <li>Deprem Yönetmeliği</li>
+      <li>Belediye sınırlarına göre değişen imar planı hükümleri</li>
+    </ul>
+  </div>
+
+  <h4>İmarmevzuat.ai — Derin Düşünme Modu</h4>
+  <p class="text-justify">
+    Karmaşık vakalar 6 adımda incelenir — bir avukatın vakaya bakarken attığı adımların otomatikleştirilmiş hali:
+  </p>
+
+  <div class="card-list numbered">
+    <ol>
+      <li>Konu tanımı</li>
+      <li>Yasal dayanak (çoklu mevzuat kontrolü)</li>
+      <li>Güncel içtihat araştırması</li>
+      <li>Lehte / aleyhte yorumlar</li>
+      <li>Risk değerlendirmesi</li>
+      <li>Profesyonel sonuç raporu</li>
+    </ol>
+  </div>
+
+  <div class="promo-inline">
+    <div class="promo-icon">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+    </div>
+    <p><strong>Çok kanunlu bir imar uyuşmazlığı mı var?</strong> — <a href="https://imarmevzuat.com.tr" target="_blank">İmar Mevzuat Derin Düşünme Modu</a> ile 6 adımlı analiz raporu oluşturabilirsiniz. PDF olarak dışa aktarılabilir.</p>
+  </div>
+
+  <hr />
+
+  <!-- ─── SORUN 5 ─── -->
+  <h3>Sorun 5: Veri Gizliliği — Müvekkil Bilgisi Nereye Gidiyor?</h3>
+  <p class="text-justify">
+    ChatGPT'ye bir parsel numarası, müvekkil ismi veya dava detayı girdiğinizde bu bilgi OpenAI sunucularına gidiyor. Varsayılan ayarlarda bu veri model eğitiminde kullanılabiliyor. Hukuk büroları, mimarlık ofisleri ve kamu kurumları için bu ciddi bir uyumluluk sorunudur.
+  </p>
+  <p class="text-justify">
+    <strong>İmarmevzuat.ai'de:</strong> Sorgular hiçbir zaman AI eğitiminde kullanılmaz. Veriler gizli kalır. Bu bir politika taahhüdüdür — hizmet şartlarında yazılıdır.
+  </p>
+
+  <hr />
+
+  <!-- ─── KARŞILAŞTIRMA TABLOSU ─── -->
+  <h3>Karşılaştırma: İmarmevzuat.ai vs ChatGPT / Gemini</h3>
+
+  <div class="comp-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Kriter</th>
+          <th class="col-green">İmarmevzuat.ai</th>
+          <th class="col-red">ChatGPT / Gemini</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>İmar bilgisi derinliği</td>
+          <td class="td-good">Yalnızca imar hukuku ve mevzuatına özel</td>
+          <td class="td-bad">Genel, yüzeysel imar bilgisi</td>
+        </tr>
+        <tr>
+          <td>Yanıt doğruluğu</td>
+          <td class="td-good">Madde atıflı, halüsinasyon riski minimize</td>
+          <td class="td-bad">Madde hatası ve halüsinasyon riski yüksek</td>
+        </tr>
+        <tr>
+          <td>Güncellik</td>
+          <td class="td-good">Günlük Resmi Gazete takibi, canlı veri</td>
+          <td class="td-bad">Eğitim verisi kesilmiş, eski kararlar</td>
+        </tr>
+        <tr>
+          <td>Mülga madde riski</td>
+          <td class="td-good">Minimize edilmiş, yürürlük kontrolü var</td>
+          <td class="td-bad">Yüksek — eski hüküm sunabilir</td>
+        </tr>
+        <tr>
+          <td>Karmaşık vaka analizi</td>
+          <td class="td-good">Derin Düşünme Modu, çapraz mevzuat</td>
+          <td class="td-bad">Tek boyutlu, bağlam kaçırır</td>
+        </tr>
+        <tr>
+          <td>Belge analizi</td>
+          <td class="td-good">PDF/Word yükle, madde madde sorgula</td>
+          <td class="td-bad">Sınırlı bağlam penceresi</td>
+        </tr>
+        <tr>
+          <td>Mevzuat karşılaştırması</td>
+          <td class="td-good">Renk kodlu otomatik fark gösterimi</td>
+          <td class="td-bad">Manuel, kısmi</td>
+        </tr>
+        <tr>
+          <td>Canlı web entegrasyonu</td>
+          <td class="td-good">Danıştay, Bakanlık, Resmi Gazete</td>
+          <td class="td-bad">İmar kaynakları filtrelemede sorunlu</td>
+        </tr>
+        <tr>
+          <td>Görsel mevzuat haritası</td>
+          <td class="td-good">İnteraktif Knowledge Graph</td>
+          <td class="td-bad">Yok</td>
+        </tr>
+        <tr>
+          <td>Veri gizliliği</td>
+          <td class="td-good">Sorgular eğitimde kullanılmaz</td>
+          <td class="td-bad">Varsayılan ayarlar değişkendir</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr />
+
+  <!-- ─── GERÇEK MALİYET ─── -->
+  <h3>"Ama ChatGPT Ücretsiz" — Gerçek Maliyet Hesabı</h3>
+  <p class="text-justify">
+    Genel modeller ücretsiz görünür. Ama hata maliyeti ücretsiz değildir.
+  </p>
+
+  <div class="cost-grid">
+    <div class="cost-card">
+      <h5>Mimar Senaryosu</h5>
+      <p>Yanlış emsal bilgisiyle hazırlanan proje → Belediye reddi → Revizyon süreci</p>
+      <span class="cost-result">~10.000₺ kayıp</span>
+    </div>
+    <div class="cost-card">
+      <h5>Avukat Senaryosu</h5>
+      <p>Mülga maddeyle hazırlanan itiraz dilekçesi → Mahkeme reddi → Müvekkil güven kaybı</p>
+      <span class="cost-result">Müvekkil kaybı</span>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- ─── UZMAN ANALİZİ ─── -->
+  <h3 class="flex-head">
+    <span class="h-icon">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3l1.5 4.5H18l-3.75 2.7 1.5 4.5L12 12.3l-3.75 2.4 1.5-4.5L6 7.5h4.5L12 3z"/><path d="M3 20h18"/><path d="M12 3v17"/></svg>
+    </span>
+    Hangi Durumda Genel YZ Kullanılabilir?
+  </h3>
+  <p class="text-justify">
+    Dürüst olmak gerekir: genel modeller bazı senaryolarda işe yarar. Aşağıdaki sınırı net çizmek önemli:
+  </p>
+
+  <div class="check-grid">
+    <div class="check-col yes">
+      <h5>✓ Uygun Kullanım Alanları</h5>
+      <ul>
+        <li>Genel bir imar kavramını öğrenmek</li>
+        <li>Bir terimin sözlük tanımına bakmak</li>
+        <li>Mevzuat dışı konularda yardım (proje yönetimi, müzakere vb.)</li>
+      </ul>
+    </div>
+    <div class="check-col no">
+      <h5>✗ Riskli Kullanım Alanları</h5>
+      <ul>
+        <li>Spesifik madde numarasına ihtiyaç duyulan durumlar</li>
+        <li>Güncel yönetmelik hükmünü öğrenmek</li>
+        <li>Hukuki süreç için dayanak oluşturmak</li>
+        <li>Müvekkil veya proje bilgisi paylaşmak</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Promo CTA -->
+  <div class="promo-cta">
+    <div class="promo-cta-body">
+      <h4>İmar sorusu mu var? Madde atıflı yanıt alın.</h4>
+      <p>İmar Mevzuat AI Asistanı; 3194 Sayılı Kanun, Planlı Alanlar Yönetmeliği ve tüm imar mevzuatına güncel, madde atıflı kesin yanıtlar veriyor. Web araması ve 50+ mevzuat kütüphanesiyle anında bilgiye ulaşın.</p>
+    </div>
+    <a href="https://imarmevzuat.com.tr" target="_blank" class="promo-cta-btn">Ücretsiz Dene</a>
+  </div>
+
+  <!-- ─── SONUÇ ─── -->
+  <div class="result-box">
+    <h3>Sonuç Olarak</h3>
+    <p>
+      Genel yapay zeka modelleri güçlü araçlardır — ama imar hukuku için tasarlanmamıştır. İmar mevzuatı, günlük değişen hükümler, karmaşık çapraz atıflar ve hata toleransı sıfır olan pratik sonuçlarla birlikte özel bir uzmanlık gerektirir. İmarmevzuat.ai bu boşluğu kapatmak için inşa edildi: Türkiye'nin ilk ve tek yapay zeka destekli imar hukuku platformu — madde atıflı, güncel, halüsinasyon-minimal. Ücretsiz planla başlayın, farkı kendiniz görün.
+    </p>
+  </div>
+
+  <!-- Tags -->
+  <div class="tags">
+    <span class="tag">#imarmevzuatı</span>
+    <span class="tag">#imarhukuku</span>
+    <span class="tag">#yapayzekaHukuk</span>
+    <span class="tag">#legaltech</span>
+    <span class="tag">#chatgpt</span>
+    <span class="tag">#mimarlık</span>
+    <span class="tag">#3194</span>
+  </div>
+
+  <!-- Source -->
+  <div class="source-note">
+    <strong>Kaynak:</strong> T.C. Çevre, Şehircilik ve İklim Değişikliği Bakanlığı —
+    <a href="https://mevzuat.gov.tr" target="_blank" style="color: var(--acc);">mevzuat.gov.tr</a>
+    &nbsp;|&nbsp; Son güncelleme: Nisan 2026
+  </div>
+
+</article>
+
+<!-- Footer -->
+<footer>
+  <div class="foot-logo">İmar Mevzuat</div>
+  <p>Türkiye'nin ilk yapay zeka destekli imar hukuku platformu.</p>
+  <p style="margin-top:8px;">© 2026 imarmevzuat.ai — Tüm hakları saklıdır.</p>
+</footer>
+
+</body>
+</html>

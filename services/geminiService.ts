@@ -103,7 +103,7 @@ export class GeminiService {
     });
 
     const systemInstruction = `Sen profesyonel bir Türkiye İmar Mevzuatı danışmanısın.
-Kullanıcılara imar hukuku, planlama mevzuatı, yapı denetimi ve kentsel dönüşüm konularında akademik ve profesyonel düzeyde danışmanlık verirsin.
+Kullanıcılara imar hukuku, planlama mevzuatı, yapı denetimi, kentsel dönüşüm ve kamulaştırma mevzuatı (2942 Sayılı Kamulaştırma Kanunu dahil) konularında akademik ve profesyonel düzeyde danışmanlık verirsin.
 BUGÜNÜN TARİHİ: ${today}
 
 ## BİLGİ KAYNAĞI KURALI
@@ -167,16 +167,35 @@ Yönetmelik ve Genelgeler:
 - Kesin yargısal sonuç tahmini yapma.
 - Güncelliğinden emin olmadığın bir rakamı kesin bilgi olarak sunma.`;
 
+    const contents = `KULLANICI SORUSU: ${question}\n\nLütfen bu soruyu yanıtlarken hukuki/mevzuat açısından en güncel durumu (varsa 2025 ve 2026 Resmi Gazete değişikliklerini) web aramasında muhakkak teyit ederek profesyonelce yanıtla.`;
+
     try {
-      const { text, groundingChunks } = await this.callApi({
+      let { text, groundingChunks } = await this.callApi({
         model: "gemini-2.5-flash",
-        contents: `KULLANICI SORUSU: ${question}\n\nLütfen bu soruyu yanıtlarken hukuki/mevzuat açısından en güncel durumu (varsa 2025 ve 2026 Resmi Gazete değişikliklerini) web aramasında muhakkak teyit ederek profesyonelce yanıtla.`,
+        contents,
         systemInstruction: systemInstruction.trim(),
         useGoogleSearch: true,
       });
 
+      // Google Search boş yanıt dönerse training data ile yeniden dene
+      if (!text) {
+        console.warn("askGeneral: Google Search boş yanıt döndü, gemini-2.0-flash ile yeniden deneniyor...");
+        const fallback = await this.callApi({
+          model: "gemini-2.0-flash",
+          contents,
+          systemInstruction: systemInstruction.trim(),
+          useGoogleSearch: false,
+        });
+        text = fallback.text;
+        groundingChunks = fallback.groundingChunks;
+      }
+
       const relatedArticles = findRelatedArticles(question);
-      return { text: text || "Güncel bilgi bulunamadı.", sources: groundingChunks, relatedArticles };
+      return {
+        text: text || "Bu konuda bilgiye ulaşılamadı. Lütfen sorunuzu farklı şekilde ifade edin veya resmi kaynaklara (mevzuat.gov.tr) başvurun.",
+        sources: groundingChunks,
+        relatedArticles,
+      };
     } catch (error: any) {
       throw new Error("Web araştırması şu an meşgul: " + error.message);
     }
@@ -458,14 +477,33 @@ Net, öz bir profesyonel görüş. "Kanaatimce", "güçlü argüman", "önerilir
 - Madde metinlerini blok alıntı olarak göster (> ile)
 - İçtihat uydurmama — emin değilsen açıkça belirt`;
 
+    const deepContents = `SORU: ${question}\n\nLütfen bu soruyu yukarıdaki talimatlara göre derin bir hukuki analiz ile yanıtla. Web aramasını mutlaka kullan — özellikle 2025 ve 2026 Resmi Gazete değişikliklerini ve güncel içtihadı teyit et.`;
+
     try {
-      const { text, groundingChunks } = await this.callApi({
+      let { text, groundingChunks } = await this.callApi({
         model: "gemini-2.5-pro",
-        contents: `SORU: ${question}\n\nLütfen bu soruyu yukarıdaki talimatlara göre derin bir hukuki analiz ile yanıtla. Web aramasını mutlaka kullan — özellikle 2025 ve 2026 Resmi Gazete değişikliklerini ve güncel içtihadı teyit et.`,
+        contents: deepContents,
         systemInstruction: systemInstruction.trim(),
         useGoogleSearch: true,
       });
-      return { text: text || "Derin analiz tamamlanamadı.", sources: groundingChunks };
+
+      // Boş yanıt durumunda gemini-2.5-flash ile yeniden dene
+      if (!text) {
+        console.warn("askDeepThink: gemini-2.5-pro boş yanıt döndü, gemini-2.5-flash ile yeniden deneniyor...");
+        const fallback = await this.callApi({
+          model: "gemini-2.5-flash",
+          contents: deepContents,
+          systemInstruction: systemInstruction.trim(),
+          useGoogleSearch: true,
+        });
+        text = fallback.text;
+        groundingChunks = fallback.groundingChunks;
+      }
+
+      return {
+        text: text || "Bu konuda derin analiz yapılamadı. Lütfen sorunuzu farklı şekilde ifade edin veya resmi kaynaklara başvurun.",
+        sources: groundingChunks,
+      };
     } catch (error: any) {
       throw new Error(error?.message || "Derin düşünce servisi şu an yanıt veremiyor.");
     }

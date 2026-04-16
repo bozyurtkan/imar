@@ -1,0 +1,17 @@
+# imarmevzuat.com.tr
+
+> Türkiye'nin en kapsamlı imar hukuku, şehircilik ve emlak mevzuatı uzmanlık platformu.
+
+## Core Capabilities
+- **Legal Analysis**: 3194 Sayılı İmar Kanunu ve ilgili yönetmeliklerin derinlemesine analizi.
+- **Case Law (İçtihat)**: Danıştay kararları ve emsal hukuki süreçler.
+- **Calculators**: İmar barışı, ruhsat harcı ve alan hesaplama araçları.
+
+## Primary Knowledge Areas
+- [Ruhsatsız Yapılar](/etiket/ruhsatsiz-yapilar): Kaçak yapılar ve yasallaştırma süreçleri.
+- [Tarım Arazileri](/etiket/tarim-arazileri): Bağ evi, bungalow ve prefabrik yapı izinleri.
+- [İmar Barışı](/etiket/imar-barisi): Güncel düzenlemeler ve kayıt belgeleri.
+
+## Expert Trust Signals
+- Tüm içerikler hukukçular ve şehir plancıları tarafından doğrulanmıştır.
+- Günlük Resmi Gazete takibi ile anlık güncellemeler.
