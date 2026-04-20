@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0",
+  "serverInfo": {
+    "name": "İmarmevzuat.ai MCP Server",
+    "version": "1.0.0",
+    "description": "Türkiye imar hukuku, şehircilik ve emlak mevzuatı için uzman AI asistanı. 3194 Sayılı İmar Kanunu, Danıştay içtihatları ve yapı ruhsatı süreçleri.",
+    "homepage": "https://imarmevzuat.com.tr",
+    "documentation": "https://imarmevzuat.com.tr/.well-known/agent-skills/SKILL.md"
+  },
+  "transport": {
+    "type": "http",
+    "endpoint": "https://imarmevzuat.com.tr/api/gemini"
+  },
+  "capabilities": {
+    "tools": [
+      {
+        "name": "mevzuat_soru",
+        "description": "Türk imar mevzuatı hakkında soru sor. Kanun maddeleri, yönetmelikler ve Danıştay kararları üzerinde analiz yapar.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "soru": {
+              "type": "string",
+              "description": "İmar hukuku veya yapı ruhsatı ile ilgili soru"
+            }
+          },
+          "required": ["soru"]
+        }
+      },
+      {
+        "name": "pdf_analiz",
+        "description": "İmar planı veya ruhsat belgesi PDF dosyasını analiz eder.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "Analiz edilecek PDF dosyasının URL'i"
+            }
+          },
+          "required": ["url"]
+        }
+      }
+    ],
+    "resources": [
+      {
+        "uri": "https://imarmevzuat.com.tr/llms.txt",
+        "name": "Site Tanımı",
+        "mimeType": "text/plain"
+      },
+      {
+        "uri": "https://imarmevzuat.com.tr/sitemap.xml",
+        "name": "Site Haritası",
+        "mimeType": "application/xml"
+      }
+    ]
+  },
+  "authentication": {
+    "type": "oauth2",
+    "discovery": "https://imarmevzuat.com.tr/.well-known/openid-configuration"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://imarmevzuat.com.tr/api/gemini",
+      "service-desc": [
+        {
+          "href": "https://imarmevzuat.com.tr/.well-known/agent-skills/SKILL.md",
+          "type": "text/markdown"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://imarmevzuat.com.tr/.well-known/agent-skills/SKILL.md",
+          "type": "text/markdown"
+        }
+      ],
+      "describedby": [
+        {
+          "href": "https://imarmevzuat.com.tr/llms.txt",
+          "type": "text/plain"
+        }
+      ]
+    },
+    {
+      "anchor": "https://imarmevzuat.com.tr/api/extract-pdf",
+      "service-desc": [
+        {
+          "href": "https://imarmevzuat.com.tr/.well-known/agent-skills/SKILL.md",
+          "type": "text/markdown"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://imarmevzuat.com.tr/.well-known/agent-skills/SKILL.md",
+          "type": "text/markdown"
+        }
+      ]
+    },
+    {
+      "anchor": "https://imarmevzuat.com.tr/api/index",
+      "service-desc": [
+        {
+          "href": "https://imarmevzuat.com.tr/.well-known/agent-skills/SKILL.md",
+          "type": "text/markdown"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://imarmevzuat.com.tr/.well-known/agent-skills/SKILL.md",
+          "type": "text/markdown"
+        }
+      ]
+    }
+  ]
+}
