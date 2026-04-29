@@ -80,6 +80,17 @@
     ],
     "rewrites": [
         {
+            "source": "/",
+            "has": [
+                {
+                    "type": "header",
+                    "key": "Accept",
+                    "value": ".*text/markdown.*"
+                }
+            ],
+            "destination": "/api"
+        },
+        {
             "source": "/((?!api/|.*\\.).*)",
             "destination": "/"
         }

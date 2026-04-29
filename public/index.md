@@ -1,6 +1,4 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
-
-const HOMEPAGE_MARKDOWN = `# İmarmevzuat.ai — Türkiye'nin İlk AI Destekli İmar Hukuku Asistanı
+# İmarmevzuat.ai — Türkiye'nin İlk AI Destekli İmar Hukuku Asistanı
 
 > 3194 Sayılı İmar Kanunu ve 50+ ilgili mevzuat üzerinde uzmanlaşmış, madde atıflı ve kesin yanıtlar sunan profesyonel çözüm ortağınız.
 
@@ -13,10 +11,10 @@ const HOMEPAGE_MARKDOWN = `# İmarmevzuat.ai — Türkiye'nin İlk AI Destekli �
 
 ## 📂 Bilgi Alanları (Primary Knowledge Areas)
 
-*   [Ruhsatsız Yapılar](https://imarmevzuat.com.tr/etiket/ruhsatsiz-yapilar): 3194 Sayılı Kanun 32. ve 42. Madde uygulamaları.
-*   [Tarım Arazileri](https://imarmevzuat.com.tr/etiket/tarim-arazileri): Bağ evi, bungalow ve prefabrik yapı izinleri (Maksimum 250m2 sınırı).
-*   [İmar Barışı](https://imarmevzuat.com.tr/etiket/imar-barisi): Yapı Kayıt Belgesi ve güncel yargı kararları.
-*   [İçtihat Veritabanı](https://imarmevzuat.com.tr/makale): Danıştay emsal kararları ve hukuki yorumlar.
+*   [Ruhsatsız Yapılar](/etiket/ruhsatsiz-yapilar): 3194 Sayılı Kanun 32. ve 42. Madde uygulamaları.
+*   [Tarım Arazileri](/etiket/tarim-arazileri): Bağ evi, bungalow ve prefabrik yapı izinleri (Maksimum 250m2 sınırı).
+*   [İmar Barışı](/etiket/imar-barisi): Yapı Kayıt Belgesi ve güncel yargı kararları.
+*   [İçtihat Veritabanı](/makale): Danıştay emsal kararları ve hukuki yorumlar.
 
 ## 📊 Önemli İstatistikler & Veriler
 
@@ -39,20 +37,3 @@ const HOMEPAGE_MARKDOWN = `# İmarmevzuat.ai — Türkiye'nin İlk AI Destekli �
 
 ---
 *Bu sayfa yapay zeka agent'ları için text/markdown formatında optimize edilmiştir.*
-`;
-
-export default function handler(req: VercelRequest, res: VercelResponse) {
-  const accept = req.headers["accept"] || "";
-
-  if (accept.includes("text/markdown")) {
-    const tokens = HOMEPAGE_MARKDOWN.split(/\s+/).length;
-    res.setHeader("Content-Type", "text/markdown; charset=utf-8");
-    res.setHeader("x-markdown-tokens", String(tokens));
-    res.setHeader("Vary", "Accept");
-    return res.status(200).send(HOMEPAGE_MARKDOWN);
-  }
-
-  // HTML için normal SPA davranışı — index.html'e yönlendir
-  res.setHeader("Vary", "Accept");
-  return res.redirect(302, "/");
-}
