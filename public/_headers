@@ -7,7 +7,10 @@
   X-DNS-Prefetch-Control: on
   X-XSS-Protection: 1; mode=block
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Link: </llms.txt>; rel="describedby"; type="text/plain", </.well-known/api-catalog>; rel="api-catalog", </.well-known/agent-skills/SKILL.md>; rel="service-doc", </sitemap.xml>; rel="sitemap"; type="application/xml"
+  Link: </llms.txt>; rel="describedby"; type="text/plain"
+  Link: </.well-known/api-catalog>; rel="api-catalog"
+  Link: </.well-known/agent-skills/SKILL.md>; rel="service-doc"
+  Link: </sitemap.xml>; rel="sitemap"; type="application/xml"
 
 /.well-known/api-catalog
   Content-Type: application/linkset+json

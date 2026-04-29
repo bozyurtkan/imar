@@ -73,7 +73,19 @@
                 },
                 {
                     "key": "Link",
-                    "value": "</llms.txt>; rel=\"describedby\"; type=\"text/plain\", </.well-known/api-catalog>; rel=\"api-catalog\", </.well-known/agent-skills/SKILL.md>; rel=\"service-doc\", </sitemap.xml>; rel=\"sitemap\"; type=\"application/xml\""
+                    "value": "</llms.txt>; rel=\"describedby\"; type=\"text/plain\""
+                },
+                {
+                    "key": "Link",
+                    "value": "</.well-known/api-catalog>; rel=\"api-catalog\""
+                },
+                {
+                    "key": "Link",
+                    "value": "</.well-known/agent-skills/SKILL.md>; rel=\"service-doc\""
+                },
+                {
+                    "key": "Link",
+                    "value": "</sitemap.xml>; rel=\"sitemap\"; type=\"application/xml\""
                 }
             ]
         }
