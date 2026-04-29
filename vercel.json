@@ -84,6 +84,10 @@
             "destination": "/.well-known/api-catalog"
         },
         {
+            "source": "/.well-known/agent-skills/index.json",
+            "destination": "/.well-known/agent-skills/index.json"
+        },
+        {
             "source": "/.well-known/mcp/server-card.json",
             "destination": "/.well-known/mcp/server-card.json"
         },

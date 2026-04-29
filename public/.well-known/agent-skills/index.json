@@ -1,33 +1,12 @@
 {
-  "$schema": "https://agentskills.io/schema/v0.2.0/index.json",
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
   "skills": [
     {
-      "name": "mevzuat-soru-cevap",
-      "type": "skill",
-      "description": "Türk imar hukuku, yapı ruhsatı ve şehircilik mevzuatı hakkında soru-cevap. 3194 Sayılı İmar Kanunu, Danıştay içtihatları ve yönetmelikler.",
+      "name": "mevzuat-asistani",
+      "type": "skill-md",
+      "description": "Profesyonel Türk imar hukuku ve şehircilik mevzuatı asistanı. 3194 Sayılı Kanun ve Danıştay içtihatları üzerinde uzmanlaşmıştır.",
       "url": "https://imarmevzuat.com.tr/.well-known/agent-skills/SKILL.md",
-      "sha256": "04e3557662ce6edc43228e32f9275671f341b4de7d1169a96fc418114b052e8e"
-    },
-    {
-      "name": "markdown-negotiation",
-      "type": "skill",
-      "description": "Accept: text/markdown header ile homepage içeriğini markdown formatında döndürür.",
-      "url": "https://imarmevzuat.com.tr/api/index",
-      "sha256": "6ec3a9c4056b92802faeb7bc1a9dd87c39f54eacbdb4afeba46379a4c5300109"
-    },
-    {
-      "name": "api-catalog",
-      "type": "catalog",
-      "description": "RFC 9727 uyumlu API kataloğu. Tüm endpoint'leri linkset+json formatında listeler.",
-      "url": "https://imarmevzuat.com.tr/.well-known/api-catalog",
-      "sha256": "054ccdecfc8fed75aa54f52453d9dc8410a0f9c5e16c9166d6ffad4b5ce27bec"
-    },
-    {
-      "name": "mcp-server",
-      "type": "mcp",
-      "description": "MCP Server Card — imar mevzuatı araçları ve kaynakları için agent discovery.",
-      "url": "https://imarmevzuat.com.tr/.well-known/mcp/server-card.json",
-      "sha256": "b41a50f6557f7a065dcfa8f01ceedf2a1f5c06ea99d383876aa92f4f027622cc"
+      "digest": "sha256:346f50a6f865248e75e9e6afb884bad783d801ff44c4e8f063737a39c4c4bfb6"
     }
   ]
 }
