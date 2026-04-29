@@ -80,6 +80,10 @@
     ],
     "rewrites": [
         {
+            "source": "/.well-known/api-catalog",
+            "destination": "/.well-known/api-catalog"
+        },
+        {
             "source": "/",
             "has": [
                 {
@@ -91,7 +95,7 @@
             "destination": "/api"
         },
         {
-            "source": "/((?!api/|.*\\.).*)",
+            "source": "/((?!api/|\\.well-known/|.*\\.).*)",
             "destination": "/"
         }
     ]
