@@ -15,8 +15,11 @@
 /.well-known/mcp/server-card.json
   Content-Type: application/json
 
-/.well-known/oauth-protected-resource
+/.well-known/openid-configuration
   Content-Type: application/json
 
-/.well-known/openid-configuration
+/.well-known/oauth-authorization-server
+  Content-Type: application/json
+
+/.well-known/oauth-protected-resource
   Content-Type: application/json

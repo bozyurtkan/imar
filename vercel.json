@@ -84,6 +84,18 @@
             "destination": "/.well-known/api-catalog"
         },
         {
+            "source": "/.well-known/openid-configuration",
+            "destination": "/.well-known/openid-configuration"
+        },
+        {
+            "source": "/.well-known/oauth-authorization-server",
+            "destination": "/.well-known/oauth-authorization-server"
+        },
+        {
+            "source": "/.well-known/oauth-protected-resource",
+            "destination": "/.well-known/oauth-protected-resource"
+        },
+        {
             "source": "/",
             "has": [
                 {
