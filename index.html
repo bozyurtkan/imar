@@ -211,6 +211,61 @@
 
   <link rel="stylesheet" href="/index.css">
 
+  <!-- WebMCP Implementation (Agent Discovery) -->
+  <script>
+    if (typeof window !== 'undefined') {
+      window.addEventListener('load', () => {
+        if (window.navigator && window.navigator.modelContext && window.navigator.modelContext.registerTool) {
+          try {
+            const controller = new AbortController();
+            
+            // Tool 1: Legal Question Analysis
+            window.navigator.modelContext.registerTool({
+              name: "imar_mevzuat_sor",
+              description: "İmar mevzuatı, 3194 Sayılı Kanun ve yönetmelikler hakkında soru sorar ve analiz alır.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  soru: { type: "string", description: "Hukuki soru veya mevzuat maddesi" }
+                },
+                required: ["soru"]
+              },
+              execute: async ({ soru }) => {
+                // Bu fonksiyon genellikle sitedeki mevcut chat/search fonksiyonuna bağlanır.
+                // Şimdilik ana sayfadaki input'u tetikleyebilir veya API'ye gidebilir.
+                console.log("WebMCP Soru:", soru);
+                window.dispatchEvent(new CustomEvent('webmcp-query', { detail: { query: soru } }));
+                return { status: "success", message: "Soru işleme alındı." };
+              }
+            }, { signal: controller.signal });
+
+            // Tool 2: Document Analysis
+            window.navigator.modelContext.registerTool({
+              name: "imar_belge_analiz",
+              description: "Ruhsat, tapu veya imar planı gibi belgeleri analiz eder.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  url: { type: "string", description: "Belge URL'i (PDF/Image)" }
+                },
+                required: ["url"]
+              },
+              execute: async ({ url }) => {
+                console.log("WebMCP Belge:", url);
+                window.dispatchEvent(new CustomEvent('webmcp-analyze', { detail: { url } }));
+                return { status: "success", message: "Belge analizi başlatıldı." };
+              }
+            }, { signal: controller.signal });
+
+            console.log("WebMCP tools registered successfully.");
+          } catch (e) {
+            console.error("WebMCP registration failed:", e);
+          }
+        }
+      });
+    }
+  </script>
+
 </head>
 
 <body>
