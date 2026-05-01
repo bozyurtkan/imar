@@ -69,7 +69,7 @@ export class GeminiService {
 
     try {
       const { text } = await this.callApi({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.5-flash",
         contents: `KÜTÜPHANE İÇERİĞİ:\n\n${contextText}\n\nKULLANICI SORUSU: ${question}`,
         systemInstruction: systemInstruction.trim(),
       });
@@ -82,7 +82,7 @@ export class GeminiService {
   async summarizeDocument(doc: DocumentFile): Promise<string> {
     try {
       const { text } = await this.callApi({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.5-flash",
         contents: `Aşağıdaki imar mevzuatı dökümanını profesyonel bir şekilde özetle:\n\n${doc.content}`,
         systemInstruction: "Sen bir hukuk asistanısın. Kısa ve net özetler çıkarırsın.",
       });
@@ -179,9 +179,9 @@ Yönetmelik ve Genelgeler:
 
       // Google Search boş yanıt dönerse training data ile yeniden dene
       if (!text) {
-        console.warn("askGeneral: Google Search boş yanıt döndü, gemini-2.0-flash ile yeniden deneniyor...");
+        console.warn("askGeneral: Google Search boş yanıt döndü, gemini-2.5-flash ile yeniden deneniyor...");
         const fallback = await this.callApi({
-          model: "gemini-2.0-flash",
+          model: "gemini-2.5-flash",
           contents,
           systemInstruction: systemInstruction.trim(),
           useGoogleSearch: false,
@@ -316,7 +316,7 @@ KURALLAR:
     `;
 
     try {
-      const { text } = await this.callApi({ model: "gemini-2.0-flash", contents: prompt });
+      const { text } = await this.callApi({ model: "gemini-2.5-flash", contents: prompt });
       const jsonMatch = text.match(/\[.*?\]/s);
       if (!jsonMatch) {
         console.warn("Gemini Filter: JSON dizisi bulunamadı.");
@@ -353,7 +353,7 @@ KURALLAR:
     `;
 
     try {
-      const { text } = await this.callApi({ model: "gemini-2.0-flash", contents: prompt });
+      const { text } = await this.callApi({ model: "gemini-2.5-flash", contents: prompt });
       return text;
     } catch (error: any) {
       return "Analiz yapılamadı: " + error.message;
@@ -392,7 +392,7 @@ KURALLAR:
 
     try {
       const { text } = await this.callApi({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.5-flash",
         contents: prompt,
         responseMimeType: "application/json",
       });
@@ -545,7 +545,7 @@ Net, öz bir profesyonel görüş. "Kanaatimce", "güçlü argüman", "önerilir
 
     try {
       const { text: jsonText } = await this.callApi({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.5-flash",
         contents: prompt,
         responseMimeType: "application/json",
       });

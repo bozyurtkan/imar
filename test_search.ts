@@ -17,7 +17,7 @@ async function run() {
 
     try {
         const response = await ai.models.generateContent({
-            model: "gemini-2.0-flash",
+            model: "gemini-2.5-flash",
             contents: "KULLANICI SORUSU: Kapı önü rüzgarlık holü ruhsata tabi midir?\n\nLütfen bu soruyu yanıtlarken özellikle 2025 veya 2026 yılına ait güncel Resmi Gazete değişikliklerini (Örn: Planlı Alanlar İmar Yönetmeliği Değişikliği) web'den muhakkak araştırarak yanıtla.",
             config: {
                 tools: [{ googleSearch: {} }]

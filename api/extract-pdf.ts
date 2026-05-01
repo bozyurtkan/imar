@@ -14,7 +14,7 @@ export default async function handler(req: any, res: any) {
     // Mod 1: PDF dosyası (base64) → Gemini OCR
     if (data) {
       const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.5-flash",
         contents: [
           {
             role: "user",
@@ -33,7 +33,7 @@ export default async function handler(req: any, res: any) {
     // Mod 2: Bozuk ham metin → Gemini düzeltme
     if (rawText) {
       const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.5-flash",
         contents: [
           {
             role: "user",
