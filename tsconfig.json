@@ -26,5 +26,6 @@
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "exclude": ["cold-email-tool", "node_modules", "dist"]
 }
