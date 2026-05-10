@@ -639,7 +639,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                     </div>
                     <div className="landing-footer-links">
                         <div className="landing-footer-col">
-                            <h4>Bizi Takip Edin</h4>
+                            <p className="landing-footer-col-heading">Bizi Takip Edin</p>
                             <div className="landing-footer-socials">
                                 <a href="#" aria-label="LinkedIn"><Linkedin size={18} /></a>
                                 <a href="#" aria-label="Twitter"><Twitter size={18} /></a>
@@ -647,12 +647,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                             </div>
                         </div>
                         <div className="landing-footer-col">
-                            <h4>Ürün</h4>
+                            <p className="landing-footer-col-heading">Ürün</p>
                             <a href="#" onClick={(e) => { e.preventDefault(); onGetStarted(); }}>Giriş Yap</a>
                             <a href="#" onClick={(e) => { e.preventDefault(); onGetStarted(); }}>Ücretsiz Dene</a>
                         </div>
                         <div className="landing-footer-col">
-                            <h4>Hukuki</h4>
+                            <p className="landing-footer-col-heading">Hukuki</p>
                             <a href="#" onClick={(e) => { e.preventDefault(); onOpenLegal?.('hizmet'); }}>Hizmet Şartları</a>
                             <a href="#" onClick={(e) => { e.preventDefault(); onOpenLegal?.('aydinlatma'); }}>Gizlilik Politikası</a>
                             <a href="#" onClick={(e) => { e.preventDefault(); onOpenLegal?.('mesafeli'); }}>Mesafeli Satış</a>
@@ -661,7 +661,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onOpenLe
                             <a href="#" onClick={(e) => { e.preventDefault(); onOpenLegal?.('acik-riza'); }}>Açık Rıza Metni</a>
                         </div>
                         <div className="landing-footer-col">
-                            <h4>Kurumsal</h4>
+                            <p className="landing-footer-col-heading">Kurumsal</p>
                             <a href="#" onClick={(e) => { e.preventDefault(); onOpenAbout?.(); }}>Hakkımızda</a>
                             <a href="#">İletişim</a>
                         </div>

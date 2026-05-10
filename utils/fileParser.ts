@@ -1,8 +1,19 @@
 
 import { FileType } from '../types';
 
-declare const pdfjsLib: any;
-declare const mammoth: any;
+const PDFJS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js';
+const MAMMOTH_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js';
+
+function loadScript(src: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = () => resolve();
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
 
 export const parseFile = async (file: File): Promise<string> => {
   const fileType = file.type;
@@ -86,6 +97,8 @@ const parsePdfWithGemini = async (file: File): Promise<string> => {
 };
 
 const parsePdfWithPdfjs = async (file: File): Promise<string> => {
+  await loadScript(PDFJS_CDN);
+  const pdfjsLib = (window as any).pdfjsLib;
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
   let fullText = '';
@@ -133,6 +146,8 @@ const parsePdfWithPdfjs = async (file: File): Promise<string> => {
 };
 
 const parseDocx = async (file: File): Promise<string> => {
+  await loadScript(MAMMOTH_CDN);
+  const mammoth = (window as any).mammoth;
   const arrayBuffer = await file.arrayBuffer();
   const result = await mammoth.extractRawText({ arrayBuffer });
   return result.value;

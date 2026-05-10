@@ -203,11 +203,11 @@
     }]
   }
   </script>
-  <!-- Fonts -->
+  <!-- Fonts: non-blocking load to eliminate render-blocking -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-    rel="stylesheet">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 
   <link rel="stylesheet" href="/index.css">
 
@@ -270,9 +270,7 @@
 
 <body>
   <div id="root"></div>
-  <!-- pdf.js and mammoth.js for file parsing -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js" defer></script>
+  <!-- pdf.js and mammoth.js: loaded on demand by fileParser.ts -->
   <script type="module" src="/index.tsx"></script>
   <noscript>
     <div style="padding:3rem;text-align:center;font-family:Inter,sans-serif;max-width:600px;margin:auto;">

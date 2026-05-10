@@ -1587,7 +1587,8 @@ body:has(.login-page) {
   gap: 24px;
 }
 
-.landing-footer-col h4 {
+.landing-footer-col h4,
+.landing-footer-col .landing-footer-col-heading {
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
